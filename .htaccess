@@ -1,0 +1,22 @@
+RewriteEngine On
+RewriteBase /
+
+# Don't rewrite real files or directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Main site
+RewriteRule ^register/?$ register.php [L]
+RewriteRule ^gallery/?$ gallery.php [L]
+RewriteRule ^gifts/?$ gifts.php [L]
+RewriteRule ^index/?$ index.php [L]
+RewriteRule ^$ index.php [L]
+
+# Admin
+RewriteRule ^admin/?$ admin/index.php [L]
+RewriteRule ^admin/dashboard/?$ admin/dashboard.php [L]
+RewriteRule ^admin/guests/?$ admin/guests.php [L]
+RewriteRule ^admin/gifts/?$ admin/gifts.php [L]
+RewriteRule ^admin/gift-edit/?$ admin/gift-edit.php [L,QSA]
+RewriteRule ^admin/receipts/?$ admin/receipts.php [L]
+RewriteRule ^admin/logout/?$ admin/logout.php [L]
