@@ -38,8 +38,11 @@
 
                 countdownEl.innerHTML =
                     '<div class="countdown-box"><span class="countdown-num">' + days + '</span><span class="countdown-label">Days</span></div>' +
+                    '<span class="countdown-sep" aria-hidden="true"></span>' +
                     '<div class="countdown-box"><span class="countdown-num">' + hours + '</span><span class="countdown-label">Hours</span></div>' +
+                    '<span class="countdown-sep" aria-hidden="true"></span>' +
                     '<div class="countdown-box"><span class="countdown-num">' + mins + '</span><span class="countdown-label">Mins</span></div>' +
+                    '<span class="countdown-sep" aria-hidden="true"></span>' +
                     '<div class="countdown-box"><span class="countdown-num">' + secs + '</span><span class="countdown-label">Secs</span></div>';
             }
             updateCountdown();

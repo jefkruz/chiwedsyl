@@ -37,8 +37,11 @@ include __DIR__ . '/includes/header.php';
     <h2>Counting the days</h2>
     <div class="countdown-runner" id="countdown" data-date="<?= htmlspecialchars(WEDDING_DATE) ?>">
         <div class="countdown-box"><span class="countdown-num">—</span><span class="countdown-label">Days</span></div>
+        <span class="countdown-sep" aria-hidden="true"></span>
         <div class="countdown-box"><span class="countdown-num">—</span><span class="countdown-label">Hours</span></div>
+        <span class="countdown-sep" aria-hidden="true"></span>
         <div class="countdown-box"><span class="countdown-num">—</span><span class="countdown-label">Mins</span></div>
+        <span class="countdown-sep" aria-hidden="true"></span>
         <div class="countdown-box"><span class="countdown-num">—</span><span class="countdown-label">Secs</span></div>
     </div>
 </section>
