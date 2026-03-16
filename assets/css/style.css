@@ -821,6 +821,11 @@ body {
     color: var(--chocolate-light);
 }
 
+.gift-price {
+    font-weight: 600;
+    color: var(--chocolate);
+}
+
 .upload-receipt-form {
     max-width: 480px;
     margin: 2rem auto 4rem;

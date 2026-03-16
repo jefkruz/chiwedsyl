@@ -74,6 +74,12 @@ function initSchema(PDO $pdo): void {
     if (!in_array('guest_photo_path', $cols)) {
         $pdo->exec("ALTER TABLE guests ADD COLUMN guest_photo_path TEXT");
     }
+    // Add price to gift_items if missing
+    $giftInfo = $pdo->query("PRAGMA table_info(gift_items)")->fetchAll(PDO::FETCH_ASSOC);
+    $giftCols = array_column($giftInfo, 'name');
+    if (!in_array('price', $giftCols)) {
+        $pdo->exec("ALTER TABLE gift_items ADD COLUMN price TEXT");
+    }
     // Gallery table created in schema above; ensure it exists for old installs
     $pdo->exec("CREATE TABLE IF NOT EXISTS gallery_images (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

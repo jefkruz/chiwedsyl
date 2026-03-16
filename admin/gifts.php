@@ -29,11 +29,11 @@ if (isset($_GET['deleted'])) {
 // Add/Edit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
+    $price = trim($_POST['price'] ?? '');
     $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
 
     if ($title === '') {
-        $message = 'Title is required.';
+        $message = 'Name is required.';
         $messageType = 'error';
     } else {
         $image_path = null;
@@ -51,12 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id > 0) {
             $row = $pdo->query("SELECT image_path FROM gift_items WHERE id = $id")->fetch(PDO::FETCH_ASSOC);
             $path = $image_path ?: ($row['image_path'] ?? null);
-            $pdo->prepare("UPDATE gift_items SET title = ?, description = ?, image_path = ? WHERE id = ?")
-                ->execute([$title, $description, $path, $id]);
+            $pdo->prepare("UPDATE gift_items SET title = ?, price = ?, image_path = ? WHERE id = ?")
+                ->execute([$title, $price ?: null, $path, $id]);
             $message = 'Gift updated.';
         } else {
-            $pdo->prepare("INSERT INTO gift_items (title, description, image_path) VALUES (?, ?, ?)")
-                ->execute([$title, $description, $image_path]);
+            $pdo->prepare("INSERT INTO gift_items (title, price, image_path) VALUES (?, ?, ?)")
+                ->execute([$title, $price ?: null, $image_path]);
             $message = 'Gift added.';
         }
         $messageType = 'success';
@@ -95,16 +95,16 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
             <h2>Add new gift</h2>
             <form method="post" action="<?= BASE ?>/admin/gifts" enctype="multipart/form-data" style="max-width: 480px;">
                 <div class="form-group">
-                    <label for="title">Title *</label>
-                    <input type="text" id="title" name="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description"></textarea>
+                    <label for="title">Name *</label>
+                    <input type="text" id="title" name="title" required placeholder="e.g. Blender">
                 </div>
                 <div class="form-group">
                     <label for="image">Image</label>
                     <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.gif,.webp">
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="text" id="price" name="price" placeholder="e.g. ₦15,000 or 15000">
                 </div>
                 <button type="submit" class="btn-submit">Add gift</button>
             </form>
@@ -117,8 +117,8 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
                     <thead>
                         <tr>
                             <th>Image</th>
-                            <th>Title</th>
-                            <th>Description</th>
+                            <th>Name</th>
+                            <th>Price</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -133,7 +133,7 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
                                     <?php endif; ?>
                                 </td>
                                 <td><?= htmlspecialchars($g['title']) ?></td>
-                                <td><?= nl2br(htmlspecialchars(mb_substr($g['description'] ?? '', 0, 80))) ?><?= mb_strlen($g['description'] ?? '') > 80 ? '…' : '' ?></td>
+                                <td><?= htmlspecialchars($g['price'] ?? '—') ?></td>
                                 <td>
                                     <a href="<?= BASE ?>/admin/gift-edit?id=<?= (int) $g['id'] ?>" class="btn-small">Edit</a>
                                     <a href="<?= BASE ?>/admin/gifts?delete=<?= (int) $g['id'] ?>" class="btn-small danger" onclick="return confirm('Delete this gift?');">Delete</a>

@@ -76,8 +76,8 @@ include __DIR__ . '/includes/header.php';
                 <?php endif; ?>
                 <div class="gift-card-body">
                     <h3><?= htmlspecialchars($g['title']) ?></h3>
-                    <?php if (!empty($g['description'])): ?>
-                        <p><?= nl2br(htmlspecialchars($g['description'])) ?></p>
+                    <?php if (!empty($g['price'])): ?>
+                        <p class="gift-price"><?= htmlspecialchars($g['price']) ?></p>
                     <?php endif; ?>
                 </div>
             </div>

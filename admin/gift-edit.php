@@ -18,9 +18,9 @@ $messageType = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
+    $price = trim($_POST['price'] ?? '');
     if ($title === '') {
-        $message = 'Title is required.';
+        $message = 'Name is required.';
         $messageType = 'error';
     } else {
         $image_path = $item['image_path'];
@@ -37,11 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
-        $pdo->prepare("UPDATE gift_items SET title = ?, description = ?, image_path = ? WHERE id = ?")
-            ->execute([$title, $description, $image_path, $id]);
+        $pdo->prepare("UPDATE gift_items SET title = ?, price = ?, image_path = ? WHERE id = ?")
+            ->execute([$title, $price ?: null, $image_path, $id]);
         $message = 'Gift updated.';
         $messageType = 'success';
-        $item = array_merge($item, ['title' => $title, 'description' => $description, 'image_path' => $image_path]);
+        $item = array_merge($item, ['title' => $title, 'price' => $price, 'image_path' => $image_path]);
     }
 }
 ?>
@@ -68,12 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="post" action="<?= BASE ?>/admin/gift-edit?id=<?= $id ?>" enctype="multipart/form-data" style="max-width: 480px;">
                 <input type="hidden" name="id" value="<?= $id ?>">
                 <div class="form-group">
-                    <label for="title">Title *</label>
+                    <label for="title">Name *</label>
                     <input type="text" id="title" name="title" required value="<?= htmlspecialchars($item['title']) ?>">
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description"><?= htmlspecialchars($item['description'] ?? '') ?></textarea>
                 </div>
                 <div class="form-group">
                     <label>Current image</label>
@@ -84,6 +80,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
                     <label for="image">Replace image</label>
                     <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.gif,.webp">
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="text" id="price" name="price" value="<?= htmlspecialchars($item['price'] ?? '') ?>" placeholder="e.g. ₦15,000">
                 </div>
                 <button type="submit" class="btn-submit">Save changes</button>
             </form>
