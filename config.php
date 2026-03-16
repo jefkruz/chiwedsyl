@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-define('SITE_NAME', 'Chi & Syl');
+define('SITE_NAME', 'Omasyl');
 define('WEDDING_DATE', '2026-06-20'); // Change to your wedding date (YYYY-MM-DD)
 define('DB_PATH', __DIR__ . '/data/wedding.db');
 define('UPLOAD_PATH', __DIR__ . '/uploads');
@@ -19,6 +19,7 @@ $bank_details = [
 define('RSVP_PHONE_EHI', '09028333290');
 define('RSVP_PHONE_ONYINYE', '09028315081');
 define('RSVP_PHONE_BECKY', '07030911452');
+define('RSVP_PHONE_PRECIOUS', '08100175880');
 define('BASE', ''); // No .php in URLs; use /register, /gifts, etc.
 
 require_once __DIR__ . '/includes/db.php';

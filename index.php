@@ -22,14 +22,14 @@ include __DIR__ . '/includes/header.php';
 <section class="hero">
     <?php if (file_exists($heroImage)): ?>
         <div class="img-frame img-frame-hero">
-            <img src="<?= BASE ?>/<?= htmlspecialchars($heroImage) ?>" alt="Chi & Syl 2026" class="hero-image">
+            <img src="<?= BASE ?>/<?= htmlspecialchars($heroImage) ?>" alt="Omasyl 2026" class="hero-image">
         </div>
     <?php else: ?>
         <div class="img-frame img-frame-hero hero-image hero-image-placeholder">
-            <span class="hero-badge" style="color: var(--cream);">Chi & Syl 2026</span>
+            <span class="hero-badge" style="color: var(--cream);">Omasyl 2026</span>
         </div>
     <?php endif; ?>
-    <h1 class="hero-badge">Chi & Syl 2026</h1>
+    <h1 class="hero-badge">Omasyl 2026</h1>
     <p class="hero-sub">We're Getting Married</p>
 </section>
 
@@ -81,7 +81,7 @@ include __DIR__ . '/includes/header.php';
     <div class="detail-card">
         <h3>Ceremony</h3>
         <p>Excel Centre, Billings Way, Ikeja, Lagos State</p>
-        <p class="time">11:00 AM</p>
+        <p class="time">10:00 AM</p>
     </div>
     <div class="detail-card">
         <h3>Reception</h3>
@@ -93,7 +93,7 @@ include __DIR__ . '/includes/header.php';
 <section class="photo-section">
     <?php if (file_exists($photo2)): ?>
         <div class="img-frame img-frame-full">
-            <img src="<?= BASE ?>/<?= htmlspecialchars($photo2) ?>" alt="Chi & Syl">
+            <img src="<?= BASE ?>/<?= htmlspecialchars($photo2) ?>" alt="Omasyl">
         </div>
     <?php endif; ?>
 </section>
@@ -124,7 +124,7 @@ include __DIR__ . '/includes/header.php';
 <section class="photo-section">
     <?php if (file_exists($photo3)): ?>
         <div class="img-frame img-frame-full">
-            <img src="<?= BASE ?>/<?= htmlspecialchars($photo3) ?>" alt="Chi & Syl">
+            <img src="<?= BASE ?>/<?= htmlspecialchars($photo3) ?>" alt="Omasyl">
         </div>
     <?php endif; ?>
 </section>
@@ -133,7 +133,7 @@ include __DIR__ . '/includes/header.php';
     <h2 class="section-title">Why you need to RSVP</h2>
     <p>So we can reserve your seat and make sure everything is perfect for you. Please register below or reach out to us.</p>
     <a href="<?= BASE ?>/register" class="btn">Click here to RSVP</a>
-    <p class="rsvp-phones">Or call <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_EHI) ?>">Ehi</a>, <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_ONYINYE) ?>">Onyinye</a> or <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_BECKY) ?>">Becky</a></p>
+    <p class="rsvp-phones">Or call <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_EHI) ?>">Ehi <?= preg_replace('/\s+/', ' ', RSVP_PHONE_EHI) ?></a>, <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_ONYINYE) ?>">Onyinye <?= preg_replace('/\s+/', ' ', RSVP_PHONE_ONYINYE) ?></a>, <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_BECKY) ?>">Becky <?= preg_replace('/\s+/', ' ', RSVP_PHONE_BECKY) ?></a> or <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_PRECIOUS) ?>">Precious <?= preg_replace('/\s+/', ' ', RSVP_PHONE_PRECIOUS) ?></a></p>
 </section>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

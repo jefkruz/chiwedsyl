@@ -15,7 +15,7 @@ $page_title = $page_title ?? SITE_NAME . ' — We\'re Getting Married';
 </head>
 <body class="page-<?= htmlspecialchars($current_page) ?>">
     <header class="site-header">
-        <a href="<?= BASE ?>/" class="logo">Chi & Syl 2026</a>
+        <a href="<?= BASE ?>/" class="logo">Omasyl 2026</a>
         <nav class="main-nav">
             <a href="<?= BASE ?>/" class="<?= $current_page === 'home' ? 'active' : '' ?>">Home</a>
             <a href="<?= BASE ?>/#our-story">Our Story</a>
