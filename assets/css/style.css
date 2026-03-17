@@ -390,6 +390,11 @@ body {
     margin-bottom: 1rem;
 }
 
+.story-cta {
+    text-align: center;
+    margin-top: 2rem;
+}
+
 /* Details (location & reception) */
 .details-section {
     padding: 4rem 1.5rem;

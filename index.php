@@ -74,6 +74,9 @@ include __DIR__ . '/includes/header.php';
         <p>Our journey together began with a simple hello and grew into a love we never knew we were waiting for. Through every season, we've chosen each other—and we can't wait to say "I do" in front of the people who matter most.</p>
         <p>Thank you for being part of our story. We look forward to seeing you in our big day</p>
     </div>
+    <p class="story-cta">
+        <a href="<?= BASE ?>/well-wishes" class="btn">Leave a well wish</a>
+    </p>
 </section>
 
 <section class="details-section" id="details">
