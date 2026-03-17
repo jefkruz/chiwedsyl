@@ -826,6 +826,109 @@ body {
     color: var(--chocolate);
 }
 
+/* Well Wishes page */
+.wishes-intro {
+    padding: 5rem 1.5rem 2rem;
+    text-align: center;
+}
+
+.wishes-tagline {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--chocolate-light);
+    letter-spacing: 0.03em;
+    margin-top: -0.5rem;
+}
+
+.wish-form-section {
+    padding: 0 1.5rem 3rem;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.wish-form-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px var(--shadow);
+    border: 1px solid var(--cream-dark);
+}
+
+.wish-form-card h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--chocolate);
+    margin-bottom: 1.25rem;
+}
+
+.wishes-list-section {
+    padding: 2rem 1.5rem 4rem;
+    background: linear-gradient(180deg, var(--cream-dark) 0%, var(--cream) 100%);
+}
+
+.wishes-list-title {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 500;
+    text-align: center;
+    color: var(--chocolate);
+    margin-bottom: 2rem;
+    letter-spacing: 0.03em;
+}
+
+.wishes-empty {
+    text-align: center;
+    color: var(--chocolate-light);
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+.wishes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.wish-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: 0 6px 24px var(--shadow);
+    border-left: 4px solid var(--gold);
+    position: relative;
+}
+
+.wish-message {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--chocolate);
+    line-height: 1.65;
+    margin: 0 0 1rem 0;
+}
+
+.wish-message::before {
+    content: '"';
+    color: var(--gold);
+    font-size: 1.5em;
+}
+
+.wish-author {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--navy);
+}
+
+.wish-date {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--chocolate-light);
+    margin-top: 0.35rem;
+}
+
 .upload-receipt-form {
     max-width: 480px;
     margin: 2rem auto 4rem;

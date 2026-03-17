@@ -11,6 +11,7 @@ $routes = [
     '/register' => '/register.php',
     '/gallery' => '/gallery.php',
     '/gifts' => '/gifts.php',
+    '/well-wishes' => '/well-wishes.php',
     '/admin' => '/admin/index.php',
     '/admin/dashboard' => '/admin/dashboard.php',
     '/admin/guests' => '/admin/guests.php',

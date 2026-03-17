@@ -9,6 +9,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^register/?$ register.php [L]
 RewriteRule ^gallery/?$ gallery.php [L]
 RewriteRule ^gifts/?$ gifts.php [L]
+RewriteRule ^well-wishes/?$ well-wishes.php [L]
 RewriteRule ^index/?$ index.php [L]
 RewriteRule ^$ index.php [L]
 

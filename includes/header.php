@@ -22,6 +22,7 @@ $page_title = $page_title ?? SITE_NAME . ' — We\'re Getting Married';
             <a href="<?= BASE ?>/#details">Details</a>
             <a href="<?= BASE ?>/gallery">Gallery</a>
             <a href="<?= BASE ?>/gifts">Gifts</a>
+            <a href="<?= BASE ?>/well-wishes">Well Wishes</a>
             <a href="<?= BASE ?>/register" class="nav-cta">RSVP</a>
         </nav>
         <button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false">☰</button>

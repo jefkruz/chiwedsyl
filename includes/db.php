@@ -58,6 +58,12 @@ function initSchema(PDO $pdo): void {
             sort_order INTEGER DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
+        CREATE TABLE IF NOT EXISTS well_wishes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            author_name TEXT NOT NULL,
+            message TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
     ");
     // Insert default admin if none exists
     $stmt = $pdo->query("SELECT COUNT(*) FROM admin");
@@ -80,6 +86,13 @@ function initSchema(PDO $pdo): void {
     if (!in_array('price', $giftCols)) {
         $pdo->exec("ALTER TABLE gift_items ADD COLUMN price TEXT");
     }
+    // Well wishes table for old installs
+    $pdo->exec("CREATE TABLE IF NOT EXISTS well_wishes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        author_name TEXT NOT NULL,
+        message TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
     // Gallery table created in schema above; ensure it exists for old installs
     $pdo->exec("CREATE TABLE IF NOT EXISTS gallery_images (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
