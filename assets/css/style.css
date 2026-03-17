@@ -831,108 +831,268 @@ body {
     color: var(--chocolate);
 }
 
-/* Well Wishes page */
-.wishes-intro {
-    padding: 5rem 1.5rem 2rem;
+/* Well Wishes / Tributes page (forevermissed-style) */
+.tributes-hero {
+    padding: 4rem 1.5rem 2.5rem;
     text-align: center;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: var(--cream);
 }
 
-.wishes-tagline {
-    font-family: var(--font-serif);
-    font-size: 1.1rem;
-    color: var(--chocolate-light);
-    letter-spacing: 0.03em;
-    margin-top: -0.5rem;
+.tributes-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
 }
 
-.wish-form-section {
-    padding: 0 1.5rem 3rem;
+.tributes-subtitle {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    letter-spacing: 0.04em;
+}
+
+.tributes-alert-wrap {
     max-width: 560px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+}
+
+.tributes-list-section {
+    padding: 2rem 1.5rem 5rem;
+    max-width: 900px;
     margin: 0 auto;
 }
 
-.wish-form-card {
+.tributes-empty {
+    text-align: center;
+    color: var(--chocolate-light);
+    padding: 3rem 1rem;
+}
+
+.tributes-empty p {
+    margin-bottom: 0.5rem;
+}
+
+.tributes-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.tribute-card {
     background: var(--white);
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 8px 32px var(--shadow);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    box-shadow: 0 2px 12px var(--shadow);
     border: 1px solid var(--cream-dark);
 }
 
-.wish-form-card h2 {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 500;
+.tribute-message {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
     color: var(--chocolate);
-    margin-bottom: 1.25rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
 }
 
-.wishes-list-section {
-    padding: 2rem 1.5rem 4rem;
-    background: linear-gradient(180deg, var(--cream-dark) 0%, var(--cream) 100%);
+.tribute-message p {
+    margin-bottom: 0.5rem;
 }
 
-.wishes-list-title {
+.tribute-message p:last-child {
+    margin-bottom: 0;
+}
+
+.tribute-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--cream-dark);
+}
+
+.tribute-author {
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 0.9rem;
+}
+
+.tribute-date {
+    font-size: 0.8rem;
+    color: var(--chocolate-light);
+}
+
+/* Floating action button */
+.tribute-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 1.5rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--chocolate);
+    border: none;
+    box-shadow: 0 4px 20px rgba(61, 35, 20, 0.25);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 90;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tribute-fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 24px rgba(61, 35, 20, 0.3);
+}
+
+/* Modal */
+.tribute-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(61, 35, 20, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 1rem;
+}
+
+.tribute-modal {
+    background: var(--white);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: auto;
+    box-shadow: 0 20px 60px var(--shadow-strong);
+}
+
+.tribute-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--cream-dark);
+}
+
+.tribute-modal-header h2 {
     font-family: var(--font-display);
     font-size: 1.35rem;
     font-weight: 500;
-    text-align: center;
     color: var(--chocolate);
-    margin-bottom: 2rem;
-    letter-spacing: 0.03em;
+    margin: 0;
 }
 
-.wishes-empty {
-    text-align: center;
+.tribute-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    line-height: 1;
     color: var(--chocolate-light);
-    max-width: 360px;
-    margin: 0 auto;
+    cursor: pointer;
+    padding: 0.25rem;
 }
 
-.wishes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.wish-card {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 1.75rem;
-    box-shadow: 0 6px 24px var(--shadow);
-    border-left: 4px solid var(--gold);
-    position: relative;
-}
-
-.wish-message {
-    font-family: var(--font-serif);
-    font-size: 1.05rem;
-    font-style: italic;
+.tribute-modal-close:hover {
     color: var(--chocolate);
-    line-height: 1.65;
-    margin: 0 0 1rem 0;
 }
 
-.wish-message::before {
-    content: '"';
-    color: var(--gold);
-    font-size: 1.5em;
+.tribute-modal-form {
+    padding: 1.5rem;
 }
 
-.wish-author {
+.tribute-modal-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.tribute-modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn-cancel {
+    padding: 0.6rem 1.25rem;
+    background: transparent;
+    border: 1px solid var(--chocolate-light);
+    color: var(--chocolate);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn-cancel:hover {
+    background: var(--cream-dark);
+}
+
+/* Rich text editor */
+.rich-text-toolbar {
+    display: flex;
+    gap: 2px;
+    padding: 4px 0;
+    margin-bottom: 4px;
+}
+
+.rich-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream-dark);
+    border: 1px solid var(--cream-dark);
+    border-radius: 4px;
+    cursor: pointer;
     font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--navy);
+    color: var(--chocolate);
 }
 
-.wish-date {
-    display: block;
-    font-size: 0.8rem;
-    color: var(--chocolate-light);
-    margin-top: 0.35rem;
+.rich-btn:hover {
+    background: var(--cream);
+    border-color: var(--gold);
 }
+
+.rich-text-editor {
+    min-height: 140px;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cream-dark);
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--chocolate);
+    background: var(--white);
+    outline: none;
+}
+
+.rich-text-editor:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.2);
+}
+
+.rich-text-editor[data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: var(--chocolate-light);
+}
+
+/* Legacy wish card classes (if still used elsewhere) */
+.wishes-intro { padding: 5rem 1.5rem 2rem; text-align: center; }
+.wishes-tagline { font-family: var(--font-serif); font-size: 1.1rem; color: var(--chocolate-light); margin-top: -0.5rem; }
+.wish-form-section { padding: 0 1.5rem 3rem; max-width: 560px; margin: 0 auto; }
+.wish-form-card { background: var(--white); border-radius: 12px; padding: 2rem; box-shadow: 0 8px 32px var(--shadow); }
+.wishes-list-section { padding: 2rem 1.5rem 4rem; }
+.wishes-list-title { font-family: var(--font-display); text-align: center; margin-bottom: 2rem; }
+.wishes-empty { text-align: center; color: var(--chocolate-light); }
+.wishes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.wish-card { background: var(--white); border-radius: 12px; padding: 1.75rem; box-shadow: 0 6px 24px var(--shadow); border-left: 4px solid var(--gold); }
+.wish-message { font-family: var(--font-serif); font-size: 1.05rem; font-style: italic; color: var(--chocolate); line-height: 1.65; }
+.wish-author { font-size: 0.9rem; font-weight: 500; color: var(--navy); }
+.wish-date { font-size: 0.8rem; color: var(--chocolate-light); margin-top: 0.35rem; }
 
 .upload-receipt-form {
     max-width: 480px;
