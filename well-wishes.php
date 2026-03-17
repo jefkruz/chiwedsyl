@@ -76,7 +76,7 @@ include __DIR__ . '/includes/header.php';
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
 </button>
 
-<div class="tribute-modal-overlay" id="tribute-modal" role="dialog" aria-modal="true" aria-labelledby="tribute-modal-title" hidden>
+<div class="tribute-modal-overlay" id="tribute-modal" role="dialog" aria-modal="true" aria-labelledby="tribute-modal-title" aria-hidden="true">
     <div class="tribute-modal">
         <div class="tribute-modal-header">
             <h2 id="tribute-modal-title">Add a well wish</h2>
@@ -116,31 +116,47 @@ include __DIR__ . '/includes/header.php';
     var form = document.querySelector('.tribute-modal-form');
 
     function openModal() {
-        modal.hidden = false;
+        if (!modal) return;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
-        document.getElementById('tribute-author_name').focus();
+        var nameEl = document.getElementById('tribute-author_name');
+        if (nameEl) nameEl.focus();
     }
-    function closeModal() {
-        modal.hidden = true;
+
+    function closeModal(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        if (!modal) return;
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
     }
 
     if (fab) fab.addEventListener('click', openModal);
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) { closeModal(e); });
+    }
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function(e) { closeModal(e); });
+    }
+
     if (modal) {
         modal.addEventListener('click', function(e) {
-            if (e.target === modal) closeModal();
+            if (e.target === modal) closeModal(e);
         });
     }
 
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal && !modal.hidden) closeModal();
+        if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) closeModal(e);
     });
 
     if (form) {
         form.addEventListener('submit', function() {
-            messageInput.value = editor.innerHTML;
+            if (messageInput && editor) messageInput.value = editor.innerHTML;
         });
     }
 
@@ -150,7 +166,7 @@ include __DIR__ . '/includes/header.php';
             e.preventDefault();
             var cmd = btn.getAttribute('data-cmd');
             document.execCommand(cmd, false, null);
-            editor.focus();
+            if (editor) editor.focus();
         });
     });
 })();

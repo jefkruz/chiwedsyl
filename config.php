@@ -22,4 +22,13 @@ define('RSVP_PHONE_BECKY', '07030911452');
 define('RSVP_PHONE_PRECIOUS', '08100175880');
 define('BASE', ''); // No .php in URLs; use /register, /gifts, etc.
 
+function format_gift_price($price) {
+    if ($price === null || $price === '') return '';
+    $digits = preg_replace('/[^0-9]/', '', $price);
+    if ($digits !== '') {
+        return '₦' . number_format((float) $digits, 0);
+    }
+    return $price;
+}
+
 require_once __DIR__ . '/includes/db.php';

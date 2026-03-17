@@ -133,7 +133,7 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
                                     <?php endif; ?>
                                 </td>
                                 <td><?= htmlspecialchars($g['title']) ?></td>
-                                <td><?= htmlspecialchars($g['price'] ?? '—') ?></td>
+                                <td><?= htmlspecialchars(format_gift_price($g['price'] ?? '') ?: '—') ?></td>
                                 <td>
                                     <a href="<?= BASE ?>/admin/gift-edit?id=<?= (int) $g['id'] ?>" class="btn-small">Edit</a>
                                     <a href="<?= BASE ?>/admin/gifts?delete=<?= (int) $g['id'] ?>" class="btn-small danger" onclick="return confirm('Delete this gift?');">Delete</a>
