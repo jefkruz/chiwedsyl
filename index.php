@@ -90,11 +90,6 @@ include __DIR__ . '/includes/header.php';
         <p>Excel Centre, Billings Way, Ikeja, Lagos State</p>
         <p class="time">10:00 AM</p>
     </div>
-    <div class="detail-card">
-        <h3>Reception</h3>
-        <p>Waterfalls Event Center, Billings Way, Ikeja, Lagos State</p>
-        <p class="time">2:00 PM</p>
-    </div>
 </section>
 
 <section class="photo-section">
