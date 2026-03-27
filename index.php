@@ -137,7 +137,9 @@ include __DIR__ . '/includes/header.php';
                     <article class="home-product-card">
                         <div class="home-product-image">
                             <?php if (!empty($g['image_path']) && file_exists($g['image_path'])): ?>
-                                <img src="<?= BASE ?>/<?= htmlspecialchars($g['image_path']) ?>" alt="<?= htmlspecialchars($g['title']) ?>">
+                                <a href="<?= BASE ?>/gifts" class="home-product-image-link" aria-label="Get <?= htmlspecialchars($g['title']) ?>">
+                                    <img src="<?= BASE ?>/<?= htmlspecialchars($g['image_path']) ?>" alt="<?= htmlspecialchars($g['title']) ?>">
+                                </a>
                             <?php else: ?>
                                 <div class="home-product-no-image">No image</div>
                             <?php endif; ?>
@@ -147,6 +149,7 @@ include __DIR__ . '/includes/header.php';
                             <?php if (!empty($g['price'])): ?>
                                 <p class="home-product-price"><?= htmlspecialchars(format_gift_price($g['price'])) ?></p>
                             <?php endif; ?>
+                            <a href="<?= BASE ?>/gifts" class="home-product-get-btn">Get</a>
                         </div>
                     </article>
                 <?php endforeach; ?>
