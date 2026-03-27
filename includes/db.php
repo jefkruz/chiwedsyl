@@ -64,6 +64,14 @@ function initSchema(PDO $pdo): void {
             message TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
+        CREATE TABLE IF NOT EXISTS gift_transfers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gift_item_id INTEGER,
+            guest_name TEXT NOT NULL,
+            amount TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (gift_item_id) REFERENCES gift_items(id)
+        );
     ");
     // Insert default admin if none exists
     $stmt = $pdo->query("SELECT COUNT(*) FROM admin");
@@ -92,6 +100,15 @@ function initSchema(PDO $pdo): void {
         author_name TEXT NOT NULL,
         message TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
+    // Gift transfers table for old installs
+    $pdo->exec("CREATE TABLE IF NOT EXISTS gift_transfers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        gift_item_id INTEGER,
+        guest_name TEXT NOT NULL,
+        amount TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (gift_item_id) REFERENCES gift_items(id)
     )");
     // Gallery table created in schema above; ensure it exists for old installs
     $pdo->exec("CREATE TABLE IF NOT EXISTS gallery_images (

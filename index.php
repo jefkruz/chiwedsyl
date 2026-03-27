@@ -16,6 +16,10 @@ $heroImage = 'assets/images/DSC02343.jpg';
 $photo2 = 'assets/images/DSC02354.jpg';
 $photo3 = 'assets/images/DSC02162.jpg';
 
+$pdo = getDb();
+$homeGifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id LIMIT 12")->fetchAll(PDO::FETCH_ASSOC);
+$homeGallery = $pdo->query("SELECT * FROM gallery_images ORDER BY created_at DESC LIMIT 16")->fetchAll(PDO::FETCH_ASSOC);
+
 include __DIR__ . '/includes/header.php';
 ?>
 
@@ -29,7 +33,7 @@ include __DIR__ . '/includes/header.php';
             <span class="hero-badge" style="color: var(--cream);">Omasyl 2026</span>
         </div>
     <?php endif; ?>
-    <h1 class="hero-badge">Omasyl 2026</h1>
+    <!-- <h1 class="hero-badge">Omasyl 2026</h1> -->
     <p class="hero-sub">We're Getting Married</p>
 </section>
 
@@ -124,12 +128,60 @@ include __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<section class="photo-section">
-    <?php if (file_exists($photo3)): ?>
-        <div class="img-frame img-frame-full">
-            <img src="<?= BASE ?>/<?= htmlspecialchars($photo3) ?>" alt="Omasyl">
+<section class="home-gifts-section">
+    <h2 class="section-title">Gift Ideas</h2>
+    <div class="home-carousel-wrap">
+        <button type="button" class="carousel-btn prev" data-target="home-gifts-carousel" aria-label="Previous gifts">‹</button>
+        <div class="home-carousel" id="home-gifts-carousel">
+            <div class="home-carousel-track">
+                <?php foreach ($homeGifts as $g): ?>
+                    <article class="home-product-card">
+                        <div class="home-product-image">
+                            <?php if (!empty($g['image_path']) && file_exists($g['image_path'])): ?>
+                                <img src="<?= BASE ?>/<?= htmlspecialchars($g['image_path']) ?>" alt="<?= htmlspecialchars($g['title']) ?>">
+                            <?php else: ?>
+                                <div class="home-product-no-image">No image</div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="home-product-body">
+                            <h3><?= htmlspecialchars($g['title']) ?></h3>
+                            <?php if (!empty($g['price'])): ?>
+                                <p class="home-product-price"><?= htmlspecialchars(format_gift_price($g['price'])) ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
         </div>
-    <?php endif; ?>
+        <button type="button" class="carousel-btn next" data-target="home-gifts-carousel" aria-label="Next gifts">›</button>
+    </div>
+    <p class="home-carousel-link">
+        <a href="<?= BASE ?>/gifts" class="btn">View more gifts</a>
+    </p>
+</section>
+
+<section class="home-gallery-section">
+    <h2 class="section-title">Gallery Highlights</h2>
+    <div class="home-carousel-wrap">
+        <button type="button" class="carousel-btn prev" data-target="home-gallery-carousel" aria-label="Previous gallery images">‹</button>
+        <div class="home-carousel" id="home-gallery-carousel">
+            <div class="home-carousel-track">
+                <?php if (file_exists($photo3)): ?>
+                    <article class="home-gallery-slide">
+                        <img src="<?= BASE ?>/<?= htmlspecialchars($photo3) ?>" alt="Omasyl">
+                    </article>
+                <?php endif; ?>
+                <?php foreach ($homeGallery as $img): ?>
+                    <?php if (!empty($img['image_path']) && file_exists($img['image_path'])): ?>
+                        <article class="home-gallery-slide">
+                            <img src="<?= BASE ?>/<?= htmlspecialchars($img['image_path']) ?>" alt="<?= htmlspecialchars($img['caption'] ?? 'Gallery image') ?>">
+                        </article>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <button type="button" class="carousel-btn next" data-target="home-gallery-carousel" aria-label="Next gallery images">›</button>
+    </div>
 </section>
 
 <section class="rsvp-cta-section">

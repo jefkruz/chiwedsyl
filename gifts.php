@@ -6,39 +6,20 @@ $page_title = 'Gifts — ' . SITE_NAME;
 $message = '';
 $messageType = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_receipt'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_transfer'])) {
     $guest_name = trim($_POST['guest_name'] ?? '');
-    $guest_email = trim($_POST['guest_email'] ?? '');
+    $amount = trim($_POST['amount'] ?? '');
     $gift_item_id = !empty($_POST['gift_item_id']) ? (int) $_POST['gift_item_id'] : null;
-    $msg = trim($_POST['message'] ?? '');
 
-    if ($guest_name === '' || $guest_email === '') {
-        $message = 'Please enter your name and email.';
-        $messageType = 'error';
-    } elseif (empty($_FILES['receipt']['name']) || $_FILES['receipt']['error'] !== UPLOAD_ERR_OK) {
-        $message = 'Please select a valid receipt image.';
+    if ($guest_name === '' || $amount === '') {
+        $message = 'Please enter your name and amount.';
         $messageType = 'error';
     } else {
-        $ext = strtolower(pathinfo($_FILES['receipt']['name'], PATHINFO_EXTENSION));
-        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'pdf'], true)) {
-            $message = 'Allowed formats: JPG, PNG, GIF, PDF.';
-            $messageType = 'error';
-        } else {
-            $uploadDir = UPLOAD_PATH . '/receipts/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-            $filename = uniqid('receipt_') . '.' . $ext;
-            $path = $uploadDir . $filename;
-            if (move_uploaded_file($_FILES['receipt']['tmp_name'], $path)) {
-                $pdo = getDb();
-                $stmt = $pdo->prepare("INSERT INTO receipts (guest_name, guest_email, gift_item_id, receipt_path, message) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$guest_name, $guest_email, $gift_item_id ?: null, 'uploads/receipts/' . $filename, $msg]);
-                $message = 'Thank you! Your receipt has been uploaded successfully.';
-                $messageType = 'success';
-            } else {
-                $message = 'Upload failed. Please try again.';
-                $messageType = 'error';
-            }
-        }
+        $pdo = getDb();
+        $stmt = $pdo->prepare("INSERT INTO gift_transfers (gift_item_id, guest_name, amount) VALUES (?, ?, ?)");
+        $stmt->execute([$gift_item_id ?: null, $guest_name, $amount]);
+        $message = 'Thank you! We appreciate your love and support.';
+        $messageType = 'success';
     }
 }
 
@@ -50,7 +31,7 @@ include __DIR__ . '/includes/header.php';
 
 <section class="gifts-intro">
     <h2 class="section-title">Gift the couple</h2>
-    <p>Your presence is our greatest gift. Choose an item below, pay to our account, then upload your receipt.</p>
+    <p>Your presence is our greatest gift. Choose an item below, pay to our account, then confirm the transfer.</p>
 </section>
 
 <?php if ($message): ?>
@@ -108,26 +89,18 @@ include __DIR__ . '/includes/header.php';
                     <p><strong>Sort code:</strong> <?= htmlspecialchars($bank_details['sort_code']) ?></p>
                 <?php endif; ?>
             </div>
-            <form method="post" action="<?= BASE ?>/gifts" enctype="multipart/form-data" class="gift-modal-form">
-                <input type="hidden" name="upload_receipt" value="1">
+            <form method="post" action="<?= BASE ?>/gifts" class="gift-modal-form" id="gift-modal-form">
+                <input type="hidden" name="confirm_transfer" value="1">
                 <input type="hidden" name="gift_item_id" id="gift-modal-item-id" value="">
                 <div class="form-group">
                     <label for="gift-modal-name">Your name *</label>
                     <input type="text" id="gift-modal-name" name="guest_name" required placeholder="Your full name">
                 </div>
                 <div class="form-group">
-                    <label for="gift-modal-email">Your email *</label>
-                    <input type="email" id="gift-modal-email" name="guest_email" required placeholder="your@email.com">
+                    <label for="gift-modal-amount">Amount *</label>
+                    <input type="text" id="gift-modal-amount" name="amount" required placeholder="e.g. ₦20,000">
                 </div>
-                <div class="form-group">
-                    <label for="gift-modal-receipt">Upload receipt *</label>
-                    <input type="file" id="gift-modal-receipt" name="receipt" accept=".jpg,.jpeg,.png,.gif,.pdf" required>
-                </div>
-                <div class="form-group">
-                    <label for="gift-modal-message">Message (optional)</label>
-                    <textarea id="gift-modal-message" name="message" rows="2" placeholder="Optional note"></textarea>
-                </div>
-                <button type="submit" class="btn-submit">Submit receipt</button>
+                <button type="submit" class="btn-submit">I have made the transfer</button>
             </form>
         </div>
     </div>
@@ -139,6 +112,7 @@ include __DIR__ . '/includes/header.php';
     var closeBtn = document.getElementById('gift-modal-close');
     var itemIdInput = document.getElementById('gift-modal-item-id');
     var modalTitle = document.getElementById('gift-modal-title');
+    var form = document.getElementById('gift-modal-form');
 
     function openModal(giftId, giftName) {
         if (!modal) return;
@@ -170,6 +144,11 @@ include __DIR__ . '/includes/header.php';
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) closeModal(e);
     });
+    if (form) {
+        form.addEventListener('submit', function() {
+            alert('Thank you! Your transfer confirmation has been received.');
+        });
+    }
 })();
 </script>
 

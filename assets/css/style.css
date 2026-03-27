@@ -11,9 +11,11 @@
     --white: #fff;
     --shadow: rgba(61, 35, 20, 0.12);
     --shadow-strong: rgba(61, 35, 20, 0.2);
-    --font-display: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-    --font-serif: 'Cormorant Garamond', Georgia, serif;
-    --font-sans: 'Montserrat', sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-script: 'Parisienne', cursive;
+    --font-serif: 'Lora', Georgia, serif;
+    --font-sans: 'Manrope', sans-serif;
+    --font-ui: 'Manrope', sans-serif;
 }
 
 * {
@@ -54,12 +56,12 @@ body {
 }
 
 .logo {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 500;
+    font-family: var(--font-script);
+    font-size: 2.1rem;
+    font-weight: 400;
     color: var(--chocolate);
     text-decoration: none;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.02em;
 }
 
 .main-nav {
@@ -68,11 +70,13 @@ body {
 }
 
 .main-nav a {
+    font-family: var(--font-ui);
     color: var(--chocolate);
     text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    letter-spacing: 0.03em;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     transition: color 0.2s;
 }
 
@@ -187,20 +191,21 @@ body {
 }
 
 .hero-badge {
-    font-family: var(--font-display);
-    font-size: clamp(2.25rem, 7vw, 4rem);
-    font-weight: 500;
+    font-family: var(--font-script);
+    font-size: clamp(3rem, 9vw, 5.2rem);
+    font-weight: 400;
     color: var(--chocolate);
-    letter-spacing: 0.12em;
+    letter-spacing: 0.03em;
     margin-bottom: 0.5rem;
 }
 
 .hero-sub {
-    font-size: 0.9rem;
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
     color: var(--chocolate-light);
-    letter-spacing: 0.25em;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
-    font-weight: 400;
+    font-weight: 700;
 }
 
 /* Countdown */
@@ -358,7 +363,7 @@ body {
 }
 
 .invite-text {
-    font-family: var(--font-display);
+    font-family: var(--font-serif);
     font-size: clamp(1.25rem, 3.5vw, 1.6rem);
     text-align: center;
     max-width: 580px;
@@ -380,6 +385,7 @@ body {
 }
 
 .story-content {
+    font-family: var(--font-serif);
     max-width: 640px;
     margin: 0 auto;
     font-size: 1.05rem;
@@ -393,6 +399,123 @@ body {
 .story-cta {
     text-align: center;
     margin-top: 2rem;
+}
+
+/* Home gifts + gallery sliders */
+.home-gifts-section,
+.home-gallery-section {
+    padding: 4rem 1.5rem;
+    background: var(--cream);
+}
+
+.home-gallery-section {
+    background: var(--cream-dark);
+}
+
+.home-carousel-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.home-carousel {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+
+.home-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.home-carousel-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(230px, 1fr);
+    gap: 1rem;
+}
+
+.carousel-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--cream-dark);
+    background: var(--white);
+    color: var(--chocolate);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.carousel-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.home-product-card {
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--cream-dark);
+    box-shadow: 0 6px 22px var(--shadow);
+}
+
+.home-product-image {
+    aspect-ratio: 1;
+    background: var(--cream-dark);
+}
+
+.home-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.home-product-no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--chocolate-light);
+}
+
+.home-product-body {
+    padding: 1rem;
+}
+
+.home-product-body h3 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    margin-bottom: 0.35rem;
+}
+
+.home-product-price {
+    font-weight: 600;
+    color: var(--navy);
+}
+
+.home-carousel-link {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.home-gallery-slide {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(61, 35, 20, 0.12);
+    box-shadow: 0 6px 22px var(--shadow);
+    background: var(--white);
+}
+
+.home-gallery-slide img {
+    display: block;
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
 }
 
 /* Details (location & reception) */
@@ -616,12 +739,14 @@ body {
 }
 
 .btn {
+    font-family: var(--font-ui);
     display: inline-block;
     padding: 1rem 2rem;
     background: var(--gold);
     color: var(--chocolate);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.03em;
     border-radius: 6px;
     transition: background 0.2s, transform 0.2s;
 }
@@ -661,8 +786,9 @@ body {
 }
 
 .form-group label {
+    font-family: var(--font-ui);
     display: block;
-    font-weight: 500;
+    font-weight: 700;
     margin-bottom: 0.4rem;
     color: var(--chocolate);
 }
@@ -670,6 +796,7 @@ body {
 .form-group input,
 .form-group select,
 .form-group textarea {
+    font-family: var(--font-ui);
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid var(--cream-dark);
@@ -692,13 +819,15 @@ body {
 }
 
 .btn-submit {
+    font-family: var(--font-ui);
     width: 100%;
     padding: 1rem;
     background: var(--navy);
     color: var(--cream);
     border: none;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.02em;
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s;
@@ -863,7 +992,7 @@ body {
 }
 
 .gift-product-title {
-    font-family: var(--font-display);
+    font-family: var(--font-serif);
     font-size: 1.2rem;
     font-weight: 500;
     color: var(--chocolate);
@@ -1510,5 +1639,20 @@ th {
     .color-item span {
         font-size: 0.65rem;
         word-break: break-word;
+    }
+    .home-carousel-wrap {
+        grid-template-columns: 34px 1fr 34px;
+        gap: 0.4rem;
+    }
+    .carousel-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 1.25rem;
+    }
+    .home-carousel-track {
+        grid-auto-columns: 82%;
+    }
+    .home-gallery-slide img {
+        height: 220px;
     }
 }

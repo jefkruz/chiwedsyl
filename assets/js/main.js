@@ -49,4 +49,67 @@
             setInterval(updateCountdown, 1000);
         }
     }
+
+    // Home page carousels
+    document.querySelectorAll('.carousel-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var targetId = btn.getAttribute('data-target');
+            var carousel = targetId ? document.getElementById(targetId) : null;
+            if (!carousel) return;
+            var amount = Math.max(220, Math.floor(carousel.clientWidth * 0.85));
+            var delta = btn.classList.contains('prev') ? -amount : amount;
+            carousel.scrollBy({ left: delta, behavior: 'smooth' });
+        });
+    });
+
+    // Home page carousels autoplay (pause on interaction)
+    document.querySelectorAll('.home-carousel').forEach(function (carousel) {
+        var timer = null;
+        var isPaused = false;
+        var step = function () {
+            var amount = Math.max(220, Math.floor(carousel.clientWidth * 0.85));
+            var nearEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 8;
+            if (nearEnd) {
+                carousel.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                carousel.scrollBy({ left: amount, behavior: 'smooth' });
+            }
+        };
+
+        var start = function () {
+            if (timer || isPaused) return;
+            timer = setInterval(step, 3500);
+        };
+
+        var stop = function () {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+        };
+
+        var pause = function () {
+            isPaused = true;
+            stop();
+        };
+
+        var resume = function () {
+            isPaused = false;
+            start();
+        };
+
+        carousel.addEventListener('mouseenter', pause);
+        carousel.addEventListener('mouseleave', resume);
+        carousel.addEventListener('focusin', pause);
+        carousel.addEventListener('focusout', resume);
+        carousel.addEventListener('touchstart', pause, { passive: true });
+        carousel.addEventListener('touchend', resume, { passive: true });
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) stop();
+            else if (!isPaused) start();
+        });
+
+        start();
+    });
 })();
