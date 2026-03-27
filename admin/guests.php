@@ -39,7 +39,7 @@ $qrBase = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=';
         <div class="admin-card">
             <p>Use these QR codes to check in guests at the venue. Scan their code or mark them checked in below.</p>
             <div class="table-wrap">
-                <table>
+                <table class="responsive-table">
                     <thead>
                         <tr>
                             <th>Guest</th>
@@ -56,23 +56,23 @@ $qrBase = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=';
                     <tbody>
                         <?php foreach ($guests as $g): ?>
                             <tr>
-                                <td><?= htmlspecialchars($g['name']) ?></td>
-                                <td><?= htmlspecialchars($g['email']) ?></td>
-                                <td><?= htmlspecialchars($g['phone'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($g['invited_by'] ?? '') ?></td>
-                                <td><?= (int) $g['num_guests'] ?></td>
-                                <td>
+                                <td data-label="Guest"><?= htmlspecialchars($g['name']) ?></td>
+                                <td data-label="Email"><?= htmlspecialchars($g['email']) ?></td>
+                                <td data-label="Phone"><?= htmlspecialchars($g['phone'] ?? '') ?></td>
+                                <td data-label="Invited by"><?= htmlspecialchars($g['invited_by'] ?? '') ?></td>
+                                <td data-label="# Guests"><?= (int) $g['num_guests'] ?></td>
+                                <td data-label="Photo">
                                     <?php if (!empty($g['guest_photo_path']) && file_exists('../' . $g['guest_photo_path'])): ?>
                                         <a href="../<?= htmlspecialchars($g['guest_photo_path']) ?>" target="_blank">View</a>
                                     <?php else: ?>
                                         —
                                     <?php endif; ?>
                                 </td>
-                                <td class="guest-qr">
+                                <td class="guest-qr" data-label="QR code">
                                     <img src="<?= htmlspecialchars($qrBase . urlencode($g['qr_code'])) ?>" alt="QR">
                                 </td>
-                                <td><?= $g['checked_in'] ? '✓ Checked in' : '—' ?></td>
-                                <td>
+                                <td data-label="Status"><?= $g['checked_in'] ? '✓ Checked in' : '—' ?></td>
+                                <td data-label="Action">
                                     <?php if (!$g['checked_in']): ?>
                                         <form class="check-in-form" method="post">
                                             <input type="hidden" name="check_in_id" value="<?= (int) $g['id'] ?>">

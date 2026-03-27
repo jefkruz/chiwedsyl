@@ -113,7 +113,7 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
         <div class="admin-card">
             <h2>Current gifts</h2>
             <div class="table-wrap">
-                <table>
+                <table class="responsive-table">
                     <thead>
                         <tr>
                             <th>Image</th>
@@ -125,16 +125,16 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
                     <tbody>
                         <?php foreach ($gifts as $g): ?>
                             <tr>
-                                <td>
+                                <td data-label="Image">
                                     <?php if ($g['image_path'] && file_exists('../' . $g['image_path'])): ?>
                                         <img src="../<?= htmlspecialchars($g['image_path']) ?>" alt="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
                                     <?php else: ?>
                                         —
                                     <?php endif; ?>
                                 </td>
-                                <td><?= htmlspecialchars($g['title']) ?></td>
-                                <td><?= htmlspecialchars(format_gift_price($g['price'] ?? '') ?: '—') ?></td>
-                                <td>
+                                <td data-label="Name"><?= htmlspecialchars($g['title']) ?></td>
+                                <td data-label="Price"><?= htmlspecialchars(format_gift_price($g['price'] ?? '') ?: '—') ?></td>
+                                <td data-label="Actions">
                                     <a href="<?= BASE ?>/admin/gift-edit?id=<?= (int) $g['id'] ?>" class="btn-small">Edit</a>
                                     <a href="<?= BASE ?>/admin/gifts?delete=<?= (int) $g['id'] ?>" class="btn-small danger" onclick="return confirm('Delete this gift?');">Delete</a>
                                 </td>

@@ -33,7 +33,7 @@ $receipts = $pdo->query("
         </div>
         <div class="admin-card">
             <div class="table-wrap">
-                <table>
+                <table class="responsive-table">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -47,12 +47,12 @@ $receipts = $pdo->query("
                     <tbody>
                         <?php foreach ($receipts as $r): ?>
                             <tr>
-                                <td><?= htmlspecialchars(date('M j, Y', strtotime($r['created_at']))) ?></td>
-                                <td><?= htmlspecialchars($r['guest_name']) ?></td>
-                                <td><?= htmlspecialchars($r['guest_email']) ?></td>
-                                <td><?= $r['gift_title'] ? htmlspecialchars($r['gift_title']) : '—' ?></td>
-                                <td><?= $r['message'] ? htmlspecialchars(mb_substr($r['message'], 0, 40)) . (mb_strlen($r['message']) > 40 ? '…' : '') : '—' ?></td>
-                                <td>
+                                <td data-label="Date"><?= htmlspecialchars(date('M j, Y', strtotime($r['created_at']))) ?></td>
+                                <td data-label="Guest"><?= htmlspecialchars($r['guest_name']) ?></td>
+                                <td data-label="Email"><?= htmlspecialchars($r['guest_email']) ?></td>
+                                <td data-label="Gift"><?= $r['gift_title'] ? htmlspecialchars($r['gift_title']) : '—' ?></td>
+                                <td data-label="Message"><?= $r['message'] ? htmlspecialchars(mb_substr($r['message'], 0, 40)) . (mb_strlen($r['message']) > 40 ? '…' : '') : '—' ?></td>
+                                <td data-label="Receipt">
                                     <a href="../<?= htmlspecialchars($r['receipt_path']) ?>" target="_blank" class="btn-small">View</a>
                                 </td>
                             </tr>
