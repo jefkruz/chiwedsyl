@@ -387,6 +387,18 @@ body {
     letter-spacing: 0.02em;
 }
 
+.invite-subtext {
+    text-align: center;
+    margin-top: 0.85rem;
+    color: var(--chocolate-light);
+    font-size: 0.98rem;
+}
+
+.invite-cta {
+    text-align: center;
+    margin-top: 1.2rem;
+}
+
 /* Our Story */
 .story-section {
     padding: 4rem 1.5rem;
