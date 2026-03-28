@@ -68,13 +68,7 @@ include __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<section class="invite-section">
-    <p class="invite-text">We look forward to seeing you in our big day.</p>
-    <p class="invite-subtext">We would love to read your well wishes.</p>
-    <p class="invite-cta">
-        <a href="<?= BASE ?>/well-wishes" class="btn">Leave a well wish</a>
-    </p>
-</section>
+
 
 <section class="story-section" id="our-story">
     <h2 class="section-title">Our Story</h2>
