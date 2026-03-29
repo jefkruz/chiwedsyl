@@ -132,9 +132,9 @@ include __DIR__ . '/includes/header.php';
                     <article class="home-product-card">
                         <div class="home-product-image">
                             <?php if (!empty($g['image_path']) && file_exists($g['image_path'])): ?>
-                                <a href="<?= BASE ?>/gifts" class="home-product-image-link" aria-label="Get <?= htmlspecialchars($g['title']) ?>">
+                                <button type="button" class="home-product-image-link gift-modal-trigger" data-gift-id="<?= (int) $g['id'] ?>" data-gift-name="<?= htmlspecialchars($g['title'], ENT_QUOTES, 'UTF-8') ?>" aria-label="Get <?= htmlspecialchars($g['title']) ?>">
                                     <img src="<?= BASE ?>/<?= htmlspecialchars($g['image_path']) ?>" alt="<?= htmlspecialchars($g['title']) ?>">
-                                </a>
+                                </button>
                             <?php else: ?>
                                 <div class="home-product-no-image">No image</div>
                             <?php endif; ?>
@@ -144,7 +144,7 @@ include __DIR__ . '/includes/header.php';
                             <?php if (!empty($g['price'])): ?>
                                 <p class="home-product-price"><?= htmlspecialchars(format_gift_price($g['price'])) ?></p>
                             <?php endif; ?>
-                            <a href="<?= BASE ?>/gifts" class="home-product-get-btn">Get</a>
+                            <button type="button" class="home-product-get-btn gift-modal-trigger" data-gift-id="<?= (int) $g['id'] ?>" data-gift-name="<?= htmlspecialchars($g['title'], ENT_QUOTES, 'UTF-8') ?>">Get</button>
                         </div>
                     </article>
                 <?php endforeach; ?>
@@ -187,5 +187,7 @@ include __DIR__ . '/includes/header.php';
     <a href="<?= BASE ?>/register" class="btn">Click here to RSVP</a>
     <p class="rsvp-phones">Or call <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_EHI) ?>">Ehi <?= preg_replace('/\s+/', ' ', RSVP_PHONE_EHI) ?></a>, <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_ONYINYE) ?>">Onyinye <?= preg_replace('/\s+/', ' ', RSVP_PHONE_ONYINYE) ?></a>, <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_BECKY) ?>">Becky <?= preg_replace('/\s+/', ' ', RSVP_PHONE_BECKY) ?></a> or <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_PRECIOUS) ?>">Precious <?= preg_replace('/\s+/', ' ', RSVP_PHONE_PRECIOUS) ?></a></p>
 </section>
+
+<?php include __DIR__ . '/includes/gift-modal.php'; ?>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
