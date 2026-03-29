@@ -422,7 +422,7 @@ body {
 .story-section .section-title {
     font-family: var(--font-story-aston);
     font-weight: 400;
-    font-size: clamp(2.1rem, 5.5vw, 3rem);
+    font-size: clamp(2.65rem, 7vw, 4rem);
     letter-spacing: 0.04em;
 }
 
@@ -431,7 +431,7 @@ body {
     font-weight: 400;
     max-width: 640px;
     margin: 0 auto;
-    font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+    font-size: clamp(1.35rem, 3.2vw, 1.95rem);
     color: var(--chocolate-light);
     line-height: 1.65;
     letter-spacing: 0.02em;
@@ -1848,7 +1848,7 @@ th {
         letter-spacing: 0.02em;
     }
     .story-content {
-        font-size: 0.98rem;
+        font-size: 1.22rem;
         line-height: 1.75;
     }
     .countdown-runner {
