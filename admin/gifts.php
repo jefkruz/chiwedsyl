@@ -80,7 +80,7 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
             <nav class="admin-nav">
                 <a href="<?= BASE ?>/admin/dashboard">Dashboard</a>
                 <a href="<?= BASE ?>/admin/guests">Guests</a>
-                <a href="<?= BASE ?>/admin/receipts">Receipts</a>
+                <a href="<?= BASE ?>/admin/well-wishes">Well wishes</a>
                 <a href="<?= BASE ?>/admin/gallery">Gallery</a>
                 <a href="<?= BASE ?>/">View site</a>
                 <a href="<?= BASE ?>/admin/logout">Log out</a>

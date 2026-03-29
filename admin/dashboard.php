@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/admin-auth.php';
 $pdo = getDb();
 $guestCount = (int) $pdo->query("SELECT COUNT(*) FROM guests")->fetchColumn();
 $giftCount = (int) $pdo->query("SELECT COUNT(*) FROM gift_items")->fetchColumn();
-$receiptCount = (int) $pdo->query("SELECT COUNT(*) FROM receipts")->fetchColumn();
+$wishCount = (int) $pdo->query("SELECT COUNT(*) FROM well_wishes")->fetchColumn();
 $galleryCount = (int) $pdo->query("SELECT COUNT(*) FROM gallery_images")->fetchColumn();
 
 $sections = [
@@ -24,11 +24,11 @@ $sections = [
         'hint' => 'Edit catalogue and prices for the public shop.',
     ],
     [
-        'href' => BASE . '/admin/receipts',
-        'title' => 'Receipts',
-        'count' => $receiptCount,
-        'count_label' => 'receipts uploaded',
-        'hint' => 'Review and manage guest uploads.',
+        'href' => BASE . '/admin/well-wishes',
+        'title' => 'Well wishes',
+        'count' => $wishCount,
+        'count_label' => 'messages posted',
+        'hint' => 'Read and remove messages from the public well wishes page.',
     ],
     [
         'href' => BASE . '/admin/gallery',
@@ -54,7 +54,7 @@ $sections = [
             <nav class="admin-nav">
                 <a href="<?= BASE ?>/admin/guests">Guests &amp; QR</a>
                 <a href="<?= BASE ?>/admin/gifts">Gifts</a>
-                <a href="<?= BASE ?>/admin/receipts">Receipts</a>
+                <a href="<?= BASE ?>/admin/well-wishes">Well wishes</a>
                 <a href="<?= BASE ?>/admin/gallery">Gallery</a>
                 <a href="<?= BASE ?>/">View site</a>
                 <a href="<?= BASE ?>/admin/logout">Log out</a>

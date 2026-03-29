@@ -1,4 +1,13 @@
 /* Chi & Syl 2026 — Chocolate brown, gold, cream, navy (inspired by elegant celebration sites) */
+@font-face {
+    font-family: 'Aston Script Bold';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('https://db.onlinewebfonts.com/t/d7c545ee87f56ce95bb1f10806aaf196.woff2') format('woff2'),
+         url('https://db.onlinewebfonts.com/t/d7c545ee87f56ce95bb1f10806aaf196.woff') format('woff');
+}
+
 :root {
     --chocolate: #3d2314;
     --chocolate-light: #5c3825;
@@ -16,6 +25,7 @@
     --font-serif: 'Lora', Georgia, serif;
     --font-sans: 'Manrope', sans-serif;
     --font-ui: 'Manrope', sans-serif;
+    --font-story-aston: 'Aston Script Bold', 'Parisienne', cursive;
 }
 
 * {
@@ -409,13 +419,22 @@ body {
     margin-bottom: 1.5rem;
 }
 
+.story-section .section-title {
+    font-family: var(--font-story-aston);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 5.5vw, 3rem);
+    letter-spacing: 0.04em;
+}
+
 .story-content {
-    font-family: var(--font-serif);
+    font-family: var(--font-story-aston);
+    font-weight: 700;
     max-width: 640px;
     margin: 0 auto;
-    font-size: clamp(1rem, 1.5vw, 1.08rem);
+    font-size: clamp(1.05rem, 2.2vw, 1.35rem);
     color: var(--chocolate-light);
-    line-height: 1.85;
+    line-height: 1.65;
+    letter-spacing: 0.02em;
 }
 
 .story-content p {
@@ -1709,6 +1728,19 @@ th {
     font-weight: 600;
     color: var(--navy);
     font-size: 0.85rem;
+}
+
+.admin-wish-cell {
+    max-width: 28rem;
+    vertical-align: top;
+}
+
+.admin-wish-preview {
+    max-height: 10rem;
+    overflow: auto;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--chocolate);
 }
 
 .guest-qr img {

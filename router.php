@@ -18,6 +18,7 @@ $routes = [
     '/admin/gifts' => '/admin/gifts.php',
     '/admin/gift-edit' => '/admin/gift-edit.php',
     '/admin/receipts' => '/admin/receipts.php',
+    '/admin/well-wishes' => '/admin/well-wishes.php',
     '/admin/gallery' => '/admin/gallery.php',
     '/admin/logout' => '/admin/logout.php',
 ];

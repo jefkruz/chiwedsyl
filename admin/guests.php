@@ -30,7 +30,7 @@ $qrBase = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=';
             <nav class="admin-nav">
                 <a href="<?= BASE ?>/admin/dashboard">Dashboard</a>
                 <a href="<?= BASE ?>/admin/gifts">Gifts</a>
-                <a href="<?= BASE ?>/admin/receipts">Receipts</a>
+                <a href="<?= BASE ?>/admin/well-wishes">Well wishes</a>
                 <a href="<?= BASE ?>/admin/gallery">Gallery</a>
                 <a href="<?= BASE ?>/">View site</a>
                 <a href="<?= BASE ?>/admin/logout">Log out</a>

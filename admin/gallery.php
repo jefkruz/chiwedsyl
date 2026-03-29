@@ -65,7 +65,7 @@ $images = $pdo->query("SELECT * FROM gallery_images ORDER BY sort_order, created
                 <a href="<?= BASE ?>/admin/dashboard">Dashboard</a>
                 <a href="<?= BASE ?>/admin/guests">Guests</a>
                 <a href="<?= BASE ?>/admin/gifts">Gifts</a>
-                <a href="<?= BASE ?>/admin/receipts">Receipts</a>
+                <a href="<?= BASE ?>/admin/well-wishes">Well wishes</a>
                 <a href="<?= BASE ?>/gallery">View gallery</a>
                 <a href="<?= BASE ?>/">View site</a>
                 <a href="<?= BASE ?>/admin/logout">Log out</a>
