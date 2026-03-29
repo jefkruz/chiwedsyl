@@ -1,11 +1,11 @@
 /* Chi & Syl 2026 — Chocolate brown, gold, cream, navy (inspired by elegant celebration sites) */
 @font-face {
-    font-family: 'Aston Script Bold';
+    font-family: 'Edwardian Script ITC';
     font-style: normal;
-    font-weight: 700;
+    font-weight: 400;
     font-display: swap;
-    src: url('https://db.onlinewebfonts.com/t/d7c545ee87f56ce95bb1f10806aaf196.woff2') format('woff2'),
-         url('https://db.onlinewebfonts.com/t/d7c545ee87f56ce95bb1f10806aaf196.woff') format('woff');
+    src: url('https://db.onlinewebfonts.com/t/4527bde76d8fc7aed09f15a9ebfb7a75.woff2') format('woff2'),
+         url('https://db.onlinewebfonts.com/t/4527bde76d8fc7aed09f15a9ebfb7a75.woff') format('woff');
 }
 
 :root {
@@ -25,7 +25,7 @@
     --font-serif: 'Lora', Georgia, serif;
     --font-sans: 'Manrope', sans-serif;
     --font-ui: 'Manrope', sans-serif;
-    --font-story-aston: 'Aston Script Bold', 'Parisienne', cursive;
+    --font-story-aston: 'Edwardian Script ITC', 'Parisienne', cursive;
 }
 
 * {
@@ -421,14 +421,14 @@ body {
 
 .story-section .section-title {
     font-family: var(--font-story-aston);
-    font-weight: 700;
+    font-weight: 400;
     font-size: clamp(2.1rem, 5.5vw, 3rem);
     letter-spacing: 0.04em;
 }
 
 .story-content {
     font-family: var(--font-story-aston);
-    font-weight: 700;
+    font-weight: 400;
     max-width: 640px;
     margin: 0 auto;
     font-size: clamp(1.05rem, 2.2vw, 1.35rem);
