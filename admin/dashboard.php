@@ -3,9 +3,41 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/admin-auth.php';
 
 $pdo = getDb();
-$guestCount = $pdo->query("SELECT COUNT(*) FROM guests")->fetchColumn();
-$giftCount = $pdo->query("SELECT COUNT(*) FROM gift_items")->fetchColumn();
-$receiptCount = $pdo->query("SELECT COUNT(*) FROM receipts")->fetchColumn();
+$guestCount = (int) $pdo->query("SELECT COUNT(*) FROM guests")->fetchColumn();
+$giftCount = (int) $pdo->query("SELECT COUNT(*) FROM gift_items")->fetchColumn();
+$receiptCount = (int) $pdo->query("SELECT COUNT(*) FROM receipts")->fetchColumn();
+$galleryCount = (int) $pdo->query("SELECT COUNT(*) FROM gallery_images")->fetchColumn();
+
+$sections = [
+    [
+        'href' => BASE . '/admin/guests',
+        'title' => 'Guests &amp; QR',
+        'count' => $guestCount,
+        'count_label' => 'guests registered',
+        'hint' => 'Check-in, QR codes, and invite list.',
+    ],
+    [
+        'href' => BASE . '/admin/gifts',
+        'title' => 'Gifts',
+        'count' => $giftCount,
+        'count_label' => 'gift items',
+        'hint' => 'Edit catalogue and prices for the public shop.',
+    ],
+    [
+        'href' => BASE . '/admin/receipts',
+        'title' => 'Receipts',
+        'count' => $receiptCount,
+        'count_label' => 'receipts uploaded',
+        'hint' => 'Review and manage guest uploads.',
+    ],
+    [
+        'href' => BASE . '/admin/gallery',
+        'title' => 'Gallery',
+        'count' => $galleryCount,
+        'count_label' => 'images live',
+        'hint' => 'Upload, caption, and remove homepage gallery photos.',
+    ],
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,12 +60,24 @@ $receiptCount = $pdo->query("SELECT COUNT(*) FROM receipts")->fetchColumn();
                 <a href="<?= BASE ?>/admin/logout">Log out</a>
             </nav>
         </div>
-        <div class="admin-card">
-            <h2>Overview</h2>
-            <p><strong><?= (int) $guestCount ?></strong> guests registered</p>
-            <p><strong><?= (int) $giftCount ?></strong> gift items</p>
-            <p><strong><?= (int) $receiptCount ?></strong> receipts uploaded</p>
-        </div>
+
+        <p class="admin-dashboard-lead">Pick a section to manage. Counts update from your live data.</p>
+
+        <section class="admin-dashboard" aria-label="Admin sections">
+            <div class="admin-dashboard-grid">
+                <?php foreach ($sections as $s): ?>
+                    <a href="<?= htmlspecialchars($s['href']) ?>" class="admin-dashboard-card">
+                        <span class="admin-dashboard-card-eyebrow">Open</span>
+                        <h2 class="admin-dashboard-card-title"><?= $s['title'] ?></h2>
+                        <p class="admin-dashboard-card-stat">
+                            <span class="admin-dashboard-card-num"><?= $s['count'] ?></span>
+                            <span class="admin-dashboard-card-label"><?= htmlspecialchars($s['count_label']) ?></span>
+                        </p>
+                        <p class="admin-dashboard-card-hint"><?= htmlspecialchars($s['hint']) ?></p>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </section>
     </div>
 </body>
 </html>
