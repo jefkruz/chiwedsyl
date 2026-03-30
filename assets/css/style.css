@@ -103,7 +103,7 @@ body {
 }
 
 .logo-img {
-    width: clamp(132px, 16vw, 180px);
+    width: clamp(108px, 13vw, 146px);
     height: auto;
     display: block;
 }
@@ -1847,7 +1847,7 @@ th {
 
 @media (min-width: 769px) and (max-width: 1100px) {
     .logo-img {
-        width: clamp(118px, 15vw, 156px);
+        width: clamp(100px, 12vw, 130px);
     }
     .main-nav {
         gap: 1.25rem;
@@ -1909,7 +1909,7 @@ th {
         padding: 0.25rem;
     }
     .logo {
-        max-width: 140px;
+        max-width: 110px;
     }
     .logo-img {
         width: 100%;
