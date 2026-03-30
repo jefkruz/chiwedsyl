@@ -85,8 +85,8 @@ include __DIR__ . '/includes/header.php';
 <section class="details-section" id="details">
     <!-- <h2 class="section-title">Wedding </h2> -->
     <div class="detail-card">
-        <h3>Ceremony</h3>
-        <p>Excel Centre, Billings Way, Ikeja, Lagos State</p>
+        <h3>Wedding Ceremony</h3>
+        <p>Christ Embassy Church, Excel Centre, 8 Billings Way, Ikeja, Lagos State</p>
         <p class="time">10:00 AM</p>
     </div>
 </section>
