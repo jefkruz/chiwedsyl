@@ -469,14 +469,14 @@ body {
 }
 
 .story-content {
-    font-family: var(--font-story-aston);
+    font-family: var(--font-sans);
     font-weight: 400;
     max-width: 640px;
     margin: 0 auto;
-    font-size: clamp(1.65rem, 4vw, 2.45rem);
+    font-size: clamp(1rem, 1.5vw, 1.08rem);
     color: var(--chocolate-light);
-    line-height: 1.65;
-    letter-spacing: 0.02em;
+    line-height: 1.85;
+    letter-spacing: 0.01em;
 }
 
 .story-content p {
@@ -1926,7 +1926,7 @@ th {
         letter-spacing: 0.02em;
     }
     .story-content {
-        font-size: 1.45rem;
+        font-size: 0.98rem;
         line-height: 1.75;
     }
     .countdown-runner {
