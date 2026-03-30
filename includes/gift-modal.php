@@ -14,7 +14,7 @@
                 <p><strong>Account name:</strong> <?= htmlspecialchars($bank_details['account_name']) ?></p>
                 <button
                     type="button"
-                    class="account-no"
+                    class="account-no account-no-copyable"
                     id="gift-account-no"
                     data-account-no="<?= htmlspecialchars((string) $bank_details['account_no'], ENT_QUOTES, 'UTF-8') ?>"
                     title="Click to copy account number"
@@ -23,9 +23,6 @@
                     <?= htmlspecialchars($bank_details['account_no']) ?>
                 </button>
                 <p id="gift-account-copy-status" aria-live="polite" style="font-size:0.82rem;margin-top:0.4rem;color:var(--navy);"></p>
-                <?php if (!empty($bank_details['sort_code'])): ?>
-                    <p><strong>Sort code:</strong> <?= htmlspecialchars($bank_details['sort_code']) ?></p>
-                <?php endif; ?>
             </div>
             <form method="post" action="<?= BASE ?>/gifts" class="gift-modal-form" id="gift-modal-form">
                 <input type="hidden" name="confirm_transfer" value="1">

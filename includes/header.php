@@ -15,6 +15,9 @@ $page_title = $page_title ?? SITE_NAME . ' — We\'re Getting Married';
     <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
 </head>
 <body class="page-<?= htmlspecialchars($current_page) ?>">
+    <div class="page-loader" id="page-loader" aria-hidden="true">
+        <img src="<?= BASE ?>/assets/images/logo.png" alt="" class="page-loader-logo">
+    </div>
     <header class="site-header">
         <a href="<?= BASE ?>/" class="logo">Omasyl 2026</a>
         <nav class="main-nav">

@@ -49,6 +49,36 @@ body {
     overflow-x: hidden;
 }
 
+.page-loader {
+    position: fixed;
+    inset: 0;
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4000;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.page-loader-logo {
+    width: min(34vw, 170px);
+    height: auto;
+    animation: pageLoaderPulse 0.9s ease-in-out infinite;
+}
+
+.page-loader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+@keyframes pageLoaderPulse {
+    0%, 100% { transform: scale(1); opacity: 0.92; }
+    50% { transform: scale(1.06); opacity: 1; }
+}
+
 /* Header */
 .site-header {
     position: fixed;
@@ -422,7 +452,7 @@ body {
 .story-section .section-title {
     font-family: var(--font-story-aston);
     font-weight: 400;
-    font-size: clamp(2.65rem, 7vw, 4rem);
+    font-size: clamp(3.1rem, 8.6vw, 5rem);
     letter-spacing: 0.04em;
 }
 
@@ -431,7 +461,7 @@ body {
     font-weight: 400;
     max-width: 640px;
     margin: 0 auto;
-    font-size: clamp(1.35rem, 3.2vw, 1.95rem);
+    font-size: clamp(1.65rem, 4vw, 2.45rem);
     color: var(--chocolate-light);
     line-height: 1.65;
     letter-spacing: 0.02em;
@@ -1226,6 +1256,30 @@ button.home-product-image-link {
     color: var(--navy);
 }
 
+.gift-modal-bank .account-no-copyable {
+    position: relative;
+    border-bottom: 1px dashed rgba(26, 39, 68, 0.35);
+    padding-bottom: 0.08rem;
+    animation: copyHintPulse 1.2s ease-in-out infinite;
+}
+
+.gift-modal-bank .account-no-copyable::after {
+    content: ' Tap to copy';
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    color: var(--navy);
+    opacity: 0.8;
+}
+
+.gift-modal-bank .account-no-copyable:hover::after {
+    opacity: 1;
+}
+
+@keyframes copyHintPulse {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1px); }
+}
+
 .gift-modal-form .form-group {
     margin-bottom: 1rem;
 }
@@ -1858,7 +1912,7 @@ th {
         letter-spacing: 0.02em;
     }
     .story-content {
-        font-size: 1.22rem;
+        font-size: 1.45rem;
         line-height: 1.75;
     }
     .countdown-runner {

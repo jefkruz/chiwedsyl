@@ -1,4 +1,14 @@
 (function () {
+    var pageLoader = document.getElementById('page-loader');
+    if (pageLoader) {
+        setTimeout(function () {
+            pageLoader.classList.add('is-hidden');
+            setTimeout(function () {
+                if (pageLoader && pageLoader.parentNode) pageLoader.parentNode.removeChild(pageLoader);
+            }, 320);
+        }, 1000);
+    }
+
     var menuToggle = document.querySelector('.menu-toggle');
     var mainNav = document.querySelector('.main-nav');
     if (menuToggle && mainNav) {
