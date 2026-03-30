@@ -96,12 +96,16 @@ body {
 }
 
 .logo {
-    font-family: var(--font-display);
-    font-size: 1.55rem;
-    font-weight: 600;
-    color: var(--chocolate);
+    display: inline-flex;
+    align-items: center;
     text-decoration: none;
-    letter-spacing: 0.04em;
+    line-height: 1;
+}
+
+.logo-img {
+    width: clamp(132px, 16vw, 180px);
+    height: auto;
+    display: block;
 }
 
 .main-nav {
@@ -1842,8 +1846,8 @@ th {
 }
 
 @media (min-width: 769px) and (max-width: 1100px) {
-    .logo {
-        font-size: 1.42rem;
+    .logo-img {
+        width: clamp(118px, 15vw, 156px);
     }
     .main-nav {
         gap: 1.25rem;
@@ -1905,8 +1909,10 @@ th {
         padding: 0.25rem;
     }
     .logo {
-        font-size: 1.35rem;
-        letter-spacing: 0.03em;
+        max-width: 140px;
+    }
+    .logo-img {
+        width: 100%;
     }
     .hero-badge {
         font-size: clamp(2.5rem, 12vw, 3.5rem);
