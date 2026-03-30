@@ -29,8 +29,8 @@ include __DIR__ . '/includes/header.php';
             <img src="<?= BASE ?>/<?= htmlspecialchars($heroImage) ?>" alt="Omasyl 2026" class="hero-image">
         </div>
     <?php else: ?>
-        <div class="img-frame img-frame-hero hero-image hero-image-placeholder">
-            <span class="hero-badge" style="color: var(--cream);">Omasyl 2026</span>
+        <div class="img-frame img-frame-hero">
+            <img src="<?= BASE ?>/assets/images/logo.png" alt="Omasyl 2026 logo" class="hero-image">
         </div>
     <?php endif; ?>
     <!-- <h1 class="hero-badge">Omasyl 2026</h1> -->
