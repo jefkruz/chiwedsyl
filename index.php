@@ -88,6 +88,7 @@ include __DIR__ . '/includes/header.php';
         <h3>Wedding Ceremony</h3>
         <p>Christ Embassy Church, Excel Centre, 8 Billings Way, Ikeja, Lagos State</p>
         <p class="time">10:00 AM</p>
+        <p><a href="https://www.google.com/maps/search/?api=1&query=Christ+Embassy+Church+Excel+Centre+8+Billings+Way+Ikeja+Lagos" target="_blank" rel="noopener noreferrer">Get directions on Google Maps</a></p>
     </div>
 </section>
 
