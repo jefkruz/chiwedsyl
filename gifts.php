@@ -31,7 +31,7 @@ include __DIR__ . '/includes/header.php';
 
 <section class="gifts-intro">
     <h2 class="section-title">Gift the couple</h2>
-    <p>Your presence is our greatest gift. Choose an item below, pay to our account, then confirm the transfer.</p>
+    <p>Your presence at our wedding is the best present, However, if you would like to contribute to our new journey, choose an item below, pay into our account and confirm your transfer.</p>
 </section>
 
 <?php if ($message): ?>
