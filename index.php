@@ -30,7 +30,7 @@ include __DIR__ . '/includes/header.php';
         </div>
     <?php else: ?>
         <div class="img-frame img-frame-hero">
-            <img src="<?= BASE ?>/assets/images/logo.png" alt="Omasyl 2026 logo" class="hero-image">
+            <img src="<?= BASE ?>/assets/images/logo.png" alt="Omasyl 2026 logo" class="hero-image hero-logo-image">
         </div>
     <?php endif; ?>
     <!-- <h1 class="hero-badge">Omasyl 2026</h1> -->

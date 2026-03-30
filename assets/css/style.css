@@ -186,6 +186,14 @@ body {
     border-radius: 2px;
 }
 
+.img-frame-hero .hero-logo-image {
+    width: min(72%, 460px);
+    height: auto;
+    max-height: none;
+    margin: 1.25rem auto;
+    object-fit: contain;
+}
+
 .hero-image-placeholder {
     min-height: 50vh;
     display: flex;
