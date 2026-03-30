@@ -12,7 +12,17 @@
                 <h3>Pay to this account</h3>
                 <p><strong>Bank:</strong> <?= htmlspecialchars($bank_details['bank_name']) ?></p>
                 <p><strong>Account name:</strong> <?= htmlspecialchars($bank_details['account_name']) ?></p>
-                <p class="account-no"><?= htmlspecialchars($bank_details['account_no']) ?></p>
+                <button
+                    type="button"
+                    class="account-no"
+                    id="gift-account-no"
+                    data-account-no="<?= htmlspecialchars((string) $bank_details['account_no'], ENT_QUOTES, 'UTF-8') ?>"
+                    title="Click to copy account number"
+                    aria-label="Copy account number"
+                >
+                    <?= htmlspecialchars($bank_details['account_no']) ?>
+                </button>
+                <p id="gift-account-copy-status" aria-live="polite" style="font-size:0.82rem;margin-top:0.4rem;color:var(--navy);"></p>
                 <?php if (!empty($bank_details['sort_code'])): ?>
                     <p><strong>Sort code:</strong> <?= htmlspecialchars($bank_details['sort_code']) ?></p>
                 <?php endif; ?>
@@ -41,6 +51,8 @@
     var itemIdInput = document.getElementById('gift-modal-item-id');
     var modalTitle = document.getElementById('gift-modal-title');
     var form = document.getElementById('gift-modal-form');
+    var accountNoBtn = document.getElementById('gift-account-no');
+    var copyStatus = document.getElementById('gift-account-copy-status');
 
     function openModal(giftId, giftName) {
         if (itemIdInput) itemIdInput.value = giftId || '';
@@ -72,7 +84,47 @@
     });
     if (form) {
         form.addEventListener('submit', function() {
-            alert('Thank you! Your transfer confirmation has been received.');
+            alert('Thank you so much! We really appreciate! God Bless you richly!!!.');
+        });
+    }
+
+    if (accountNoBtn) {
+        accountNoBtn.addEventListener('click', function() {
+            var value = this.getAttribute('data-account-no') || this.textContent || '';
+            value = value.trim();
+            if (!value) return;
+
+            function setStatus(msg) {
+                if (!copyStatus) return;
+                copyStatus.textContent = msg;
+                setTimeout(function() {
+                    if (copyStatus.textContent === msg) copyStatus.textContent = '';
+                }, 2200);
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(value).then(function() {
+                    setStatus('Account number copied.');
+                }).catch(function() {
+                    setStatus('Unable to copy. Please copy manually.');
+                });
+                return;
+            }
+
+            var helper = document.createElement('textarea');
+            helper.value = value;
+            helper.setAttribute('readonly', '');
+            helper.style.position = 'fixed';
+            helper.style.opacity = '0';
+            document.body.appendChild(helper);
+            helper.select();
+            try {
+                document.execCommand('copy');
+                setStatus('Account number copied.');
+            } catch (err) {
+                setStatus('Unable to copy. Please copy manually.');
+            }
+            document.body.removeChild(helper);
         });
     }
 })();

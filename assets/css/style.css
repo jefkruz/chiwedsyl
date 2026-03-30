@@ -1214,6 +1214,16 @@ button.home-product-image-link {
     font-weight: 600;
     letter-spacing: 0.05em;
     color: var(--chocolate);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+}
+
+.gift-modal-bank .account-no:hover {
+    color: var(--navy);
 }
 
 .gift-modal-form .form-group {
