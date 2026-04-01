@@ -524,10 +524,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .home-carousel-track {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(230px, 1fr);
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
     gap: 1rem;
+    vertical-align: top;
 }
 
 .carousel-btn {
@@ -548,6 +550,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .home-product-card {
+    flex: 0 0 clamp(220px, 38vw, 280px);
     background: var(--white);
     border-radius: 12px;
     overflow: hidden;
@@ -649,6 +652,7 @@ button.home-product-image-link {
 }
 
 .home-gallery-slide {
+    flex: 0 0 clamp(240px, 70vw, 400px);
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid rgba(61, 35, 20, 0.12);
@@ -1987,8 +1991,11 @@ th {
         height: 34px;
         font-size: 1.25rem;
     }
-    .home-carousel-track {
-        grid-auto-columns: 82%;
+    .home-gallery-slide {
+        flex: 0 0 min(86vw, 360px);
+    }
+    .home-carousel-track .home-product-card {
+        flex: 0 0 min(86vw, 300px);
     }
     .home-gallery-slide img {
         height: 220px;

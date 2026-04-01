@@ -18,7 +18,7 @@ $photo3 = 'assets/images/DSC02162.jpg';
 
 $pdo = getDb();
 $homeGifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id LIMIT 12")->fetchAll(PDO::FETCH_ASSOC);
-$homeGallery = $pdo->query("SELECT * FROM gallery_images ORDER BY created_at DESC LIMIT 16")->fetchAll(PDO::FETCH_ASSOC);
+$homeGallery = $pdo->query("SELECT * FROM gallery_images ORDER BY sort_order, created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 include __DIR__ . '/includes/header.php';
 ?>
@@ -164,15 +164,19 @@ include __DIR__ . '/includes/header.php';
         <button type="button" class="carousel-btn prev" data-target="home-gallery-carousel" aria-label="Previous gallery images">‹</button>
         <div class="home-carousel" id="home-gallery-carousel">
             <div class="home-carousel-track">
-                <?php if (file_exists($photo3)): ?>
+                <?php if (is_file(__DIR__ . '/' . ltrim(str_replace('\\', '/', $photo3), '/'))): ?>
                     <article class="home-gallery-slide">
                         <img src="<?= BASE ?>/<?= htmlspecialchars($photo3) ?>" alt="Omasyl">
                     </article>
                 <?php endif; ?>
                 <?php foreach ($homeGallery as $img): ?>
-                    <?php if (!empty($img['image_path']) && file_exists($img['image_path'])): ?>
+                    <?php
+                    $gpath = $img['image_path'] ?? '';
+                    $gfull = $gpath !== '' ? __DIR__ . '/' . ltrim(str_replace('\\', '/', $gpath), '/') : '';
+                    ?>
+                    <?php if ($gpath !== '' && is_file($gfull)): ?>
                         <article class="home-gallery-slide">
-                            <img src="<?= BASE ?>/<?= htmlspecialchars($img['image_path']) ?>" alt="<?= htmlspecialchars($img['caption'] ?? 'Gallery image') ?>">
+                            <img src="<?= BASE ?>/<?= htmlspecialchars($gpath) ?>" alt="<?= htmlspecialchars($img['caption'] ?? 'Gallery image') ?>">
                         </article>
                     <?php endif; ?>
                 <?php endforeach; ?>
@@ -180,6 +184,9 @@ include __DIR__ . '/includes/header.php';
         </div>
         <button type="button" class="carousel-btn next" data-target="home-gallery-carousel" aria-label="Next gallery images">›</button>
     </div>
+    <p class="home-carousel-link">
+        <a href="<?= BASE ?>/gallery" class="btn">View more</a>
+    </p>
 </section>
 
 <section class="rsvp-cta-section">
