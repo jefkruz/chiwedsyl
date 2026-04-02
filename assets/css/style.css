@@ -658,13 +658,17 @@ button.home-product-image-link {
     border: 1px solid rgba(61, 35, 20, 0.12);
     box-shadow: 0 6px 22px var(--shadow);
     background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .home-gallery-slide img {
     display: block;
     width: 100%;
     height: 260px;
-    object-fit: cover;
+    object-fit: contain;
+    background: var(--cream);
 }
 
 /* Details (location & reception) */
@@ -1992,13 +1996,16 @@ th {
         font-size: 1.25rem;
     }
     .home-gallery-slide {
-        flex: 0 0 min(86vw, 360px);
+        flex: 0 0 100%;
+    }
+    #home-gallery-carousel .home-carousel-track {
+        gap: 0;
     }
     .home-carousel-track .home-product-card {
         flex: 0 0 min(86vw, 300px);
     }
     .home-gallery-slide img {
-        height: 220px;
+        height: clamp(220px, 58vw, 320px);
     }
     /* Admin mobile */
     .admin-wrap {
