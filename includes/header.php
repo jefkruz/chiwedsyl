@@ -1,6 +1,13 @@
 <?php
 $current_page = $current_page ?? 'home';
 $page_title = $page_title ?? SITE_NAME . ' — We\'re Getting Married';
+$og_description = $og_description ?? 'Join us as we celebrate our wedding day.';
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$request_uri = $_SERVER['REQUEST_URI'] ?? '/';
+$base_url = $scheme . '://' . $host;
+$og_url = $base_url . $request_uri;
+$og_image = $base_url . BASE . '/assets/images/wedding.png';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,6 +15,11 @@ $page_title = $page_title ?? SITE_NAME . ' — We\'re Getting Married';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title) ?></title>
+    <meta property="og:title" content="<?= htmlspecialchars($page_title) ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($og_description) ?>">
+    <meta property="og:image" content="<?= htmlspecialchars($og_image) ?>">
+    <meta property="og:url" content="<?= htmlspecialchars($og_url) ?>">
+    <meta property="og:type" content="website">
     <link rel="icon" type="image/png" href="<?= BASE ?>/assets/images/logo.png">
     <link rel="apple-touch-icon" href="<?= BASE ?>/assets/images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
