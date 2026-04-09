@@ -255,22 +255,12 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #2a2520;
     background-image: var(--hero-banner-url, none);
     background-size: cover;
-    /* Top of the photo flush with top of hero — avoids clipping heads while leaving lower area to crop */
-    background-position: center top;
+    /* Square banner: cover fills hero; center keeps crop even on sides or top/bottom */
+    background-position: center center;
     background-repeat: no-repeat;
     filter: grayscale(100%);
     transform: none;
     z-index: 0;
-}
-
-/* Tablets / narrow portrait: same width-fit behavior as phones (avoids cover cropping faces) */
-@media (max-width: 900px) and (orientation: portrait) {
-    .hero-banner::before {
-        background-size: 100% auto;
-        background-position: center top;
-        background-repeat: no-repeat;
-        transform: none;
-    }
 }
 
 .hero-banner-overlay {
@@ -2043,15 +2033,8 @@ th {
     }
     .hero-banner {
         padding: 6.5rem 1.25rem 3rem;
-        min-height: 90dvh;
-        min-height: 90svh;
-    }
-    /* Width-fitted on small screens; top-aligned so heads aren’t cropped (extra crops from bottom / letterbox below). */
-    .hero-banner::before {
-        background-size: 100% auto;
-        background-position: center top;
-        background-repeat: no-repeat;
-        transform: none;
+        min-height: 100dvh;
+        min-height: 100svh;
     }
     .hero-banner-title {
         font-size: clamp(1.45rem, 6.5vw, 1.95rem);
