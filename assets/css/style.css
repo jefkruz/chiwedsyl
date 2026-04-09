@@ -255,11 +255,22 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #2a2520;
     background-image: var(--hero-banner-url, none);
     background-size: cover;
-    /* Nudged toward top of image so faces aren’t cropped (was center / 50%) */
-    background-position: center 28%;
+    /* Pin to top of photo so heads aren’t cropped (center/cover crops both sides) */
+    background-position: center top;
+    background-repeat: no-repeat;
     filter: grayscale(100%);
-    transform: scale(1.02);
+    transform: none;
     z-index: 0;
+}
+
+/* Tablets / narrow portrait: same width-fit behavior as phones (avoids cover cropping faces) */
+@media (max-width: 900px) and (orientation: portrait) {
+    .hero-banner::before {
+        background-size: 100% auto;
+        background-position: center top;
+        background-repeat: no-repeat;
+        transform: none;
+    }
 }
 
 .hero-banner-overlay {
@@ -2032,13 +2043,17 @@ th {
     }
     .hero-banner {
         padding: 6.5rem 1.25rem 3rem;
-        /* Slightly shorter than tall portrait screens so cover crops less from the photo */
-        min-height: 92dvh;
-        min-height: 92svh;
+        min-height: 90dvh;
+        min-height: 90svh;
     }
-    /* Portrait phones: anchor background to top so heads aren’t clipped */
+    /*
+     * Portrait phones: width-fitted image shows the full top of the photo (no vertical cover crop).
+     * Any gap below the image shows the dark hero background.
+     */
     .hero-banner::before {
+        background-size: 100% auto;
         background-position: center top;
+        background-repeat: no-repeat;
         transform: none;
     }
     .hero-banner-title {

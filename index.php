@@ -38,7 +38,7 @@ include __DIR__ . '/includes/header.php';
         <p class="hero-banner-tagline">Love found us and forever started 😍❤️</p>
         <p class="hero-banner-hashtags">
             <span class="hero-banner-hash">#RhapsodyOfEndlesslove</span>
-            <span class="hero-banner-hash">#Omasyl2026</span>
+            <span class="hero-banner-hash">#OmaSyl2026</span>
         </p>
     </div>
 </section>
@@ -46,11 +46,11 @@ include __DIR__ . '/includes/header.php';
 <section class="hero-framed-section" aria-label="Featured photo">
     <?php if (is_file($heroImagePath)): ?>
         <div class="img-frame img-frame-hero">
-            <img src="<?= BASE ?>/<?= htmlspecialchars($heroImage) ?>" alt="Chioma and Sylvanus — Omasyl 2026" class="hero-image">
+            <img src="<?= BASE ?>/<?= htmlspecialchars($heroImage) ?>" alt="Chioma and Sylvanus — OmaSyl 2026" class="hero-image">
         </div>
     <?php else: ?>
         <div class="img-frame img-frame-hero hero-image hero-image-placeholder">
-            <span class="hero-framed-placeholder" style="color: var(--cream);">Omasyl 2026</span>
+            <span class="hero-framed-placeholder" style="color: var(--cream);">OmaSyl 2026</span>
         </div>
     <?php endif; ?>
     <p class="hero-sub">We're Getting Married</p>
@@ -95,9 +95,9 @@ include __DIR__ . '/includes/header.php';
         <h3 class="story-subtitle">Groom</h3>
         <p>I met her at the University of Lagos, where we were both pursuing our Masters degrees (same course). I was drawn to her striking confidence and ambition. She was always pushing to be the best version of herself. Her hard work and dedication inspired me, and I found myself wanting to be around her more and more.</p>
         <p>As we spent more time together, I discovered that her ambition was just one aspect of her remarkable personality; she is kind, compassionate, and genuinely cared about the people around her. Her faith was an integral part of who she was, and it shone through in everything she did. I was impressed by her humility and willingness to learn, despite her many accomplishments.</p>
-        <p>We bonded over our shared values and interests, sometimes studying together, discussing our dreams, and supporting each other. What struck me most was her authenticity—she was unapologetically herself, without pretenses or airs. I admired her strength and resilience, especially in the face of challenges. She had a quiet confidence that drew me in, and I knew I wanted to spend more time getting to know her.</p>
+        <p>We bonded over our shared values and interests, sometimes studying together, discussing our dreams, and supporting each other. What struck me most was her authenticity, she was unapologetically herself, without pretenses or airs. I admired her strength and resilience, especially in the face of challenges. She had a quiet confidence that drew me in, and I knew I wanted to spend more time getting to know her.</p>
         <p>As our friendship blossomed into something more, I was amazed by her generosity and love. She had a way of making me feel seen and valued, and I knew I had found someone special. Her family welcomed me with open arms, and I felt like I had found a second family.</p>
-        <p>Looking back, I realize that our university days were just the beginning of our journey together. Our shared experiences and values have only grown stronger with time. I'm grateful for the day I met her and for the love we've built together. She's the missing piece that makes me whole. I'm excitedly and prayerfully looking forward to a bright future with her.</p>
+        <p>Looking back, I realize that our university days were just the beginning of our journey together. Our shared experiences and values have only grown stronger with time. I'm grateful for the day I met her and for the love we've built together. She's the missing piece that makes me whole. With great excitement, I'm prayerfully looking forward to a bright future with her.</p>
         <h3 class="story-subtitle">Bride</h3>
         <p>I met the groom at the University of Lagos; we were both studying the same course. What attracted me to him was his intelligence, confidence, and leadership traits. He was always sharing his opinion in class, always ready to teach, or give a helping hand where necessary.</p>
         <p>One striking thing that caught my attention was when he would go out of his way to drop me very close to where I would board a vehicle going home—and he did it almost every time. He is a very good listener, very slow to anger, very thoughtful of others, and always very, very kind.</p>
@@ -125,7 +125,7 @@ include __DIR__ . '/includes/header.php';
 <section class="photo-section">
     <?php if (file_exists($photo2)): ?>
         <div class="img-frame img-frame-full">
-            <img src="<?= BASE ?>/<?= htmlspecialchars($photo2) ?>" alt="Omasyl">
+            <img src="<?= BASE ?>/<?= htmlspecialchars($photo2) ?>" alt="OmaSyl">
         </div>
     <?php endif; ?>
 </section>
@@ -196,7 +196,7 @@ include __DIR__ . '/includes/header.php';
             <div class="home-carousel-track">
                 <?php if (is_file(__DIR__ . '/' . ltrim(str_replace('\\', '/', $photo3), '/'))): ?>
                     <article class="home-gallery-slide">
-                        <img src="<?= BASE ?>/<?= htmlspecialchars($photo3) ?>" alt="Omasyl">
+                        <img src="<?= BASE ?>/<?= htmlspecialchars($photo3) ?>" alt="OmaSyl">
                     </article>
                 <?php endif; ?>
                 <?php foreach ($homeGallery as $img): ?>

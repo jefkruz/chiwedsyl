@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-define('SITE_NAME', 'Omasyl');
+define('SITE_NAME', 'OmaSyl');
 define('WEDDING_DATE', '2026-06-20'); // Change to your wedding date (YYYY-MM-DD)
 define('DB_PATH', __DIR__ . '/data/wedding.db');
 define('UPLOAD_PATH', __DIR__ . '/uploads');
