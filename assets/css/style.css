@@ -466,22 +466,19 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1.5rem;
 }
 
-.story-section .section-title {
+.story-section .section-title,
+.story-section .story-subtitle {
     font-family: var(--font-story-aston);
     font-weight: 400;
     font-size: clamp(3.1rem, 8.6vw, 5rem);
     letter-spacing: 0.04em;
 }
 
-.story-subtitle {
-    font-family: var(--font-story-aston);
-    font-weight: 400;
-    font-size: clamp(2rem, 5vw, 2.75rem);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+.story-section .story-subtitle {
     color: var(--chocolate);
     margin: 0 0 1.5rem;
     text-align: center;
+    text-transform: none;
 }
 
 .story-content .story-subtitle:not(:first-child) {
