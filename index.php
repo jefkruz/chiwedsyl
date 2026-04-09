@@ -12,7 +12,15 @@ $firstDay = date('w', strtotime($weddingYear . '-' . date('n', $weddingTs) . '-0
 $daysInMonth = date('t', $weddingTs);
 
 // Image paths (place your photos in assets/images/)
+$bannerImage = 'assets/images/banner.png';
+$bannerFullPath = __DIR__ . '/' . str_replace('\\', '/', $bannerImage);
+$heroBannerStyle = '';
+if (is_file($bannerFullPath)) {
+    $bannerUrl = BASE . '/' . $bannerImage;
+    $heroBannerStyle = ' style="--hero-banner-url: url(\'' . htmlspecialchars($bannerUrl, ENT_QUOTES, 'UTF-8') . '\')"';
+}
 $heroImage = 'assets/images/DSC02343.jpg';
+$heroImagePath = __DIR__ . '/' . str_replace('\\', '/', $heroImage);
 $photo2 = 'assets/images/DSC02354.jpg';
 $photo3 = 'assets/images/DSC02162.jpg';
 
@@ -23,17 +31,28 @@ $homeGallery = $pdo->query("SELECT * FROM gallery_images ORDER BY sort_order, cr
 include __DIR__ . '/includes/header.php';
 ?>
 
-<section class="hero">
-    <?php if (file_exists($heroImage)): ?>
+<section class="hero hero-banner"<?= $heroBannerStyle ?>>
+    <div class="hero-banner-overlay" aria-hidden="true"></div>
+    <div class="hero-banner-inner">
+        <h1 class="hero-banner-title">Welcome to Chioma and Sylvanus wedding website…</h1>
+        <p class="hero-banner-tagline">Love found us and forever started 😍❤️</p>
+        <p class="hero-banner-hashtags">
+            <span class="hero-banner-hash">#RhapsodyOfEndlesslove</span>
+            <span class="hero-banner-hash">#Omasyl2026</span>
+        </p>
+    </div>
+</section>
+
+<section class="hero-framed-section" aria-label="Featured photo">
+    <?php if (is_file($heroImagePath)): ?>
         <div class="img-frame img-frame-hero">
-            <img src="<?= BASE ?>/<?= htmlspecialchars($heroImage) ?>" alt="Omasyl 2026" class="hero-image">
+            <img src="<?= BASE ?>/<?= htmlspecialchars($heroImage) ?>" alt="Chioma and Sylvanus — Omasyl 2026" class="hero-image">
         </div>
     <?php else: ?>
         <div class="img-frame img-frame-hero hero-image hero-image-placeholder">
-            <span class="hero-badge" style="color: var(--cream);">Omasyl 2026</span>
+            <span class="hero-framed-placeholder" style="color: var(--cream);">Omasyl 2026</span>
         </div>
     <?php endif; ?>
-    <!-- <h1 class="hero-badge">Omasyl 2026</h1> -->
     <p class="hero-sub">We're Getting Married</p>
 </section>
 
