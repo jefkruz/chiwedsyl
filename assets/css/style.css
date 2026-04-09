@@ -255,7 +255,8 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #2a2520;
     background-image: var(--hero-banner-url, none);
     background-size: cover;
-    background-position: center;
+    /* Nudged toward top of image so faces aren’t cropped (was center / 50%) */
+    background-position: center 28%;
     filter: grayscale(100%);
     transform: scale(1.02);
     z-index: 0;
