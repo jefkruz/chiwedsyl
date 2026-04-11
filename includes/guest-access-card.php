@@ -178,6 +178,19 @@ function guest_access_card_file_data_uri(string $absolutePath): ?string {
     return 'data:' . $mime . ';base64,' . base64_encode($raw);
 }
 
+/**
+ * Same-origin URL for the QR image (proxied) so browser capture and caching stay first-party.
+ */
+function guest_access_card_qr_proxy_url(string $qrData, string $base): string {
+    $qrData = trim($qrData);
+    if ($qrData === '') {
+        return '';
+    }
+    $prefix = $base === '' ? '' : rtrim($base, '/');
+
+    return $prefix . '/qr-image?d=' . rawurlencode($qrData);
+}
+
 function guest_access_card_logo_data_uri(): ?string {
     $path = guest_access_card_project_root() . '/assets/images/logo.png';
     return guest_access_card_file_data_uri($path);
@@ -225,13 +238,14 @@ function render_guest_access_card(array $guest, string $base = '', bool $embed_f
     }
     $photoUrlWeb = guest_access_card_photo_url($guest, $base);
 
-    $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . rawurlencode($qrData);
+    $qrUrl = guest_access_card_qr_proxy_url($qrData, $base);
 
     $partyLine = $num === 1
         ? 'This pass admits <strong>1</strong> person at the gate.'
         : 'This pass admits <strong>' . $num . '</strong> people in total — you plus <strong>' . $extras . '</strong> guest' . ($extras === 1 ? '' : 's') . ' arriving with you.';
 
-    $html = '<article class="guest-access-card" aria-label="Wedding access pass">';
+    $downloadName = htmlspecialchars(guest_access_card_download_filename($guest), ENT_QUOTES, 'UTF-8');
+    $html = '<article class="guest-access-card" aria-label="Wedding access pass" data-download-name="' . $downloadName . '">';
     $html .= '<div class="guest-access-card-frame">';
     $html .= '<header class="guest-access-card-header">';
     $html .= '<div class="guest-access-card-header-inner">';
@@ -259,8 +273,12 @@ function render_guest_access_card(array $guest, string $base = '', bool $embed_f
     $html .= '<h2 class="guest-access-card-name">' . $displayName . '</h2>';
     $html .= '<p class="guest-access-card-email">' . $email . '</p>';
     $html .= '<div class="guest-access-card-admit">' . $partyLine . '</div>';
-    $html .= '<div class="guest-access-card-qr"><img src="' . htmlspecialchars($qrUrl, ENT_QUOTES, 'UTF-8') . '" alt="Check-in QR code" width="200" height="200" loading="lazy"></div>';
-    $html .= '<p class="guest-access-card-hint">Present this pass at entry. Staff scan the QR to check you in (once per pass). Download your pass as an image to save on your phone.</p>';
+    if ($qrUrl !== '') {
+        $html .= '<div class="guest-access-card-qr"><img src="' . htmlspecialchars($qrUrl, ENT_QUOTES, 'UTF-8') . '" alt="Check-in QR code" width="200" height="200" loading="lazy"></div>';
+    } else {
+        $html .= '<div class="guest-access-card-qr guest-access-card-qr--missing"><p>QR unavailable</p></div>';
+    }
+    $html .= '<p class="guest-access-card-hint">Present this pass at entry. Staff scan the QR to check you in (once per pass). Use your site’s download button to save this card as a PNG — it matches what you see here.</p>';
     $html .= '</div></div>';
     $html .= '<footer class="guest-access-card-footer">Official guest pass · keep private</footer>';
     $html .= '</div></article>';

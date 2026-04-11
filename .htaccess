@@ -7,6 +7,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 
 # Main site
 RewriteRule ^register/?$ register.php [L]
+RewriteRule ^qr-image/?$ qr-image.php [L,QSA]
 RewriteRule ^gallery/?$ gallery.php [L]
 RewriteRule ^gifts/?$ gifts.php [L]
 RewriteRule ^well-wishes/?$ well-wishes.php [L]

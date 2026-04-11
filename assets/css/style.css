@@ -1425,6 +1425,12 @@ button.btn {
     box-shadow: 0 4px 14px rgba(42, 24, 16, 0.12);
 }
 
+.guest-access-card-qr--missing {
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: var(--chocolate-light);
+}
+
 .guest-access-card-hint {
     font-size: 0.7rem;
     color: var(--chocolate-light);

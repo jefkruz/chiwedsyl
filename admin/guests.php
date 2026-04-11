@@ -127,9 +127,7 @@ if ($q === '') {
                                 <td data-label="RSVP"><?= $regOk ? 'Confirmed' : 'Pending' ?></td>
                                 <td data-label="Check-in"><?php if (!empty($g['checked_in'])): ?>✓ In<?php if (!empty($g['checked_in_at'])): ?><br><span class="admin-checked-when"><?= htmlspecialchars((string) $g['checked_in_at']) ?></span><?php endif; else: ?>—<?php endif; ?></td>
                                 <td data-label="Access card">
-                                    <a href="<?= htmlspecialchars(BASE) ?>/admin/guest-card?id=<?= (int) $g['id'] ?>">View</a>
-                                    ·
-                                    <a href="<?= htmlspecialchars(BASE) ?>/admin/guest-card?id=<?= (int) $g['id'] ?>&amp;download=1">Download</a>
+                                    <a href="<?= htmlspecialchars(BASE) ?>/admin/guest-card?id=<?= (int) $g['id'] ?>">View / save PNG</a>
                                 </td>
                                 <td data-label="Action">
                                     <div class="admin-action-stack">

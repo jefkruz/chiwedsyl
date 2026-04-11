@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/guest-access-card.php';
-require_once __DIR__ . '/includes/guest-access-card-image.php';
-
 /**
  * @return array{path: ?string, error: ?string}
  */
@@ -47,32 +45,6 @@ $max_guest_photo_bytes = 10 * 1024 * 1024;
 if (isset($_GET['new']) && $_GET['new'] === '1') {
     unset($_SESSION['register_phase'], $_SESSION['register_phase_data'], $_SESSION['register_profile_saved']);
     header('Location: ' . BASE . '/register');
-    exit;
-}
-
-// Download access card (confirmed guest, same session as card view)
-if (isset($_GET['download_card']) && $_GET['download_card'] === '1') {
-    if (($_SESSION['register_phase'] ?? '') !== 'card') {
-        header('Location: ' . BASE . '/register');
-        exit;
-    }
-    $gid = (int) ($_SESSION['register_phase_data']['guest_id'] ?? 0);
-    if ($gid < 1) {
-        header('Location: ' . BASE . '/register');
-        exit;
-    }
-    $pdo = getDb();
-    $stmt = $pdo->prepare('SELECT * FROM guests WHERE id = ? AND registration_confirmed = 1 LIMIT 1');
-    $stmt->execute([$gid]);
-    $g = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (!$g || guest_profile_needs_completion($g)) {
-        header('Location: ' . BASE . '/register');
-        exit;
-    }
-    if (!guest_access_card_send_png_download($g)) {
-        header('Location: ' . BASE . '/register?download_error=1');
-        exit;
-    }
     exit;
 }
 
@@ -291,7 +263,6 @@ $profileSavedFlash = !empty($_SESSION['register_profile_saved']);
 if ($profileSavedFlash) {
     unset($_SESSION['register_profile_saved']);
 }
-$download_error = isset($_GET['download_error']);
 
 if ($phase === 'card' && !empty($phaseData['guest_id'])) {
     $stmt = $pdo->prepare('SELECT * FROM guests WHERE id = ? AND registration_confirmed = 1 LIMIT 1');
@@ -348,15 +319,13 @@ elseif ($phase === 'card' && $cardGuest):
 ?>
     <section class="register-access-card-wrap">
         <h1>Your access card</h1>
-        <?php if ($download_error): ?>
-            <p class="alert alert-error" style="max-width:420px;margin:0 auto 1rem;">We could not build your pass image. Please try again in a moment, or contact us if it continues.</p>
-        <?php endif; ?>
-        <p class="register-access-card-lead">Download your pass as a PNG image to save on your phone for check-in.</p>
+        <p class="register-access-card-lead">Save the pass below exactly as it appears — same layout and size as on your screen.</p>
         <?= render_guest_access_card($cardGuest, BASE) ?>
         <div class="register-access-card-actions">
-            <a class="btn-submit" style="width:auto;padding:0.75rem 1.5rem;text-decoration:none;display:inline-block;" href="<?= htmlspecialchars(BASE) ?>/register?download_card=1">Download pass (PNG)</a>
+            <button type="button" class="btn-submit" style="width:auto;padding:0.75rem 1.5rem;" data-access-card-download aria-label="Download pass as PNG">Download pass (PNG)</button>
             <a class="btn-secondary" href="<?= htmlspecialchars(BASE) ?>/register?new=1">Use another email</a>
         </div>
+        <script src="<?= htmlspecialchars(BASE) ?>/assets/js/access-card-download.js" defer></script>
     </section>
 <?php
 elseif ($phase === 'pending'):
@@ -559,9 +528,6 @@ else:
     <section class="form-page">
         <h1>Register to attend</h1>
         <p style="text-align: center; margin-bottom: 1.5rem; color: var(--chocolate-light);">Enter the email you would like us to use for your invitation. We will either show your access card or guide you through the next step.</p>
-        <?php if ($download_error): ?>
-            <div class="alert alert-error">We could not prepare your pass image. Please try again in a moment, or contact the organisers if this keeps happening.</div>
-        <?php endif; ?>
         <?php if ($email_error): ?>
             <div class="alert alert-error"><?= htmlspecialchars($email_error) ?></div>
         <?php endif; ?>
