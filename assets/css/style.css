@@ -255,8 +255,8 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #2a2520;
     background-image: var(--hero-banner-url, none);
     background-size: cover;
-    /* Square banner: cover fills hero; center keeps crop even on sides or top/bottom */
-    background-position: center center;
+    /* cover scales/zooms to fill hero; top aligns so the frame starts from the top (crop from bottom/sides as needed) */
+    background-position: center top;
     background-repeat: no-repeat;
     filter: grayscale(100%);
     transform: none;
