@@ -14,11 +14,7 @@ $daysInMonth = date('t', $weddingTs);
 // Image paths (place your photos in assets/images/)
 $bannerImage = 'assets/images/banner.png';
 $bannerFullPath = __DIR__ . '/' . str_replace('\\', '/', $bannerImage);
-$heroBannerStyle = '';
-if (is_file($bannerFullPath)) {
-    $bannerUrl = BASE . '/' . $bannerImage;
-    $heroBannerStyle = ' style="--hero-banner-url: url(\'' . htmlspecialchars($bannerUrl, ENT_QUOTES, 'UTF-8') . '\')"';
-}
+$bannerUrl = is_file($bannerFullPath) ? BASE . '/' . $bannerImage : '';
 $heroImage = 'assets/images/DSC02343.jpg';
 $heroImagePath = __DIR__ . '/' . str_replace('\\', '/', $heroImage);
 $photo2 = 'assets/images/DSC02354.jpg';
@@ -31,7 +27,12 @@ $homeGallery = $pdo->query("SELECT * FROM gallery_images ORDER BY sort_order, cr
 include __DIR__ . '/includes/header.php';
 ?>
 
-<section class="hero hero-banner"<?= $heroBannerStyle ?>>
+<section class="hero hero-banner">
+    <?php if ($bannerUrl !== ''): ?>
+        <div class="hero-banner-media" aria-hidden="true">
+            <img class="hero-banner-img" src="<?= htmlspecialchars($bannerUrl, ENT_QUOTES, 'UTF-8') ?>" alt="" decoding="async" fetchpriority="high">
+        </div>
+    <?php endif; ?>
     <div class="hero-banner-overlay" aria-hidden="true"></div>
     <div class="hero-banner-inner">
         <h1 class="hero-banner-title">Welcome to Chioma and Sylvanus wedding website…</h1>

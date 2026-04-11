@@ -248,19 +248,32 @@ h1, h2, h3, h4, h5, h6 {
     overflow: hidden;
 }
 
-.hero-banner::before {
-    content: '';
+/* Real <img> scales more reliably on mobile than background-size:contain on ::before */
+.hero-banner-media {
     position: absolute;
     inset: 0;
-    background-color: #2a2520;
-    background-image: var(--hero-banner-url, none);
-    background-size: contain;
-    /* Entire image visible inside hero (no crop); top + horizontal center; letterboxing uses background-color */
-    background-position: center top;
-    background-repeat: no-repeat;
-    filter: grayscale(100%);
-    transform: none;
     z-index: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: #2a2520;
+    pointer-events: none;
+    min-height: 0;
+    box-sizing: border-box;
+}
+
+.hero-banner-img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    min-width: 0;
+    min-height: 0;
+    align-self: flex-start;
+    object-fit: contain;
+    object-position: center top;
+    filter: grayscale(100%);
 }
 
 .hero-banner-overlay {
@@ -2035,13 +2048,6 @@ th {
         padding: 6.5rem 1.25rem 3rem;
         min-height: 100dvh;
         min-height: 100svh;
-    }
-    /* Same as desktop: full image in frame (contain), anchored to top */
-    .hero.hero-banner::before {
-        background-size: contain;
-        background-position-x: center;
-        background-position-y: top;
-        background-repeat: no-repeat;
     }
     .hero-banner-title {
         font-size: clamp(1.45rem, 6.5vw, 1.95rem);
