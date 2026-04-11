@@ -19,7 +19,6 @@ if (!$guest) {
 }
 
 $validTitles = guest_valid_titles();
-$max_guest_photo_bytes = 10 * 1024 * 1024;
 $error = '';
 $saved = isset($_GET['saved']);
 
@@ -67,42 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
         }
     }
 
-    $photo_path = (string) ($guest['guest_photo_path'] ?? '');
-    $fu = $_FILES['photo'] ?? null;
-    if ($error === '' && is_array($fu) && (int) ($fu['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
-        $fileErr = (int) ($fu['error'] ?? UPLOAD_ERR_NO_FILE);
-        $fileName = trim((string) ($fu['name'] ?? ''));
-        if ($fileErr === UPLOAD_ERR_INI_SIZE || $fileErr === UPLOAD_ERR_FORM_SIZE) {
-            $error = 'Replacement photo must be 10 MB or smaller.';
-        } elseif ($fileErr !== UPLOAD_ERR_OK) {
-            $error = 'Photo upload failed.';
-        } elseif ((int) ($fu['size'] ?? 0) > $max_guest_photo_bytes) {
-            $error = 'Replacement photo must be 10 MB or smaller.';
-        } else {
-            $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true)) {
-                $error = 'Use JPG, PNG, GIF or WebP for the photo.';
-            } else {
-                $uploadDir = UPLOAD_PATH . '/guests/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
-                }
-                $filename = uniqid('guest_') . '.' . $ext;
-                if (move_uploaded_file($fu['tmp_name'], $uploadDir . $filename)) {
-                    $photo_path = 'uploads/guests/' . $filename;
-                } else {
-                    $error = 'Could not save the new photo.';
-                }
-            }
-        }
-    }
-
     if ($error === '') {
         $name = guest_composed_full_name($title, $first, $last);
         if ($name === '') {
             $name = trim((string) $guest['name']);
         }
-        $stmt = $pdo->prepare('UPDATE guests SET title = ?, first_name = ?, last_name = ?, name = ?, email = ?, phone = ?, gender = ?, invited_by = ?, num_guests = ?, registration_confirmed = ?, checked_in = ?, guest_photo_path = ? WHERE id = ?');
+        $stmt = $pdo->prepare('UPDATE guests SET title = ?, first_name = ?, last_name = ?, name = ?, email = ?, phone = ?, gender = ?, invited_by = ?, num_guests = ?, registration_confirmed = ?, checked_in = ? WHERE id = ?');
         $stmt->execute([
             $title !== '' ? $title : null,
             $first !== '' ? $first : null,
@@ -115,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
             $num_guests,
             $registration_confirmed,
             $checked_in,
-            $photo_path !== '' ? $photo_path : null,
             $id,
         ]);
         header('Location: ' . BASE . '/admin/guest-edit?id=' . $id . '&saved=1');
@@ -169,8 +137,8 @@ $v = function (string $field) use ($guest) {
             <?php if ($error): ?>
                 <p class="alert alert-error"><?= htmlspecialchars($error) ?></p>
             <?php endif; ?>
-            <p>Changes here update the guest list and their downloadable access pass. The QR code is not changed.</p>
-            <form method="post" action="<?= BASE ?>/admin/guest-edit?id=<?= (int) $id ?>" enctype="multipart/form-data" class="admin-guest-edit-form admin-form-narrow">
+            <p>Changes here update the guest list and their downloadable access pass. The QR code and pass photo are not changed here — guests update their photo on the public RSVP flow.</p>
+            <form method="post" action="<?= BASE ?>/admin/guest-edit?id=<?= (int) $id ?>" class="admin-guest-edit-form admin-form-narrow">
                 <input type="hidden" name="action" value="save_guest">
                 <input type="hidden" name="id" value="<?= (int) $id ?>">
                 <div class="form-group">
@@ -223,11 +191,6 @@ $v = function (string $field) use ($guest) {
                 </div>
                 <div class="form-group">
                     <label><input type="checkbox" name="checked_in" value="1" <?= !empty($guest['checked_in']) ? 'checked' : '' ?>> Checked in at venue</label>
-                </div>
-                <div class="form-group">
-                    <label for="photo">Replace pass photo (optional)</label>
-                    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp">
-                    <span class="form-hint">JPG, PNG, GIF or WebP, max 10 MB. Leave empty to keep the current photo.</span>
                 </div>
                 <p><button type="submit" class="btn-submit btn-submit--inline">Save changes</button></p>
             </form>

@@ -30,20 +30,19 @@ if ($q === '') {
     $guests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-$qrBase = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guests — Admin — <?= htmlspecialchars(SITE_NAME) ?></title>
+    <title>Guests &amp; check-in — Admin — <?= htmlspecialchars(SITE_NAME) ?></title>
     <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
 </head>
 <body>
     <div class="admin-wrap">
         <div class="admin-header">
-            <h1>Guests &amp; QR codes</h1>
+            <h1>Guests</h1>
             <nav class="admin-nav">
                 <a href="<?= BASE ?>/admin/dashboard">Dashboard</a>
                 <a href="<?= BASE ?>/admin/scan">Scan check-in</a>
@@ -61,7 +60,7 @@ $qrBase = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=';
             <?php if (isset($_GET['confirmed'])): ?>
                 <p class="alert alert-success">Registration confirmed. The guest can now retrieve their access card from the public RSVP page.</p>
             <?php endif; ?>
-            <p>Each QR opens the check-in page when scanned (stay logged in on the device at the door). A pass can only be checked in once; you can still use <strong>Check in</strong> below or <a href="<?= BASE ?>/admin/scan">enter the code manually</a>. Search by name or email, confirm new RSVPs, and open each guest’s access card to view or download.</p>
+            <p>The pass QR on each guest’s access card opens check-in when scanned (stay logged in on the device at the door). A pass can only be checked in once; use <strong>Check in</strong> below or <a href="<?= BASE ?>/admin/scan">scan / enter code manually</a>. Search by name or email, confirm new RSVPs, and open each guest’s access card to view or download.</p>
             <form method="get" action="<?= BASE ?>/admin/guests" class="admin-search-form">
                 <label for="guest-search" class="visually-hidden">Search guests</label>
                 <input type="search" id="guest-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search name, email, phone…" autocomplete="off">
@@ -81,8 +80,6 @@ $qrBase = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=';
                             <th>Phone</th>
                             <th>Invited by</th>
                             <th># Guests</th>
-                            <th>Photo</th>
-                            <th>QR code</th>
                             <th>RSVP</th>
                             <th>Check-in</th>
                             <th>Access card</th>
@@ -110,20 +107,6 @@ $qrBase = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=';
                                 <td data-label="Phone"><?= htmlspecialchars($g['phone'] ?? '') ?></td>
                                 <td data-label="Invited by"><?= htmlspecialchars($g['invited_by'] ?? '') ?></td>
                                 <td data-label="# Guests"><?= (int) $g['num_guests'] ?></td>
-                                <td data-label="Photo">
-                                    <?php if (!empty($g['guest_photo_path']) && file_exists('../' . $g['guest_photo_path'])): ?>
-                                        <a href="../<?= htmlspecialchars($g['guest_photo_path']) ?>" target="_blank">View</a>
-                                    <?php else: ?>
-                                        —
-                                    <?php endif; ?>
-                                </td>
-                                <td class="guest-qr" data-label="QR code">
-                                    <?php
-                                    $scanUrl = guest_qr_checkin_url_from_code((string) $g['qr_code']);
-                                    $qrPayload = $scanUrl !== '' ? $scanUrl : (string) $g['qr_code'];
-                                    ?>
-                                    <img src="<?= htmlspecialchars($qrBase . urlencode($qrPayload)) ?>" alt="QR — scan to check in">
-                                </td>
                                 <td data-label="RSVP"><?= $regOk ? 'Confirmed' : 'Pending' ?></td>
                                 <td data-label="Check-in"><?php if (!empty($g['checked_in'])): ?>✓ In<?php if (!empty($g['checked_in_at'])): ?><br><span class="admin-checked-when"><?= htmlspecialchars((string) $g['checked_in_at']) ?></span><?php endif; else: ?>—<?php endif; ?></td>
                                 <td data-label="Access card">

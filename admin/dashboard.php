@@ -11,10 +11,10 @@ $galleryCount = (int) $pdo->query("SELECT COUNT(*) FROM gallery_images")->fetchC
 $sections = [
     [
         'href' => BASE . '/admin/guests',
-        'title' => 'Guests &amp; QR',
+        'title' => 'Guests',
         'count' => $guestCount,
         'count_label' => 'guests registered',
-        'hint' => 'Check-in, QR codes, and invite list.',
+        'hint' => 'Check-in, access passes, and invite list.',
     ],
     [
         'href' => BASE . '/admin/gifts',
@@ -52,7 +52,7 @@ $sections = [
         <div class="admin-header">
             <h1>Admin</h1>
             <nav class="admin-nav">
-                <a href="<?= BASE ?>/admin/guests">Guests &amp; QR</a>
+                <a href="<?= BASE ?>/admin/guests">Guests</a>
                 <a href="<?= BASE ?>/admin/scan">Scan check-in</a>
                 <a href="<?= BASE ?>/admin/gifts">Gifts</a>
                 <a href="<?= BASE ?>/admin/well-wishes">Well wishes</a>
