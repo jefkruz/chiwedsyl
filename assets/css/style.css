@@ -254,8 +254,8 @@ h1, h2, h3, h4, h5, h6 {
     inset: 0;
     background-color: #2a2520;
     background-image: var(--hero-banner-url, none);
-    background-size: cover;
-    /* cover scales/zooms to fill hero; top aligns so the frame starts from the top (crop from bottom/sides as needed) */
+    background-size: contain;
+    /* Entire image visible inside hero (no crop); top + horizontal center; letterboxing uses background-color */
     background-position: center top;
     background-repeat: no-repeat;
     filter: grayscale(100%);
@@ -2036,9 +2036,9 @@ th {
         min-height: 100dvh;
         min-height: 100svh;
     }
-    /* Explicit top + cover on small screens (matches desktop; avoids mobile engines ignoring shorthand) */
+    /* Same as desktop: full image in frame (contain), anchored to top */
     .hero.hero-banner::before {
-        background-size: cover;
+        background-size: contain;
         background-position-x: center;
         background-position-y: top;
         background-repeat: no-repeat;

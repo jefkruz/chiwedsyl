@@ -12,7 +12,7 @@ $firstDay = date('w', strtotime($weddingYear . '-' . date('n', $weddingTs) . '-0
 $daysInMonth = date('t', $weddingTs);
 
 // Image paths (place your photos in assets/images/)
-$bannerImage = 'assets/images/banner.jpg';
+$bannerImage = 'assets/images/banner.png';
 $bannerFullPath = __DIR__ . '/' . str_replace('\\', '/', $bannerImage);
 $heroBannerStyle = '';
 if (is_file($bannerFullPath)) {
