@@ -67,6 +67,7 @@ $photo3 = 'assets/images/DSC02162.jpg';
 $pdo = getDb();
 $homeGifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id LIMIT 12")->fetchAll(PDO::FETCH_ASSOC);
 $homeGallery = $pdo->query("SELECT * FROM gallery_images ORDER BY sort_order, created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+$homeWishes = $pdo->query("SELECT id, author_name, message, created_at FROM well_wishes ORDER BY created_at ASC, id ASC LIMIT 30")->fetchAll(PDO::FETCH_ASSOC);
 
 include __DIR__ . '/includes/header.php';
 ?>
@@ -162,9 +163,35 @@ include __DIR__ . '/includes/header.php';
         <p>We would love to read your well wishes</p>
     </div>
     <p class="story-cta">
-        <a href="<?= BASE ?>/well-wishes" class="btn">Leave a well wish</a>
+        <button type="button" class="btn js-open-well-wish-modal" id="story-well-wish-btn">Leave a well wish</button>
     </p>
 </section>
+
+<?php if (!empty($homeWishes)): ?>
+<section class="home-wishes-section" aria-label="Well wishes from guests">
+    <h2 class="section-title">Well wishes</h2>
+    <div class="home-carousel-wrap">
+        <button type="button" class="carousel-btn prev" data-target="home-wishes-carousel" aria-label="Previous well wishes">‹</button>
+        <div class="home-carousel" id="home-wishes-carousel">
+            <div class="home-carousel-track">
+                <?php foreach ($homeWishes as $w): ?>
+                    <article class="tribute-card wish-slide-card">
+                        <div class="tribute-message"><?= $w['message'] ?></div>
+                        <footer class="tribute-meta">
+                            <span class="tribute-author"><?= htmlspecialchars($w['author_name']) ?></span>
+                            <time class="tribute-date" datetime="<?= htmlspecialchars($w['created_at']) ?>"><?= date('M j, Y', strtotime($w['created_at'])) ?></time>
+                        </footer>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <button type="button" class="carousel-btn next" data-target="home-wishes-carousel" aria-label="Next well wishes">›</button>
+    </div>
+    <p class="home-carousel-link">
+        <a href="<?= BASE ?>/well-wishes" class="btn">View all &amp; add yours</a>
+    </p>
+</section>
+<?php endif; ?>
 
 <section class="details-section" id="details">
     <!-- <h2 class="section-title">Wedding </h2> -->
@@ -281,5 +308,10 @@ include __DIR__ . '/includes/header.php';
 </section>
 
 <?php include __DIR__ . '/includes/gift-modal.php'; ?>
+
+<?php
+$show_well_wish_fab = false;
+include __DIR__ . '/includes/well-wish-modal.php';
+?>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

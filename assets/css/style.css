@@ -636,6 +636,30 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--cream-dark);
 }
 
+.home-wishes-section {
+    padding: 4rem 1.5rem;
+    background: var(--white);
+}
+
+.home-wishes-section .section-title {
+    margin-bottom: 1.5rem;
+}
+
+/* Well-wish slides: fixed width in horizontal track (oldest first, left to right) */
+.wish-slide-card {
+    flex: 0 0 clamp(280px, 86vw, 380px);
+}
+
+.wish-slide-card .tribute-message {
+    max-height: 14rem;
+    overflow-y: auto;
+}
+
+.wishes-page-carousel-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
 .home-carousel-wrap {
     max-width: 1120px;
     margin: 0 auto;
@@ -1035,6 +1059,13 @@ button.home-product-image-link {
     letter-spacing: 0.03em;
     border-radius: 6px;
     transition: background 0.2s, transform 0.2s;
+}
+
+button.btn {
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    text-align: center;
 }
 
 .btn:hover {
