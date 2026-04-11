@@ -193,6 +193,20 @@ function guest_access_card_render_png_binary(array $guest): ?string {
 
     $W = 720;
 
+    // Photo ring must sit fully below the header/gold stripe (was overlapping at cy=278).
+    $diam = 228;
+    $ring = 7;
+    $cx = (int) ($W / 2);
+    $photoOuterD = $diam + $ring * 2 + 10;
+    $photoRadiusY = (int) ceil($photoOuterD / 2);
+    $headerGoldBottom = 178;
+    $photoStageTop = $headerGoldBottom + 10;
+    $cy = $photoStageTop + $photoRadiusY;
+    $photoBottomY = $cy + $photoRadiusY;
+    $nameGapBelowPhoto = 28;
+    $nameBase = $photoBottomY + $nameGapBelowPhoto;
+    $cream2BandBottom = max(380, $photoBottomY + 36);
+
     $name = guest_display_name($guest);
     $nameLines = guest_access_card_png_split_lines($font, 22, $name, $W - 64);
     if ($nameLines === []) {
@@ -245,7 +259,6 @@ function guest_access_card_render_png_binary(array $guest): ?string {
     $boxRef10 = imagettfbbox(10, 0, $font, 'Mg');
     $qrFailAsc = $boxRef10 !== false ? abs((int) $boxRef10[7]) : 11;
 
-    $nameBase = 396;
     $yAfterName = $nameBase + count($nameLines) * $nameLh;
     $gapAfterName = 10;
     if ($emailLines !== []) {
@@ -340,17 +353,13 @@ function guest_access_card_render_png_binary(array $guest): ?string {
     }
 
     imagefilledrectangle($im, 0, 178, $W, $H, $cream);
-    imagefilledrectangle($im, 0, 178, $W, 368, $cream2);
+    imagefilledrectangle($im, 0, 178, $W, $cream2BandBottom, $cream2);
 
     $photoPath = trim((string) ($guest['guest_photo_path'] ?? ''));
     $fullPhoto = $photoPath !== '' ? guest_access_card_project_root() . '/' . $photoPath : '';
-    $diam = 228;
-    $cx = (int) ($W / 2);
-    $cy = 278;
     if ($fullPhoto !== '' && is_file($fullPhoto)) {
         $circle = guest_access_card_png_guest_circle($fullPhoto, $diam);
         if ($circle) {
-            $ring = 7;
             imagefilledellipse($im, $cx, $cy, $diam + $ring * 2 + 10, $diam + $ring * 2 + 10, $gold);
             imagefilledellipse($im, $cx, $cy, $diam + $ring * 2, $diam + $ring * 2, $choc2);
             imagealphablending($im, true);
