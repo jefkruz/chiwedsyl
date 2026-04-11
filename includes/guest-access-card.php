@@ -66,6 +66,82 @@ function guest_composed_full_name(string $title, string $first, string $last): s
     return trim(($t !== '' ? $t . ' ' : '') . $core);
 }
 
+/**
+ * Guest pass image exists on disk (path set and file readable).
+ */
+function guest_has_valid_pass_photo_on_disk(array $guest): bool {
+    $photoPath = trim((string) ($guest['guest_photo_path'] ?? ''));
+    if ($photoPath === '') {
+        return false;
+    }
+    return is_file(guest_access_card_project_root() . '/' . $photoPath);
+}
+
+/**
+ * True when the guest should complete missing RSVP fields (photo and/or gender, etc.).
+ */
+function guest_profile_needs_completion(array $guest): bool {
+    if (!guest_has_valid_pass_photo_on_disk($guest)) {
+        return true;
+    }
+    $g = trim((string) ($guest['gender'] ?? ''));
+    if (!in_array($g, ['male', 'female'], true)) {
+        return true;
+    }
+    $title = trim((string) ($guest['title'] ?? ''));
+    if ($title === '' || !isset(guest_valid_titles()[$title])) {
+        return true;
+    }
+    $fn = trim((string) ($guest['first_name'] ?? ''));
+    $ln = trim((string) ($guest['last_name'] ?? ''));
+    if ($fn === '' || $ln === '') {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Human-readable list of missing profile items (for messaging).
+ *
+ * @return list<string>
+ */
+function guest_profile_missing_labels(array $guest): array {
+    $missing = [];
+    if (!guest_has_valid_pass_photo_on_disk($guest)) {
+        $missing[] = 'pass photo';
+    }
+    $g = trim((string) ($guest['gender'] ?? ''));
+    if (!in_array($g, ['male', 'female'], true)) {
+        $missing[] = 'gender';
+    }
+    $title = trim((string) ($guest['title'] ?? ''));
+    if ($title === '' || !isset(guest_valid_titles()[$title])) {
+        $missing[] = 'title';
+    }
+    $fn = trim((string) ($guest['first_name'] ?? ''));
+    $ln = trim((string) ($guest['last_name'] ?? ''));
+    if ($fn === '' || $ln === '') {
+        $missing[] = 'first and last name';
+    }
+    return $missing;
+}
+
+/**
+ * Suggest first/last name fields when only legacy `name` is set.
+ *
+ * @return array{0: string, 1: string}
+ */
+function guest_default_first_last_for_form(array $guest): array {
+    $fn = trim((string) ($guest['first_name'] ?? ''));
+    $ln = trim((string) ($guest['last_name'] ?? ''));
+    if ($fn === '' && $ln === '' && trim((string) ($guest['name'] ?? '')) !== '') {
+        $parts = preg_split('/\s+/', trim((string) $guest['name']), 2);
+        $fn = $parts[0] ?? '';
+        $ln = $parts[1] ?? '';
+    }
+    return [$fn, $ln];
+}
+
 function guest_access_card_photo_url(array $guest, string $base): ?string {
     $photoPath = trim((string) ($guest['guest_photo_path'] ?? ''));
     if ($photoPath === '') {
