@@ -45,7 +45,7 @@ $sections = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin — <?= htmlspecialchars(SITE_NAME) ?></title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
 </head>
 <body>
     <div class="admin-wrap">
@@ -53,6 +53,7 @@ $sections = [
             <h1>Admin</h1>
             <nav class="admin-nav">
                 <a href="<?= BASE ?>/admin/guests">Guests &amp; QR</a>
+                <a href="<?= BASE ?>/admin/scan">Scan check-in</a>
                 <a href="<?= BASE ?>/admin/gifts">Gifts</a>
                 <a href="<?= BASE ?>/admin/well-wishes">Well wishes</a>
                 <a href="<?= BASE ?>/admin/gallery">Gallery</a>

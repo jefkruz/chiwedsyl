@@ -193,7 +193,12 @@ function guest_access_card_logo_data_uri(): ?string {
 function render_guest_access_card(array $guest, string $base = '', bool $embed_for_offline_file = false): string {
     $displayName = htmlspecialchars(guest_display_name($guest), ENT_QUOTES, 'UTF-8');
     $email = htmlspecialchars((string) ($guest['email'] ?? ''), ENT_QUOTES, 'UTF-8');
-    $qrData = (string) ($guest['qr_code'] ?? '');
+    $qrData = function_exists('guest_qr_checkin_url_for_guest')
+        ? guest_qr_checkin_url_for_guest($guest)
+        : (string) ($guest['qr_code'] ?? '');
+    if ($qrData === '') {
+        $qrData = (string) ($guest['qr_code'] ?? '');
+    }
     $num = max(1, (int) ($guest['num_guests'] ?? 1));
     $extras = max(0, $num - 1);
     $site = defined('SITE_NAME') ? htmlspecialchars((string) SITE_NAME, ENT_QUOTES, 'UTF-8') : 'Wedding';
@@ -255,7 +260,7 @@ function render_guest_access_card(array $guest, string $base = '', bool $embed_f
     $html .= '<p class="guest-access-card-email">' . $email . '</p>';
     $html .= '<div class="guest-access-card-admit">' . $partyLine . '</div>';
     $html .= '<div class="guest-access-card-qr"><img src="' . htmlspecialchars($qrUrl, ENT_QUOTES, 'UTF-8') . '" alt="Check-in QR code" width="200" height="200" loading="lazy"></div>';
-    $html .= '<p class="guest-access-card-hint">Present this pass at entry. Download your pass as an image to save on your phone.</p>';
+    $html .= '<p class="guest-access-card-hint">Present this pass at entry. Staff scan the QR to check you in (once per pass). Download your pass as an image to save on your phone.</p>';
     $html .= '</div></div>';
     $html .= '<footer class="guest-access-card-footer">Official guest pass · keep private</footer>';
     $html .= '</div></article>';

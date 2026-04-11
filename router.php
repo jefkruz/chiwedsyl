@@ -15,6 +15,7 @@ $routes = [
     '/admin' => '/admin/index.php',
     '/admin/dashboard' => '/admin/dashboard.php',
     '/admin/guests' => '/admin/guests.php',
+    '/admin/scan' => '/admin/scan.php',
     '/admin/guest-card' => '/admin/guest-card.php',
     '/admin/guest-edit' => '/admin/guest-edit.php',
     '/admin/gifts' => '/admin/gifts.php',

@@ -149,7 +149,7 @@ $v = function (string $field) use ($guest) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit guest — Admin — <?= htmlspecialchars(SITE_NAME) ?></title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
 </head>
 <body>
     <div class="admin-wrap">
@@ -164,13 +164,13 @@ $v = function (string $field) use ($guest) {
         </div>
         <div class="admin-card">
             <?php if ($saved): ?>
-                <p class="alert alert-success" style="margin-bottom:1rem;">Guest saved.</p>
+                <p class="alert alert-success">Guest saved.</p>
             <?php endif; ?>
             <?php if ($error): ?>
-                <p class="alert alert-error" style="margin-bottom:1rem;"><?= htmlspecialchars($error) ?></p>
+                <p class="alert alert-error"><?= htmlspecialchars($error) ?></p>
             <?php endif; ?>
             <p>Changes here update the guest list and their downloadable access pass. The QR code is not changed.</p>
-            <form method="post" action="<?= BASE ?>/admin/guest-edit?id=<?= (int) $id ?>" enctype="multipart/form-data" class="admin-guest-edit-form" style="max-width:520px;margin-top:1.25rem;">
+            <form method="post" action="<?= BASE ?>/admin/guest-edit?id=<?= (int) $id ?>" enctype="multipart/form-data" class="admin-guest-edit-form admin-form-narrow">
                 <input type="hidden" name="action" value="save_guest">
                 <input type="hidden" name="id" value="<?= (int) $id ?>">
                 <div class="form-group">
@@ -229,7 +229,7 @@ $v = function (string $field) use ($guest) {
                     <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp">
                     <span class="form-hint">JPG, PNG, GIF or WebP, max 10 MB. Leave empty to keep the current photo.</span>
                 </div>
-                <p><button type="submit" class="btn-submit" style="width:auto;">Save changes</button></p>
+                <p><button type="submit" class="btn-submit btn-submit--inline">Save changes</button></p>
             </form>
         </div>
     </div>

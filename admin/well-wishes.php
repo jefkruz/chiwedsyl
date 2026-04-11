@@ -52,24 +52,28 @@ $allowed_msg_tags = '<p><br><b><strong><i><em><u>';
                 <p>No well wishes yet.</p>
             <?php else: ?>
                 <div class="table-wrap">
-                    <table>
+                    <table class="responsive-table">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Date</th>
                                 <th>Message</th>
-                                <th></th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($wishes as $w): ?>
+                                <?php
+                                $wishTs = strtotime($w['created_at'] ?? '');
+                                $wishDate = $wishTs ? date('M j, Y g:i a', $wishTs) : '';
+                                ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($w['author_name']) ?></td>
-                                    <td><?= htmlspecialchars($w['created_at'] ?? '') ?></td>
-                                    <td class="admin-wish-cell">
+                                    <td data-label="Name"><?= htmlspecialchars($w['author_name']) ?></td>
+                                    <td data-label="Date"><?= htmlspecialchars($wishDate) ?></td>
+                                    <td class="admin-wish-cell" data-label="Message">
                                         <div class="admin-wish-preview"><?= strip_tags($w['message'] ?? '', $allowed_msg_tags) ?></div>
                                     </td>
-                                    <td>
+                                    <td data-label="Actions">
                                         <a href="<?= BASE ?>/admin/well-wishes?delete=<?= (int) $w['id'] ?>" class="btn-small danger" onclick="return confirm('Remove this well wish?');">Delete</a>
                                     </td>
                                 </tr>

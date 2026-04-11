@@ -76,7 +76,7 @@ $images = $pdo->query("SELECT * FROM gallery_images ORDER BY sort_order, created
         <?php endif; ?>
         <div class="admin-card">
             <h2>Upload image</h2>
-            <form method="post" action="<?= BASE ?>/admin/gallery" enctype="multipart/form-data" style="max-width: 480px;">
+            <form method="post" action="<?= BASE ?>/admin/gallery" enctype="multipart/form-data" class="admin-form-narrow--sm">
                 <div class="form-group">
                     <label for="image">Image *</label>
                     <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.gif,.webp" required>

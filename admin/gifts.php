@@ -71,7 +71,7 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gifts — Admin — <?= htmlspecialchars(SITE_NAME) ?></title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
 </head>
 <body>
     <div class="admin-wrap">
@@ -93,7 +93,7 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
 
         <div class="admin-card">
             <h2>Add new gift</h2>
-            <form method="post" action="<?= BASE ?>/admin/gifts" enctype="multipart/form-data" style="max-width: 480px;">
+            <form method="post" action="<?= BASE ?>/admin/gifts" enctype="multipart/form-data" class="admin-form-narrow--sm">
                 <div class="form-group">
                     <label for="title">Name *</label>
                     <input type="text" id="title" name="title" required placeholder="e.g. Blender">
@@ -127,7 +127,7 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
                             <tr>
                                 <td data-label="Image">
                                     <?php if ($g['image_path'] && file_exists('../' . $g['image_path'])): ?>
-                                        <img src="../<?= htmlspecialchars($g['image_path']) ?>" alt="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                                        <img src="../<?= htmlspecialchars($g['image_path']) ?>" alt="" class="admin-thumb-sm">
                                     <?php else: ?>
                                         —
                                     <?php endif; ?>

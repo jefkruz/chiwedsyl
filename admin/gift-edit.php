@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit gift — Admin — <?= htmlspecialchars(SITE_NAME) ?></title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
 </head>
 <body>
     <div class="admin-wrap">
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="alert alert-<?= $messageType ?>"><?= htmlspecialchars($message) ?></div>
         <?php endif; ?>
         <div class="admin-card">
-            <form method="post" action="<?= BASE ?>/admin/gift-edit?id=<?= $id ?>" enctype="multipart/form-data" style="max-width: 480px;">
+            <form method="post" action="<?= BASE ?>/admin/gift-edit?id=<?= $id ?>" enctype="multipart/form-data" class="admin-form-narrow--sm">
                 <input type="hidden" name="id" value="<?= $id ?>">
                 <div class="form-group">
                     <label for="title">Name *</label>
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label>Current image</label>
                     <?php if ($item['image_path'] && file_exists('../' . $item['image_path'])): ?>
-                        <img src="../<?= htmlspecialchars($item['image_path']) ?>" alt="" style="max-width: 200px; display: block; margin-bottom: 0.5rem;">
+                        <img src="../<?= htmlspecialchars($item['image_path']) ?>" alt="" class="admin-thumb-preview">
                     <?php else: ?>
                         <p>None</p>
                     <?php endif; ?>

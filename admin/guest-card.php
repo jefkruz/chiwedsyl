@@ -35,7 +35,7 @@ $download_error = isset($_GET['download_error']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Access card — <?= htmlspecialchars((string) ($guest['name'] ?? 'Guest')) ?> — Admin</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
 </head>
 <body>
     <div class="admin-wrap">
@@ -53,11 +53,11 @@ $download_error = isset($_GET['download_error']);
             <?php if ($download_error): ?>
                 <p class="alert alert-error">PNG export failed. Confirm PHP GD is enabled and <code>assets/fonts/Lora-Regular.ttf</code> is deployed.</p>
             <?php endif; ?>
-            <div class="register-access-card-wrap" style="padding-top:1rem;">
+            <div class="admin-guest-card-preview register-access-card-wrap">
                 <?= render_guest_access_card($guest, BASE) ?>
             </div>
-            <div class="register-access-card-actions" style="margin-bottom:0;">
-                <a class="btn-submit" style="width:auto;padding:0.75rem 1.5rem;text-decoration:none;display:inline-block;" href="<?= htmlspecialchars(BASE) ?>/admin/guest-card?id=<?= (int) $guest['id'] ?>&amp;download=1">Download pass (PNG)</a>
+            <div class="admin-guest-card-actions register-access-card-actions">
+                <a class="btn-submit admin-btn-download" href="<?= htmlspecialchars(BASE) ?>/admin/guest-card?id=<?= (int) $guest['id'] ?>&amp;download=1">Download pass (PNG)</a>
             </div>
         </div>
     </div>

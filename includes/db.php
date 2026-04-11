@@ -101,6 +101,9 @@ function initSchema(PDO $pdo): void {
     if (!in_array('title', $cols)) {
         $pdo->exec("ALTER TABLE guests ADD COLUMN title TEXT");
     }
+    if (!in_array('checked_in_at', $cols)) {
+        $pdo->exec("ALTER TABLE guests ADD COLUMN checked_in_at TEXT");
+    }
     // Add price to gift_items if missing
     $giftInfo = $pdo->query("PRAGMA table_info(gift_items)")->fetchAll(PDO::FETCH_ASSOC);
     $giftCols = array_column($giftInfo, 'name');

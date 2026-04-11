@@ -272,7 +272,12 @@ function guest_access_card_render_png_binary(array $guest): ?string {
     guest_access_card_png_text_wrap($im, $font, 12, $choc, $party, 40 + $boxPadX, $pBase, $boxInnerW, 24);
 
     $qrY = $boxTop + $boxH + 26;
-    $qrData = (string) ($guest['qr_code'] ?? '');
+    $qrData = function_exists('guest_qr_checkin_url_for_guest')
+        ? guest_qr_checkin_url_for_guest($guest)
+        : (string) ($guest['qr_code'] ?? '');
+    if ($qrData === '') {
+        $qrData = (string) ($guest['qr_code'] ?? '');
+    }
     $qrIm = $qrData !== '' ? guest_access_card_png_fetch_qr($qrData) : null;
     if ($qrIm) {
         $qs = 200;
@@ -286,7 +291,7 @@ function guest_access_card_render_png_binary(array $guest): ?string {
         imagettftext($im, 10, 0, 48, $qrY + 20, $muted, $font, 'QR could not be generated — show your email at the gate.');
         $hintY = $qrY + 48;
     }
-    imagettftext($im, 9, 0, 48, $hintY, $muted, $font, 'Save this image on your phone for check-in.');
+    imagettftext($im, 9, 0, 48, $hintY, $muted, $font, 'Save on your phone. Staff scan the QR to check you in once.');
 
     imagefilledrectangle($im, 0, $H - 44, $W, $H, $choc2);
     $ft = 'Official guest pass · keep private';

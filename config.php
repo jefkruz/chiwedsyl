@@ -22,6 +22,11 @@ define('RSVP_PHONE_BECKY', '07030911452');
 define('RSVP_PHONE_PRECIOUS', '08100175880');
 define('BASE', ''); // No .php in URLs; use /register, /gifts, etc.
 
+// Optional: full origin with no trailing slash (e.g. https://yourdomain.com) for guest QR links if auto-detection fails.
+define('SITE_PUBLIC_URL', '');
+
+require_once __DIR__ . '/includes/site-url.php';
+
 function format_gift_price($price) {
     if ($price === null || $price === '') return '';
     $digits = preg_replace('/[^0-9]/', '', $price);

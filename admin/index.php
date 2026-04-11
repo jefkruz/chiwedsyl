@@ -17,6 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($row && password_verify($pass, $row['password_hash'])) {
         $_SESSION['admin_logged_in'] = true;
         $_SESSION['admin_user'] = $user;
+        $pending = trim((string) ($_SESSION['admin_scan_pending_code'] ?? ''));
+        unset($_SESSION['admin_scan_pending_code']);
+        if ($pending !== '' && guest_qr_secret_looks_valid($pending)) {
+            header('Location: ' . BASE . '/admin/scan?code=' . rawurlencode($pending));
+            exit;
+        }
         header('Location: ' . BASE . '/admin/dashboard');
         exit;
     }

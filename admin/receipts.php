@@ -16,7 +16,7 @@ $receipts = $pdo->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receipts — Admin — <?= htmlspecialchars(SITE_NAME) ?></title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
 </head>
 <body>
     <div class="admin-wrap">
@@ -54,7 +54,7 @@ $receipts = $pdo->query("
                                 <td data-label="Gift"><?= $r['gift_title'] ? htmlspecialchars($r['gift_title']) : '—' ?></td>
                                 <td data-label="Message"><?= $r['message'] ? htmlspecialchars(mb_substr($r['message'], 0, 40)) . (mb_strlen($r['message']) > 40 ? '…' : '') : '—' ?></td>
                                 <td data-label="Receipt">
-                                    <a href="../<?= htmlspecialchars($r['receipt_path']) ?>" target="_blank" class="btn-small">View</a>
+                                    <a href="<?= BASE ?>/<?= htmlspecialchars(ltrim($r['receipt_path'], '/')) ?>" target="_blank" rel="noopener" class="btn-small">View</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
