@@ -1161,11 +1161,11 @@ button.btn {
     background: var(--chocolate);
 }
 
-/* Success (QR) */
+/* RSVP success — guest access pass */
 .register-success {
-    padding: 6rem 1.5rem 4rem;
+    padding: 5.5rem 1.25rem 4rem;
     text-align: center;
-    max-width: 480px;
+    max-width: 400px;
     margin: 0 auto;
 }
 
@@ -1173,26 +1173,164 @@ button.btn {
     font-family: var(--font-serif);
     font-size: 2rem;
     color: var(--chocolate);
-    margin-bottom: 1rem;
+    margin-bottom: 0.65rem;
 }
 
-.qr-wrap {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: var(--white);
-    border-radius: 12px;
-    display: inline-block;
-    box-shadow: 0 10px 40px var(--shadow);
+.register-success-lead {
+    color: var(--chocolate-light);
+    font-size: 1rem;
+    line-height: 1.55;
+    margin-bottom: 1.75rem;
 }
 
-.qr-wrap img {
+.guest-pass-card {
+    margin: 0 auto 1.75rem;
+    max-width: 340px;
+    text-align: center;
+    filter: drop-shadow(0 12px 28px rgba(61, 35, 20, 0.18));
+}
+
+.guest-pass-card-inner {
+    background: linear-gradient(165deg, var(--white) 0%, var(--cream) 100%);
+    border-radius: 18px;
+    border: 2px solid var(--chocolate);
+    box-shadow: inset 0 0 0 1px var(--gold-light);
+    overflow: hidden;
+}
+
+.guest-pass-header {
+    background: linear-gradient(90deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: var(--cream);
+    padding: 0.85rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    align-items: center;
+}
+
+.guest-pass-event {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.guest-pass-type {
+    font-family: var(--font-ui);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    opacity: 0.88;
+}
+
+.guest-pass-body {
+    padding: 1.35rem 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.guest-pass-photo-frame {
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    padding: 4px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+    box-shadow: 0 4px 16px var(--shadow);
+}
+
+.guest-pass-photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
     display: block;
+    border: 3px solid var(--white);
+    box-sizing: border-box;
+}
+
+.guest-pass-photo--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, var(--navy-light) 0%, var(--navy) 100%);
+    color: var(--cream);
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 600;
+    border: 3px solid var(--white);
+    box-sizing: border-box;
+}
+
+.guest-pass-identity {
+    width: 100%;
+}
+
+.guest-pass-name {
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--chocolate);
+    line-height: 1.25;
+    margin: 0;
+    word-break: break-word;
+}
+
+.guest-pass-party {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--navy);
+}
+
+.guest-pass-qr-block {
+    padding: 1rem 1.25rem 1.15rem;
+    background: var(--white);
+    border-top: 1px dashed var(--cream-dark);
+}
+
+.guest-pass-qr-img {
+    display: block;
+    margin: 0 auto;
+    border-radius: 8px;
+    border: 1px solid var(--cream-dark);
+}
+
+.guest-pass-scan {
+    margin: 0.65rem 0 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--chocolate-light);
+}
+
+.guest-pass-footer {
+    padding: 0.65rem 1rem 0.85rem;
+    background: var(--cream-dark);
+    border-top: 1px solid var(--cream-dark);
+}
+
+.guest-pass-chip {
+    font-family: ui-monospace, Menlo, Monaco, 'Courier New', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--chocolate-light);
+    word-break: break-all;
 }
 
 .qr-note {
     font-size: 0.9rem;
     color: var(--chocolate-light);
-    margin-top: 1rem;
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
 }
 
 /* Gifts page */

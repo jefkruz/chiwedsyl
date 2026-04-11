@@ -41,6 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'name' => $name,
                 'email' => $email,
                 'qr_code' => $qr_code,
+                'photo_path' => $photo_path,
+                'num_guests' => $num_guests,
             ];
             $success = true;
         } catch (PDOException $e) {
@@ -52,15 +54,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include __DIR__ . '/includes/header.php';
 
 if ($success && $guest):
-    $qr_url = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' . urlencode($guest['qr_code']);
+    $qr_url = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($guest['qr_code']);
+    $guestPhotoRel = $guest['photo_path'] ?? '';
+    $guestPhotoFull = $guestPhotoRel !== '' ? __DIR__ . '/' . ltrim(str_replace('\\', '/', $guestPhotoRel), '/') : '';
+    $guestPhotoUrl = ($guestPhotoRel !== '' && is_file($guestPhotoFull)) ? (BASE . '/' . $guestPhotoRel) : '';
+    $nameTrim = trim($guest['name']);
+    if (function_exists('mb_substr')) {
+        $guestInitial = mb_strtoupper(mb_substr($nameTrim, 0, 1, 'UTF-8'), 'UTF-8');
+    } else {
+        $guestInitial = strtoupper(substr($nameTrim, 0, 1));
+    }
+    if ($guestInitial === '') {
+        $guestInitial = '?';
+    }
 ?>
     <section class="register-success">
         <h1>You're on the list!</h1>
-        <p>Thank you, <?= htmlspecialchars($guest['name']) ?>. We can't wait to celebrate with you.</p>
-        <div class="qr-wrap">
-            <img src="<?= htmlspecialchars($qr_url) ?>" alt="Your RSVP QR code" width="220" height="220">
+        <p class="register-success-lead">Thank you, <?= htmlspecialchars($guest['name']) ?>. We can't wait to celebrate with you.</p>
+
+        <div class="guest-pass-card" aria-label="Your event access pass">
+            <div class="guest-pass-card-inner">
+                <header class="guest-pass-header">
+                    <span class="guest-pass-event">OmaSyl 2026</span>
+                    <span class="guest-pass-type">Guest access</span>
+                </header>
+                <div class="guest-pass-body">
+                    <div class="guest-pass-photo-frame">
+                        <?php if ($guestPhotoUrl !== ''): ?>
+                            <img src="<?= htmlspecialchars($guestPhotoUrl, ENT_QUOTES, 'UTF-8') ?>" alt="" class="guest-pass-photo" width="140" height="140">
+                        <?php else: ?>
+                            <div class="guest-pass-photo guest-pass-photo--placeholder" aria-hidden="true"><?= htmlspecialchars($guestInitial, ENT_QUOTES, 'UTF-8') ?></div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="guest-pass-identity">
+                        <p class="guest-pass-name"><?= htmlspecialchars($guest['name']) ?></p>
+                        <?php if (($guest['num_guests'] ?? 1) > 1): ?>
+                            <p class="guest-pass-party">Party of <?= (int) $guest['num_guests'] ?></p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="guest-pass-qr-block">
+                    <img src="<?= htmlspecialchars($qr_url, ENT_QUOTES, 'UTF-8') ?>" alt="Check-in QR code" class="guest-pass-qr-img" width="200" height="200" loading="lazy" decoding="async">
+                    <p class="guest-pass-scan">Scan at check-in</p>
+                </div>
+                <footer class="guest-pass-footer">
+                    <span class="guest-pass-chip"><?= htmlspecialchars($guest['qr_code']) ?></span>
+                </footer>
+            </div>
         </div>
-        <p class="qr-note">Please show this QR code at the venue for a smooth check-in.</p>
+
+        <p class="qr-note">Save a screenshot or show this pass on your phone at the venue.</p>
         <p><a href="<?= BASE ?>/" class="btn">Back to home</a></p>
     </section>
 <?php
