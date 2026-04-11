@@ -1,8 +1,19 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/admin-auth.php';
+require_once __DIR__ . '/../includes/admin-delete-guest.php';
 
 $pdo = getDb();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_guest_id'])) {
+    $delId = (int) $_POST['delete_guest_id'];
+    if (admin_delete_guest_registration($pdo, $delId)) {
+        header('Location: ' . BASE . '/admin/guests?deleted=1');
+    } else {
+        header('Location: ' . BASE . '/admin/guests?delete_error=1');
+    }
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_in_id'])) {
     $id = (int) $_POST['check_in_id'];
@@ -60,7 +71,13 @@ if ($q === '') {
             <?php if (isset($_GET['confirmed'])): ?>
                 <p class="alert alert-success">Registration confirmed. The guest can now retrieve their access card from the public RSVP page.</p>
             <?php endif; ?>
-            <p>The pass QR on each guest’s access card opens check-in when scanned (stay logged in on the device at the door). A pass can only be checked in once; use <strong>Check in</strong> below or <a href="<?= BASE ?>/admin/scan">scan / enter code manually</a>. Search by name or email, confirm new RSVPs, and open each guest’s access card to view or download.</p>
+            <?php if (isset($_GET['deleted'])): ?>
+                <p class="alert alert-success">Registration removed from the list.</p>
+            <?php endif; ?>
+            <?php if (isset($_GET['delete_error'])): ?>
+                <p class="alert alert-error">Could not remove that registration (it may have already been deleted).</p>
+            <?php endif; ?>
+            <p>The pass QR on each guest’s access card opens check-in when scanned (stay logged in on the device at the door). A pass can only be checked in once; use <strong>Check in</strong> below or <a href="<?= BASE ?>/admin/scan">scan / enter code manually</a>. <strong>Delete</strong> permanently removes a registration and their pass photo file. Search by name or email, confirm new RSVPs, and open each guest’s access card to view or download.</p>
             <form method="get" action="<?= BASE ?>/admin/guests" class="admin-search-form">
                 <label for="guest-search" class="visually-hidden">Search guests</label>
                 <input type="search" id="guest-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search name, email, phone…" autocomplete="off">
@@ -131,6 +148,10 @@ if ($q === '') {
                                         <?php elseif ($regOk): ?>
                                             <span class="admin-action-done">Done</span>
                                         <?php endif; ?>
+                                        <form class="check-in-form" method="post" onsubmit="return confirm('Remove this registration permanently? This cannot be undone.');">
+                                            <input type="hidden" name="delete_guest_id" value="<?= (int) $g['id'] ?>">
+                                            <button type="submit" class="btn-small danger">Delete</button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

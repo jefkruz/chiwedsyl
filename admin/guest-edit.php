@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/admin-auth.php';
 require_once __DIR__ . '/../includes/guest-access-card.php';
+require_once __DIR__ . '/../includes/admin-delete-guest.php';
 
 $id = (int) ($_GET['id'] ?? $_POST['id'] ?? 0);
 if ($id < 1) {
@@ -18,9 +19,24 @@ if (!$guest) {
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_guest') {
+    $delId = (int) ($_POST['delete_guest_id'] ?? 0);
+    if ($delId === $id && $delId > 0) {
+        if (admin_delete_guest_registration($pdo, $delId)) {
+            header('Location: ' . BASE . '/admin/guests?deleted=1');
+            exit;
+        }
+        header('Location: ' . BASE . '/admin/guests?delete_error=1');
+        exit;
+    }
+    header('Location: ' . BASE . '/admin/guest-edit?id=' . $id . '&delete_error=1');
+    exit;
+}
+
 $validTitles = guest_valid_titles();
 $error = '';
 $saved = isset($_GET['saved']);
+$deleteError = isset($_GET['delete_error']);
 
 $defaultFirst = trim((string) ($guest['first_name'] ?? ''));
 $defaultLast = trim((string) ($guest['last_name'] ?? ''));
@@ -59,10 +75,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
     } elseif ($first === '' && $last === '') {
         $error = 'Enter at least a first name or a last name.';
     } else {
-        $dup = $pdo->prepare('SELECT id FROM guests WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)) AND id != ?');
-        $dup->execute([$email, $id]);
-        if ($dup->fetch()) {
-            $error = 'Another guest is already registered with this email.';
+        $guestId = (int) ($guest['id'] ?? 0);
+        $currentNorm = strtolower(trim((string) ($guest['email'] ?? '')));
+        $submittedNorm = strtolower(trim($email));
+        if ($submittedNorm !== $currentNorm) {
+            $dup = $pdo->prepare('SELECT id FROM guests WHERE LOWER(TRIM(COALESCE(email, \'\'))) = LOWER(TRIM(?)) AND id != ?');
+            $dup->execute([$email, $guestId]);
+            if ($dup->fetch()) {
+                $error = 'Another guest is already registered with this email.';
+            }
         }
     }
 
@@ -134,6 +155,9 @@ $v = function (string $field) use ($guest) {
             <?php if ($saved): ?>
                 <p class="alert alert-success">Guest saved.</p>
             <?php endif; ?>
+            <?php if ($deleteError): ?>
+                <p class="alert alert-error">Could not delete this registration. Try again from the guest list.</p>
+            <?php endif; ?>
             <?php if ($error): ?>
                 <p class="alert alert-error"><?= htmlspecialchars($error) ?></p>
             <?php endif; ?>
@@ -193,6 +217,11 @@ $v = function (string $field) use ($guest) {
                     <label><input type="checkbox" name="checked_in" value="1" <?= !empty($guest['checked_in']) ? 'checked' : '' ?>> Checked in at venue</label>
                 </div>
                 <p><button type="submit" class="btn-submit btn-submit--inline">Save changes</button></p>
+            </form>
+            <form method="post" action="<?= BASE ?>/admin/guest-edit?id=<?= (int) $id ?>" class="admin-form-narrow admin-guest-delete-form" onsubmit="return confirm('Remove this registration permanently? This cannot be undone.');">
+                <input type="hidden" name="action" value="delete_guest">
+                <input type="hidden" name="delete_guest_id" value="<?= (int) $id ?>">
+                <button type="submit" class="btn-small danger">Delete registration</button>
             </form>
         </div>
     </div>

@@ -2186,6 +2186,12 @@ button.btn {
     max-width: 480px;
 }
 
+.admin-guest-delete-form {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--cream-dark);
+}
+
 .admin-checked-when {
     display: inline-block;
     margin-top: 0.2rem;
