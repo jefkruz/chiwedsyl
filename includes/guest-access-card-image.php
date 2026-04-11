@@ -109,34 +109,77 @@ function guest_access_card_png_fetch_qr(string $qrData) {
     return $im ?: null;
 }
 
+function guest_access_card_png_line_width(string $font, int $size, string $line): int {
+    $bbox = imagettfbbox($size, 0, $font, $line);
+
+    return $bbox ? max(0, (int) ($bbox[2] - $bbox[0])) : 0;
+}
+
 /**
- * @param resource $im
- * @return int baseline Y after last line
+ * Break a single token so each segment fits maxWidth (for long emails / URLs).
+ *
+ * @return list<string>
  */
-function guest_access_card_png_text_wrap($im, string $font, int $size, int $color, string $text, int $left, int $baselineY, int $maxWidth, int $lineHeight): int {
-    $words = preg_split('/\s+/u', trim($text)) ?: [];
-    $line = '';
-    $y = $baselineY;
-    foreach ($words as $w) {
-        $trial = $line === '' ? $w : $line . ' ' . $w;
-        $bbox = imagettfbbox($size, 0, $font, $trial);
-        if ($bbox === false) {
-            continue;
-        }
-        $tw = (int) ($bbox[2] - $bbox[0]);
-        if ($tw > $maxWidth && $line !== '') {
-            imagettftext($im, $size, 0, $left, $y, $color, $font, $line);
-            $y += $lineHeight;
-            $line = $w;
+function guest_access_card_png_split_long_word(string $font, int $size, string $word, int $maxWidth): array {
+    if ($word === '') {
+        return [];
+    }
+    if (guest_access_card_png_line_width($font, $size, $word) <= $maxWidth) {
+        return [$word];
+    }
+    $chars = preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $out = [];
+    $buf = '';
+    foreach ($chars as $ch) {
+        $trial = $buf . $ch;
+        if (guest_access_card_png_line_width($font, $size, $trial) > $maxWidth && $buf !== '') {
+            $out[] = $buf;
+            $buf = $ch;
         } else {
-            $line = $trial;
+            $buf = $trial;
+        }
+    }
+    if ($buf !== '') {
+        $out[] = $buf;
+    }
+
+    return $out !== [] ? $out : [$word];
+}
+
+/**
+ * Word-wrap for TTF; long words are split so lines never exceed maxWidth.
+ *
+ * @return list<string>
+ */
+function guest_access_card_png_split_lines(string $font, int $size, string $text, int $maxWidth): array {
+    $text = trim($text);
+    if ($maxWidth < 24) {
+        $maxWidth = 24;
+    }
+    if ($text === '') {
+        return [];
+    }
+    $words = preg_split('/\s+/u', $text) ?: [];
+    $lines = [];
+    $line = '';
+    foreach ($words as $word) {
+        foreach (guest_access_card_png_split_long_word($font, $size, $word, $maxWidth) as $part) {
+            $trial = $line === '' ? $part : $line . ' ' . $part;
+            if (guest_access_card_png_line_width($font, $size, $trial) <= $maxWidth) {
+                $line = $trial;
+            } else {
+                if ($line !== '') {
+                    $lines[] = $line;
+                }
+                $line = $part;
+            }
         }
     }
     if ($line !== '') {
-        imagettftext($im, $size, 0, $left, $y, $color, $font, $line);
-        $y += $lineHeight;
+        $lines[] = $line;
     }
-    return $y;
+
+    return $lines !== [] ? $lines : [''];
 }
 
 function guest_access_card_render_png_binary(array $guest): ?string {
@@ -149,9 +192,89 @@ function guest_access_card_render_png_binary(array $guest): ?string {
     }
 
     $W = 720;
-    $H = 1120;
+
+    $name = guest_display_name($guest);
+    $nameLines = guest_access_card_png_split_lines($font, 22, $name, $W - 64);
+    if ($nameLines === []) {
+        $nameLines = ['Guest'];
+    }
+    $nameLh = 30;
+    $boxRef22 = imagettfbbox(22, 0, $font, 'Mg');
+    $nameAsc = $boxRef22 !== false ? abs((int) $boxRef22[7]) : 18;
+
+    $email = (string) ($guest['email'] ?? '');
+    $emailLines = $email !== '' ? guest_access_card_png_split_lines($font, 11, $email, $W - 80) : [];
+    $emailLh = 20;
+    $boxRef11 = imagettfbbox(11, 0, $font, 'Mg');
+    $emailAsc = $boxRef11 !== false ? abs((int) $boxRef11[7]) : 12;
+
+    $num = max(1, (int) ($guest['num_guests'] ?? 1));
+    $extras = max(0, $num - 1);
+    $party = $num === 1
+        ? 'This pass admits 1 person at the gate.'
+        : "This pass admits {$num} people total — you plus {$extras} guest" . ($extras === 1 ? '' : 's') . ' with you.';
+    $partyInnerW = $W - 80 - 48;
+    $partyLines = guest_access_card_png_split_lines($font, 12, $party, $partyInnerW);
+    if ($partyLines === []) {
+        $partyLines = [$party];
+    }
+    $partyLh = 24;
+    $boxRef12 = imagettfbbox(12, 0, $font, 'Mg');
+    $partyAsc = $boxRef12 !== false ? abs((int) $boxRef12[7]) : 12;
+
+    $hintText = 'Save on your phone. Staff scan the QR to check you in once.';
+    $hintLines = guest_access_card_png_split_lines($font, 9, $hintText, min(520, $W - 80));
+    if ($hintLines === []) {
+        $hintLines = [$hintText];
+    }
+    $hintLh = 16;
+    $boxRef9 = imagettfbbox(9, 0, $font, 'Mg');
+    $hintAsc = $boxRef9 !== false ? abs((int) $boxRef9[7]) : 10;
+
+    $qrData = function_exists('guest_qr_checkin_url_for_guest')
+        ? guest_qr_checkin_url_for_guest($guest)
+        : (string) ($guest['qr_code'] ?? '');
+    if ($qrData === '') {
+        $qrData = (string) ($guest['qr_code'] ?? '');
+    }
+    $qrIm = $qrData !== '' ? guest_access_card_png_fetch_qr($qrData) : null;
+
+    $qrFailText = 'QR could not be generated — show your email at the gate.';
+    $qrFailLines = guest_access_card_png_split_lines($font, 10, $qrFailText, $W - 72);
+    $qrFailLh = 20;
+    $boxRef10 = imagettfbbox(10, 0, $font, 'Mg');
+    $qrFailAsc = $boxRef10 !== false ? abs((int) $boxRef10[7]) : 11;
+
+    $nameBase = 396;
+    $yAfterName = $nameBase + count($nameLines) * $nameLh;
+    $gapAfterName = 10;
+    if ($emailLines !== []) {
+        $yEmail0 = $yAfterName + $gapAfterName + $emailAsc;
+        $yAfterMail = $yEmail0 + count($emailLines) * $emailLh + 10;
+    } else {
+        $yAfterMail = $yAfterName + $gapAfterName;
+    }
+
+    $boxTop = $yAfterMail + 12;
+    $partyTopPad = 16;
+    $partyBotPad = 16;
+    $boxH = $partyTopPad + $partyAsc + count($partyLines) * $partyLh + $partyBotPad;
+
+    $qrY = $boxTop + $boxH + 22;
+    $qs = 200;
+
+    $qrBlockBottom = $qrY + ($qrIm ? $qs + 10 : $qrFailAsc + count($qrFailLines) * $qrFailLh + 16);
+    $hintGap = 14;
+    $hintBase = $qrBlockBottom + $hintGap + $hintAsc;
+    $hintBottom = $hintBase + count($hintLines) * $hintLh + 14;
+
+    $H = max(1120, $hintBottom + 52);
+
     $im = imagecreatetruecolor($W, $H);
     if (!$im) {
+        if ($qrIm) {
+            imagedestroy($qrIm);
+        }
         return null;
     }
     imagealphablending($im, true);
@@ -239,59 +362,51 @@ function guest_access_card_render_png_binary(array $guest): ?string {
         imagefilledellipse($im, $cx, $cy, $diam + 8, $diam + 8, $cream2);
     }
 
-    $name = guest_display_name($guest);
-    $nb = imagettfbbox(22, 0, $font, $name);
-    if ($nb !== false) {
-        $nw = (int) ($nb[2] - $nb[0]);
-        imagettftext($im, 22, 0, (int) (($W - $nw) / 2), 398, $choc, $font, $name);
+    foreach ($nameLines as $i => $nameLine) {
+        $nw = guest_access_card_png_line_width($font, 22, $nameLine);
+        imagettftext($im, 22, 0, (int) (($W - $nw) / 2), $nameBase + $i * $nameLh, $choc, $font, $nameLine);
     }
 
-    $email = (string) ($guest['email'] ?? '');
-    $bboxMail = imagettfbbox(11, 0, $font, 'Mg');
-    $mailBase = 428 + ($bboxMail !== false ? abs((int) $bboxMail[7]) : 12);
-    $yAfterMail = guest_access_card_png_text_wrap($im, $font, 11, $muted, $email, 48, $mailBase, $W - 96, 22);
+    if ($emailLines !== []) {
+        $yEmail0 = $yAfterName + $gapAfterName + $emailAsc;
+        foreach ($emailLines as $i => $emailLine) {
+            $ew = guest_access_card_png_line_width($font, 11, $emailLine);
+            imagettftext($im, 11, 0, (int) (($W - $ew) / 2), $yEmail0 + $i * $emailLh, $muted, $font, $emailLine);
+        }
+    }
 
-    $num = max(1, (int) ($guest['num_guests'] ?? 1));
-    $extras = max(0, $num - 1);
-    $party = $num === 1
-        ? 'This pass admits 1 person at the gate.'
-        : "This pass admits {$num} people total — you plus {$extras} guest" . ($extras === 1 ? '' : 's') . ' with you.';
-
-    $boxTop = $yAfterMail + 20;
-    $boxPadX = 28;
-    $boxInnerW = $W - 80 - $boxPadX * 2;
-    $estLines = max(2, (int) ceil(strlen($party) / 38));
-    $boxH = min(120, 32 + $estLines * 24);
     $boxFill = imagecolorallocate($im, 255, 252, 246);
     imagefilledrectangle($im, 40, $boxTop, $W - 40, $boxTop + $boxH, $boxFill);
     imagesetthickness($im, 2);
     imagerectangle($im, 40, $boxTop, $W - 40, $boxTop + $boxH, $gold);
     imagesetthickness($im, 1);
-    $bboxP = imagettfbbox(12, 0, $font, 'Mg');
-    $pBase = $boxTop + 26 + ($bboxP !== false ? abs((int) $bboxP[7]) : 12);
-    guest_access_card_png_text_wrap($im, $font, 12, $choc, $party, 40 + $boxPadX, $pBase, $boxInnerW, 24);
-
-    $qrY = $boxTop + $boxH + 26;
-    $qrData = function_exists('guest_qr_checkin_url_for_guest')
-        ? guest_qr_checkin_url_for_guest($guest)
-        : (string) ($guest['qr_code'] ?? '');
-    if ($qrData === '') {
-        $qrData = (string) ($guest['qr_code'] ?? '');
+    $partyTextTop = $boxTop + $partyTopPad + $partyAsc;
+    foreach ($partyLines as $i => $partyLine) {
+        $pw = guest_access_card_png_line_width($font, 12, $partyLine);
+        imagettftext($im, 12, 0, (int) (($W - $pw) / 2), $partyTextTop + $i * $partyLh, $choc, $font, $partyLine);
     }
-    $qrIm = $qrData !== '' ? guest_access_card_png_fetch_qr($qrData) : null;
+
     if ($qrIm) {
-        $qs = 200;
         $qx = (int) (($W - $qs) / 2);
         imagefilledrectangle($im, $qx - 8, $qrY - 8, $qx + $qs + 8, $qrY + $qs + 8, $white);
         imagerectangle($im, $qx - 8, $qrY - 8, $qx + $qs + 8, $qrY + $qs + 8, $cream2);
         imagecopyresampled($im, $qrIm, $qx, $qrY, 0, 0, $qs, $qs, imagesx($qrIm), imagesy($qrIm));
-        imagedestroy($qrIm);
-        $hintY = $qrY + $qs + 24;
     } else {
-        imagettftext($im, 10, 0, 48, $qrY + 20, $muted, $font, 'QR could not be generated — show your email at the gate.');
-        $hintY = $qrY + 48;
+        $failBase = $qrY + $qrFailAsc;
+        foreach ($qrFailLines as $i => $failLine) {
+            $fw = guest_access_card_png_line_width($font, 10, $failLine);
+            imagettftext($im, 10, 0, (int) (($W - $fw) / 2), $failBase + $i * $qrFailLh, $muted, $font, $failLine);
+        }
     }
-    imagettftext($im, 9, 0, 48, $hintY, $muted, $font, 'Save on your phone. Staff scan the QR to check you in once.');
+
+    foreach ($hintLines as $i => $hintLine) {
+        $hw = guest_access_card_png_line_width($font, 9, $hintLine);
+        imagettftext($im, 9, 0, (int) (($W - $hw) / 2), $hintBase + $i * $hintLh, $muted, $font, $hintLine);
+    }
+
+    if ($qrIm) {
+        imagedestroy($qrIm);
+    }
 
     imagefilledrectangle($im, 0, $H - 44, $W, $H, $choc2);
     $ft = 'Official guest pass · keep private';
