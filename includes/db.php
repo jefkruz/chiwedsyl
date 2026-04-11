@@ -88,6 +88,19 @@ function initSchema(PDO $pdo): void {
     if (!in_array('guest_photo_path', $cols)) {
         $pdo->exec("ALTER TABLE guests ADD COLUMN guest_photo_path TEXT");
     }
+    if (!in_array('registration_confirmed', $cols)) {
+        $pdo->exec("ALTER TABLE guests ADD COLUMN registration_confirmed INTEGER DEFAULT 0");
+        // Existing RSVPs were already treated as complete; keep their passes valid.
+        $pdo->exec("UPDATE guests SET registration_confirmed = 1");
+    }
+    if (!in_array('first_name', $cols)) {
+        $pdo->exec("ALTER TABLE guests ADD COLUMN first_name TEXT");
+        $pdo->exec("ALTER TABLE guests ADD COLUMN last_name TEXT");
+        $pdo->exec("ALTER TABLE guests ADD COLUMN gender TEXT");
+    }
+    if (!in_array('title', $cols)) {
+        $pdo->exec("ALTER TABLE guests ADD COLUMN title TEXT");
+    }
     // Add price to gift_items if missing
     $giftInfo = $pdo->query("PRAGMA table_info(gift_items)")->fetchAll(PDO::FETCH_ASSOC);
     $giftCols = array_column($giftInfo, 'name');
