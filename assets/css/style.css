@@ -26,6 +26,8 @@
     --font-sans: 'Manrope', sans-serif;
     --font-ui: 'Manrope', sans-serif;
     --font-story-aston: 'Edwardian Script ITC', 'Parisienne', cursive;
+    /* Hero banner image starts below fixed .site-header (logo + padding + notch) */
+    --hero-banner-below-header: calc(5.5rem + env(safe-area-inset-top, 0px));
 }
 
 * {
@@ -251,7 +253,10 @@ h1, h2, h3, h4, h5, h6 {
 /* Real <img> scales more reliably on mobile than background-size:contain on ::before */
 .hero-banner-media {
     position: absolute;
-    inset: 0;
+    top: var(--hero-banner-below-header);
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 0;
     display: flex;
     align-items: flex-start;
@@ -2001,6 +2006,10 @@ th {
 
 /* Responsive */
 @media (max-width: 768px) {
+    :root {
+        /* Narrow header row: logo ~78px + vertical padding */
+        --hero-banner-below-header: calc(4.75rem + env(safe-area-inset-top, 0px));
+    }
     .site-header {
         flex-wrap: wrap;
     }
