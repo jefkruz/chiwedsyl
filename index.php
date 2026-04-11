@@ -11,10 +11,54 @@ $weddingYear = date('Y', $weddingTs);
 $firstDay = date('w', strtotime($weddingYear . '-' . date('n', $weddingTs) . '-01'));
 $daysInMonth = date('t', $weddingTs);
 
-// Image paths (place your photos in assets/images/)
-$bannerImage = 'assets/images/banner.png';
-$bannerFullPath = __DIR__ . '/' . str_replace('\\', '/', $bannerImage);
-$bannerUrl = is_file($bannerFullPath) ? BASE . '/' . $bannerImage : '';
+// Hero banner: prefer smaller/faster formats (add banner.webp with cwebp or Squoosh for best gains)
+$hero_banner_preload_href = '';
+$hero_banner_preload_type = '';
+$bannerWebpUrl = '';
+$bannerImgSrc = '';
+$bannerImgPath = '';
+$bannerImgMime = '';
+$bannerDims = null;
+$__banner_defs = [
+    ['rel' => 'assets/images/banner.webp', 'mime' => 'image/webp'],
+    ['rel' => 'assets/images/banner.jpg', 'mime' => 'image/jpeg'],
+    ['rel' => 'assets/images/banner.png', 'mime' => 'image/png'],
+];
+foreach ($__banner_defs as $__b) {
+    $__p = __DIR__ . '/' . $__b['rel'];
+    if (!is_file($__p)) {
+        continue;
+    }
+    if ($__b['mime'] === 'image/webp' && $bannerWebpUrl === '') {
+        $bannerWebpUrl = BASE . '/' . $__b['rel'];
+        continue;
+    }
+    if ($bannerImgSrc === '') {
+        $bannerImgSrc = BASE . '/' . $__b['rel'];
+        $bannerImgPath = $__p;
+        $bannerImgMime = $__b['mime'];
+    }
+}
+if ($bannerImgSrc === '' && $bannerWebpUrl !== '') {
+    $bannerImgSrc = $bannerWebpUrl;
+    $bannerImgPath = __DIR__ . '/assets/images/banner.webp';
+    $bannerImgMime = 'image/webp';
+    $bannerWebpUrl = '';
+}
+if ($bannerImgPath !== '' && is_file($bannerImgPath)) {
+    $__sz = @getimagesize($bannerImgPath);
+    if (is_array($__sz) && !empty($__sz[0]) && !empty($__sz[1])) {
+        $bannerDims = ['w' => (int) $__sz[0], 'h' => (int) $__sz[1]];
+    }
+}
+if ($bannerWebpUrl !== '') {
+    $hero_banner_preload_href = $bannerWebpUrl;
+    $hero_banner_preload_type = 'image/webp';
+} elseif ($bannerImgSrc !== '') {
+    $hero_banner_preload_href = $bannerImgSrc;
+    $hero_banner_preload_type = $bannerImgMime;
+}
+
 $heroImage = 'assets/images/DSC02343.jpg';
 $heroImagePath = __DIR__ . '/' . str_replace('\\', '/', $heroImage);
 $photo2 = 'assets/images/DSC02354.jpg';
@@ -28,9 +72,18 @@ include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="hero hero-banner">
-    <?php if ($bannerUrl !== ''): ?>
+    <?php if ($bannerImgSrc !== ''): ?>
         <div class="hero-banner-media" aria-hidden="true">
-            <img class="hero-banner-img" src="<?= htmlspecialchars($bannerUrl, ENT_QUOTES, 'UTF-8') ?>" alt="" decoding="async" fetchpriority="high">
+            <?php if ($bannerWebpUrl !== ''): ?>
+                <picture class="hero-banner-picture">
+                    <source type="image/webp" srcset="<?= htmlspecialchars($bannerWebpUrl, ENT_QUOTES, 'UTF-8') ?>">
+                    <img class="hero-banner-img" src="<?= htmlspecialchars($bannerImgSrc, ENT_QUOTES, 'UTF-8') ?>" alt=""<?php
+                    if ($bannerDims): ?> width="<?= $bannerDims['w'] ?>" height="<?= $bannerDims['h'] ?>"<?php endif; ?> decoding="sync" fetchpriority="high" loading="eager">
+                </picture>
+            <?php else: ?>
+                <img class="hero-banner-img" src="<?= htmlspecialchars($bannerImgSrc, ENT_QUOTES, 'UTF-8') ?>" alt=""<?php
+                if ($bannerDims): ?> width="<?= $bannerDims['w'] ?>" height="<?= $bannerDims['h'] ?>"<?php endif; ?> decoding="sync" fetchpriority="high" loading="eager">
+            <?php endif; ?>
         </div>
     <?php endif; ?>
     <div class="hero-banner-overlay" aria-hidden="true"></div>

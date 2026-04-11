@@ -22,6 +22,9 @@ $og_image = $base_url . BASE . '/assets/images/wedding.png';
     <meta property="og:type" content="website">
     <link rel="icon" type="image/png" href="<?= BASE ?>/assets/images/logo.png">
     <link rel="apple-touch-icon" href="<?= BASE ?>/assets/images/logo.png">
+    <?php if (!empty($hero_banner_preload_href ?? '') && !empty($hero_banner_preload_type ?? '')): ?>
+    <link rel="preload" href="<?= htmlspecialchars($hero_banner_preload_href, ENT_QUOTES, 'UTF-8') ?>" as="image" type="<?= htmlspecialchars($hero_banner_preload_type, ENT_QUOTES, 'UTF-8') ?>" fetchpriority="high">
+    <?php endif; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://db.onlinewebfonts.com" crossorigin>
