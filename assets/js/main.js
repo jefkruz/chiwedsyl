@@ -61,6 +61,9 @@
     }
 
     function carouselStepAmount(carousel) {
+        if (carousel.classList.contains('home-wishes-carousel')) {
+            return carousel.clientWidth;
+        }
         var track = carousel.querySelector('.home-carousel-track');
         var item = track && track.children.length ? track.children[0] : null;
         if (!item || !track) {
@@ -83,8 +86,9 @@
         });
     });
 
-    // Home page carousels autoplay (pause on interaction)
+    // Home page carousels autoplay (pause on interaction); well wishes are manual (arrows only)
     document.querySelectorAll('.home-carousel').forEach(function (carousel) {
+        if (carousel.classList.contains('home-wishes-carousel')) return;
         var timer = null;
         var isPaused = false;
         var step = function () {

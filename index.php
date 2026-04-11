@@ -172,18 +172,16 @@ include __DIR__ . '/includes/header.php';
     <h2 class="section-title">Well wishes</h2>
     <div class="home-carousel-wrap">
         <button type="button" class="carousel-btn prev" data-target="home-wishes-carousel" aria-label="Previous well wishes">‹</button>
-        <div class="home-carousel" id="home-wishes-carousel">
-            <div class="home-carousel-track">
-                <?php foreach ($homeWishes as $w): ?>
-                    <article class="tribute-card wish-slide-card">
-                        <div class="tribute-message"><?= $w['message'] ?></div>
-                        <footer class="tribute-meta">
-                            <span class="tribute-author"><?= htmlspecialchars($w['author_name']) ?></span>
-                            <time class="tribute-date" datetime="<?= htmlspecialchars($w['created_at']) ?>"><?= date('M j, Y', strtotime($w['created_at'])) ?></time>
-                        </footer>
-                    </article>
-                <?php endforeach; ?>
-            </div>
+        <div class="home-carousel home-wishes-carousel" id="home-wishes-carousel">
+            <?php foreach ($homeWishes as $w): ?>
+                <article class="tribute-card wish-slide-card">
+                    <div class="tribute-message"><?= $w['message'] ?></div>
+                    <footer class="tribute-meta">
+                        <span class="tribute-author"><?= htmlspecialchars($w['author_name']) ?></span>
+                        <time class="tribute-date" datetime="<?= htmlspecialchars($w['created_at']) ?>"><?= date('M j, Y', strtotime($w['created_at'])) ?></time>
+                    </footer>
+                </article>
+            <?php endforeach; ?>
         </div>
         <button type="button" class="carousel-btn next" data-target="home-wishes-carousel" aria-label="Next well wishes">›</button>
     </div>

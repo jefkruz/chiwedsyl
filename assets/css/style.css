@@ -645,19 +645,26 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1.5rem;
 }
 
-/* Well-wish slides: fixed width in horizontal track (oldest first, left to right) */
-.wish-slide-card {
-    flex: 0 0 clamp(280px, 86vw, 380px);
+/* Home well wishes: one full card per view, arrows scroll by full width (no peek of next) */
+.home-carousel.home-wishes-carousel {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    scroll-snap-type: x mandatory;
+    scroll-snap-stop: always;
+    min-height: 0;
 }
 
-.wish-slide-card .tribute-message {
-    max-height: 14rem;
-    overflow-y: auto;
-}
-
-.wishes-page-carousel-wrap {
-    max-width: 1120px;
-    margin: 0 auto;
+.home-carousel.home-wishes-carousel > .wish-slide-card {
+    flex: 0 0 100%;
+    min-width: 100%;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
 }
 
 .home-carousel-wrap {

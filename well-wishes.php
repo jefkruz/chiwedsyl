@@ -65,22 +65,16 @@ include __DIR__ . '/includes/header.php';
             <p>Tap the button below to leave a message for the couple.</p>
         </div>
     <?php else: ?>
-        <div class="home-carousel-wrap wishes-page-carousel-wrap">
-            <button type="button" class="carousel-btn prev" data-target="well-wishes-carousel" aria-label="Previous well wishes">‹</button>
-            <div class="home-carousel" id="well-wishes-carousel">
-                <div class="home-carousel-track">
-                    <?php foreach ($wishes as $w): ?>
-                        <article class="tribute-card wish-slide-card">
-                            <div class="tribute-message"><?= $w['message'] ?></div>
-                            <footer class="tribute-meta">
-                                <span class="tribute-author"><?= htmlspecialchars($w['author_name']) ?></span>
-                                <time class="tribute-date" datetime="<?= htmlspecialchars($w['created_at']) ?>"><?= date('M j, Y', strtotime($w['created_at'])) ?></time>
-                            </footer>
-                        </article>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <button type="button" class="carousel-btn next" data-target="well-wishes-carousel" aria-label="Next well wishes">›</button>
+        <div class="tributes-grid">
+            <?php foreach ($wishes as $w): ?>
+                <article class="tribute-card">
+                    <div class="tribute-message"><?= $w['message'] ?></div>
+                    <footer class="tribute-meta">
+                        <span class="tribute-author"><?= htmlspecialchars($w['author_name']) ?></span>
+                        <time class="tribute-date" datetime="<?= htmlspecialchars($w['created_at']) ?>"><?= date('M j, Y', strtotime($w['created_at'])) ?></time>
+                    </footer>
+                </article>
+            <?php endforeach; ?>
         </div>
     <?php endif; ?>
 </section>
