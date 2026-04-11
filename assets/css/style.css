@@ -1234,8 +1234,7 @@ button.btn {
 /* Guest access card (RSVP pass) */
 @media print {
     body.page-register .site-header,
-    body.page-register .page-loader,
-    body.page-register .register-access-card-actions {
+    body.page-register .page-loader {
         display: none !important;
     }
     body.page-register .register-access-card-wrap {
@@ -1287,13 +1286,13 @@ button.btn {
 }
 
 .guest-access-card-frame {
-    background: linear-gradient(180deg, #fffdf8 0%, #f5ebe0 55%, #efe4d8 100%);
-    border-radius: 20px;
+    background: linear-gradient(180deg, #fffdf8 0%, #f5ebe0 48%, #ebe0d2 100%);
+    border-radius: 22px;
     box-shadow:
-        0 20px 40px rgba(42, 24, 16, 0.18),
-        0 0 0 1px rgba(255, 255, 255, 0.35) inset,
-        0 0 0 3px var(--gold),
-        0 0 0 5px var(--chocolate);
+        0 22px 48px rgba(42, 24, 16, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.45) inset,
+        0 0 0 4px var(--gold),
+        0 0 0 7px var(--chocolate);
     overflow: hidden;
     text-align: center;
 }
@@ -1345,28 +1344,40 @@ button.btn {
     font-weight: 500;
 }
 
-.guest-access-card-photo {
-    width: 100%;
-    aspect-ratio: 1;
-    max-height: 280px;
-    background: var(--cream);
-    overflow: hidden;
+.guest-access-card-photo-stage {
+    padding: 1.35rem 1.25rem 1rem;
+    background: linear-gradient(180deg, #ebe4d8 0%, #f5efe6 100%);
 }
 
-.guest-access-card-photo img {
+.guest-access-card-photo-ring {
+    width: min(220px, 72vw);
+    aspect-ratio: 1;
+    margin: 0 auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid var(--gold);
+    box-shadow:
+        0 0 0 3px var(--chocolate),
+        0 12px 28px rgba(42, 24, 16, 0.22);
+    background: var(--cream-dark);
+}
+
+.guest-access-card-photo-ring img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center top;
     display: block;
 }
 
-.guest-access-card-photo-placeholder {
-    min-height: 180px;
-    background: linear-gradient(160deg, var(--cream), #c4b5a0);
+.guest-access-card-photo-ring--empty {
+    min-height: min(220px, 72vw);
+    width: min(220px, 72vw);
+    background: linear-gradient(145deg, #e8dfd0, #c9b8a8);
 }
 
 .guest-access-card-body {
-    padding: 1.25rem 1.35rem 1.45rem;
+    padding: 0.35rem 1.35rem 1.5rem;
 }
 
 .guest-access-card-name {
@@ -1389,11 +1400,12 @@ button.btn {
     font-size: 0.9rem;
     line-height: 1.5;
     margin: 0 0 1.1rem;
-    padding: 0.8rem 0.95rem;
-    background: rgba(201, 162, 39, 0.14);
-    border: 1px solid rgba(92, 61, 46, 0.22);
-    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    background: linear-gradient(180deg, rgba(255, 252, 246, 0.95), rgba(239, 228, 210, 0.55));
+    border: 1px solid rgba(201, 162, 39, 0.45);
+    border-radius: 14px;
     color: var(--chocolate);
+    box-shadow: 0 2px 12px rgba(61, 35, 20, 0.06);
 }
 
 .guest-access-card-admit strong {

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/guest-access-card.php';
+require_once __DIR__ . '/includes/guest-access-card-image.php';
 
 /**
  * @return array{path: ?string, error: ?string}
@@ -68,9 +69,10 @@ if (isset($_GET['download_card']) && $_GET['download_card'] === '1') {
         header('Location: ' . BASE . '/register');
         exit;
     }
-    header('Content-Type: text/html; charset=utf-8');
-    header('Content-Disposition: attachment; filename="' . guest_access_card_download_filename($g) . '"');
-    echo render_guest_access_card_document($g, BASE);
+    if (!guest_access_card_send_png_download($g)) {
+        header('Location: ' . BASE . '/register?download_error=1');
+        exit;
+    }
     exit;
 }
 
@@ -289,6 +291,7 @@ $profileSavedFlash = !empty($_SESSION['register_profile_saved']);
 if ($profileSavedFlash) {
     unset($_SESSION['register_profile_saved']);
 }
+$download_error = isset($_GET['download_error']);
 
 if ($phase === 'card' && !empty($phaseData['guest_id'])) {
     $stmt = $pdo->prepare('SELECT * FROM guests WHERE id = ? AND registration_confirmed = 1 LIMIT 1');
@@ -345,11 +348,13 @@ elseif ($phase === 'card' && $cardGuest):
 ?>
     <section class="register-access-card-wrap">
         <h1>Your access card</h1>
-        <p class="register-access-card-lead">Save or print this pass for the celebration. You can download a copy to your device.</p>
+        <?php if ($download_error): ?>
+            <p class="alert alert-error" style="max-width:420px;margin:0 auto 1rem;">We could not build your pass image. Please try again in a moment, or contact us if it continues.</p>
+        <?php endif; ?>
+        <p class="register-access-card-lead">Download your pass as a PNG image to save on your phone for check-in.</p>
         <?= render_guest_access_card($cardGuest, BASE) ?>
         <div class="register-access-card-actions">
-            <button type="button" class="btn-submit" style="width:auto;padding:0.75rem 1.5rem;" onclick="window.print()">Print</button>
-            <a class="btn-submit" style="width:auto;padding:0.75rem 1.5rem;text-decoration:none;display:inline-block;" href="<?= htmlspecialchars(BASE) ?>/register?download_card=1">Download</a>
+            <a class="btn-submit" style="width:auto;padding:0.75rem 1.5rem;text-decoration:none;display:inline-block;" href="<?= htmlspecialchars(BASE) ?>/register?download_card=1">Download pass (PNG)</a>
             <a class="btn-secondary" href="<?= htmlspecialchars(BASE) ?>/register?new=1">Use another email</a>
         </div>
     </section>
@@ -554,6 +559,9 @@ else:
     <section class="form-page">
         <h1>Register to attend</h1>
         <p style="text-align: center; margin-bottom: 1.5rem; color: var(--chocolate-light);">Enter the email you would like us to use for your invitation. We will either show your access card or guide you through the next step.</p>
+        <?php if ($download_error): ?>
+            <div class="alert alert-error">We could not prepare your pass image. Please try again in a moment, or contact the organisers if this keeps happening.</div>
+        <?php endif; ?>
         <?php if ($email_error): ?>
             <div class="alert alert-error"><?= htmlspecialchars($email_error) ?></div>
         <?php endif; ?>

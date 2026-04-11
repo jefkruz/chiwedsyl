@@ -240,68 +240,30 @@ function render_guest_access_card(array $guest, string $base = '', bool $embed_f
     $html .= '</div></div></header>';
 
     $html .= '<div class="guest-access-card-main">';
+    $html .= '<div class="guest-access-card-photo-stage">';
     if ($photoSrcAttr !== null && $photoSrcAttr !== '') {
-        $html .= '<div class="guest-access-card-photo"><img src="' . $photoSrcAttr . '" alt=""></div>';
+        $html .= '<div class="guest-access-card-photo-ring"><img src="' . $photoSrcAttr . '" alt=""></div>';
     } elseif ($photoUrlWeb !== null) {
-        $html .= '<div class="guest-access-card-photo"><img src="' . htmlspecialchars($photoUrlWeb, ENT_QUOTES, 'UTF-8') . '" alt=""></div>';
+        $html .= '<div class="guest-access-card-photo-ring"><img src="' . htmlspecialchars($photoUrlWeb, ENT_QUOTES, 'UTF-8') . '" alt=""></div>';
     } else {
-        $html .= '<div class="guest-access-card-photo guest-access-card-photo-placeholder" aria-hidden="true"></div>';
+        $html .= '<div class="guest-access-card-photo-ring guest-access-card-photo-ring--empty" aria-hidden="true"></div>';
     }
+    $html .= '</div>';
 
     $html .= '<div class="guest-access-card-body">';
     $html .= '<h2 class="guest-access-card-name">' . $displayName . '</h2>';
     $html .= '<p class="guest-access-card-email">' . $email . '</p>';
     $html .= '<div class="guest-access-card-admit">' . $partyLine . '</div>';
     $html .= '<div class="guest-access-card-qr"><img src="' . htmlspecialchars($qrUrl, ENT_QUOTES, 'UTF-8') . '" alt="Check-in QR code" width="200" height="200" loading="lazy"></div>';
-    $html .= '<p class="guest-access-card-hint">Present this pass at entry. You may print or save this page.</p>';
+    $html .= '<p class="guest-access-card-hint">Present this pass at entry. Download your pass as an image to save on your phone.</p>';
     $html .= '</div></div>';
     $html .= '<footer class="guest-access-card-footer">Official guest pass · keep private</footer>';
     $html .= '</div></article>';
     return $html;
 }
 
-function guest_access_card_inline_styles(): string {
-    return <<<'CSS'
-*{box-sizing:border-box;}
-body{margin:0;padding:1.75rem 1rem 2rem;font-family:Georgia,"Times New Roman",serif;background:linear-gradient(165deg,#2a1810 0%,#4a3224 40%,#6b4e3d 100%);color:#3d2914;min-height:100vh;}
-.guest-access-card{max-width:400px;margin:0 auto;}
-.guest-access-card-frame{background:linear-gradient(180deg,#fffdf8 0%,#f5ebe0 55%,#efe4d8 100%);border-radius:20px;box-shadow:0 24px 48px rgba(0,0,0,0.35),0 0 0 1px rgba(255,255,255,0.25) inset,0 0 0 3px #c9a227,0 0 0 6px #5c3d2e;overflow:hidden;}
-.guest-access-card-header{background:linear-gradient(135deg,#1e1424 0%,#3d2914 50%,#5c3d2e 100%);color:#f5ebe0;padding:1.25rem 1.25rem 1.1rem;text-align:center;border-bottom:3px solid #c9a227;}
-.guest-access-card-header-inner{display:flex;flex-direction:column;align-items:center;gap:0.65rem;}
-.guest-access-card-logo{width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.35));}
-.guest-access-card-headlines{text-align:center;}
-.guest-access-card-brand{font-family:Georgia,serif;font-size:1.35rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;margin:0;color:#f5e6c8;}
-.guest-access-card-tagline{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.28em;margin:0.25rem 0 0;color:rgba(245,230,200,0.85);}
-.guest-access-card-date{font-size:0.82rem;margin:0.5rem 0 0;color:#e8d4a8;font-weight:500;}
-.guest-access-card-main{padding:0;}
-.guest-access-card-photo{width:100%;aspect-ratio:1;max-height:280px;background:#e8dfd0;overflow:hidden;}
-.guest-access-card-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-.guest-access-card-photo-placeholder{min-height:180px;background:linear-gradient(160deg,#e8dfd0,#c4b5a0);}
-.guest-access-card-body{padding:1.35rem 1.35rem 1.5rem;text-align:center;}
-.guest-access-card-name{font-size:1.55rem;font-weight:600;margin:0 0 0.4rem;line-height:1.2;color:#2a1810;}
-.guest-access-card-email{font-size:0.82rem;color:#5c4a3d;margin:0 0 1rem;word-break:break-all;}
-.guest-access-card-admit{font-size:0.92rem;line-height:1.5;margin:0 0 1.15rem;padding:0.85rem 1rem;background:rgba(201,162,39,0.12);border:1px solid rgba(92,61,46,0.25);border-radius:12px;color:#3d2914;}
-.guest-access-card-admit strong{color:#1e1424;}
-.guest-access-card-qr{display:flex;justify-content:center;margin:0 0 0.75rem;}
-.guest-access-card-qr img{display:block;border-radius:10px;border:4px solid #fff;box-shadow:0 4px 16px rgba(42,24,16,0.15);}
-.guest-access-card-hint{font-size:0.72rem;color:#6b5344;margin:0;line-height:1.45;max-width:280px;margin-left:auto;margin-right:auto;}
-.guest-access-card-footer{text-align:center;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;padding:0.65rem 1rem;background:#2a1810;color:rgba(245,235,220,0.55);}
-CSS;
-}
-
-/**
- * Full standalone HTML document (saved file / download). Embeds logo and photo for offline viewing.
- */
-function render_guest_access_card_document(array $guest, string $base = ''): string {
-    $inner = render_guest_access_card($guest, $base, true);
-    $css = guest_access_card_inline_styles();
-    return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Access pass — '
-        . htmlspecialchars(guest_display_name($guest), ENT_QUOTES, 'UTF-8')
-        . '</title><style>' . $css . '</style></head><body>' . $inner . '</body></html>';
-}
-
 function guest_access_card_download_filename(array $guest): string {
     $safe = preg_replace('/[^a-zA-Z0-9-_]+/', '-', guest_display_name($guest) ?: 'guest');
     $safe = trim($safe, '-') ?: 'guest';
-    return 'access-pass-' . $safe . '.html';
+    return 'access-pass-' . $safe . '.png';
 }

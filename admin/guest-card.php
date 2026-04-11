@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/admin-auth.php';
 require_once __DIR__ . '/../includes/guest-access-card.php';
+require_once __DIR__ . '/../includes/guest-access-card-image.php';
 
 $id = (int) ($_GET['id'] ?? 0);
 if ($id < 1) {
@@ -19,11 +20,14 @@ if (!$guest) {
 }
 
 if (isset($_GET['download']) && $_GET['download'] === '1') {
-    header('Content-Type: text/html; charset=utf-8');
-    header('Content-Disposition: attachment; filename="' . guest_access_card_download_filename($guest) . '"');
-    echo render_guest_access_card_document($guest, BASE);
+    if (!guest_access_card_send_png_download($guest)) {
+        header('Location: ' . BASE . '/admin/guest-card?id=' . $id . '&download_error=1');
+        exit;
+    }
     exit;
 }
+
+$download_error = isset($_GET['download_error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,12 +50,14 @@ if (isset($_GET['download']) && $_GET['download'] === '1') {
         </div>
         <div class="admin-card">
             <p><strong><?= htmlspecialchars((string) $guest['name']) ?></strong> — <?= htmlspecialchars((string) $guest['email']) ?></p>
+            <?php if ($download_error): ?>
+                <p class="alert alert-error">PNG export failed. Confirm PHP GD is enabled and <code>assets/fonts/Lora-Regular.ttf</code> is deployed.</p>
+            <?php endif; ?>
             <div class="register-access-card-wrap" style="padding-top:1rem;">
                 <?= render_guest_access_card($guest, BASE) ?>
             </div>
             <div class="register-access-card-actions" style="margin-bottom:0;">
-                <button type="button" class="btn-submit" style="width:auto;padding:0.75rem 1.5rem;" onclick="window.print()">Print</button>
-                <a class="btn-submit" style="width:auto;padding:0.75rem 1.5rem;text-decoration:none;display:inline-block;" href="<?= htmlspecialchars(BASE) ?>/admin/guest-card?id=<?= (int) $guest['id'] ?>&amp;download=1">Download</a>
+                <a class="btn-submit" style="width:auto;padding:0.75rem 1.5rem;text-decoration:none;display:inline-block;" href="<?= htmlspecialchars(BASE) ?>/admin/guest-card?id=<?= (int) $guest['id'] ?>&amp;download=1">Download pass (PNG)</a>
             </div>
         </div>
     </div>
