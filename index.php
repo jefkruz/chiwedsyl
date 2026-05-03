@@ -67,7 +67,7 @@ $photo3 = 'assets/images/DSC02162.jpg';
 $pdo = getDb();
 $homeGifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id LIMIT 12")->fetchAll(PDO::FETCH_ASSOC);
 $homeGallery = $pdo->query("SELECT * FROM gallery_images ORDER BY sort_order, created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
-$homeWishes = $pdo->query("SELECT id, author_name, message, created_at FROM well_wishes ORDER BY created_at ASC, id ASC LIMIT 30")->fetchAll(PDO::FETCH_ASSOC);
+$homeWishes = $pdo->query("SELECT id, author_name, message FROM well_wishes ORDER BY created_at ASC, id ASC LIMIT 30")->fetchAll(PDO::FETCH_ASSOC);
 
 include __DIR__ . '/includes/header.php';
 ?>
@@ -178,7 +178,6 @@ include __DIR__ . '/includes/header.php';
                     <div class="tribute-message"><?= $w['message'] ?></div>
                     <footer class="tribute-meta">
                         <span class="tribute-author"><?= htmlspecialchars($w['author_name']) ?></span>
-                        <time class="tribute-date" datetime="<?= htmlspecialchars($w['created_at']) ?>"><?= date('M j, Y', strtotime($w['created_at'])) ?></time>
                     </footer>
                 </article>
             <?php endforeach; ?>

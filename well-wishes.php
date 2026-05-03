@@ -71,7 +71,6 @@ include __DIR__ . '/includes/header.php';
                     <div class="tribute-message"><?= $w['message'] ?></div>
                     <footer class="tribute-meta">
                         <span class="tribute-author"><?= htmlspecialchars($w['author_name']) ?></span>
-                        <time class="tribute-date" datetime="<?= htmlspecialchars($w['created_at']) ?>"><?= date('M j, Y', strtotime($w['created_at'])) ?></time>
                     </footer>
                 </article>
             <?php endforeach; ?>
