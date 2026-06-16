@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/admin-auth.php';
+require_once __DIR__ . '/../includes/admin-lte-layout.php';
 
 $pdo = getDb();
 $uploadDir = rtrim(UPLOAD_PATH, '/') . '/gifts/';
@@ -72,20 +73,12 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gifts — Admin — <?= htmlspecialchars(SITE_NAME) ?></title>
     <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
 </head>
-<body>
-    <div class="admin-wrap">
-        <div class="admin-header">
-            <h1>Gift items</h1>
-            <nav class="admin-nav">
-                <a href="<?= BASE ?>/admin/dashboard">Dashboard</a>
-                <a href="<?= BASE ?>/admin/guests">Guests</a>
-                <a href="<?= BASE ?>/admin/well-wishes">Well wishes</a>
-                <a href="<?= BASE ?>/admin/gallery">Gallery</a>
-                <a href="<?= BASE ?>/">View site</a>
-                <a href="<?= BASE ?>/admin/logout">Log out</a>
-            </nav>
-        </div>
+<body class="hold-transition sidebar-mini">
+<?php admin_lte_layout_begin('Gifts', 'gifts'); ?>
 
         <?php if ($message): ?>
             <div class="alert alert-<?= $messageType ?>"><?= htmlspecialchars($message) ?></div>
@@ -144,6 +137,4 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
                 </table>
             </div>
         </div>
-    </div>
-</body>
-</html>
+<?php admin_lte_layout_end(); ?>

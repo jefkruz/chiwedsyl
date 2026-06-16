@@ -15,6 +15,8 @@ $sections = [
         'count' => $guestCount,
         'count_label' => 'guests registered',
         'hint' => 'Check-in, access passes, and invite list.',
+        'icon' => 'fas fa-users',
+        'color' => 'bg-info',
     ],
     [
         'href' => BASE . '/admin/gifts',
@@ -22,6 +24,8 @@ $sections = [
         'count' => $giftCount,
         'count_label' => 'gift items',
         'hint' => 'Edit catalogue and prices for the public shop.',
+        'icon' => 'fas fa-gift',
+        'color' => 'bg-warning',
     ],
     [
         'href' => BASE . '/admin/well-wishes',
@@ -29,6 +33,8 @@ $sections = [
         'count' => $wishCount,
         'count_label' => 'messages posted',
         'hint' => 'Read and remove messages from the public well wishes page.',
+        'icon' => 'fas fa-heart',
+        'color' => 'bg-danger',
     ],
     [
         'href' => BASE . '/admin/gallery',
@@ -36,6 +42,8 @@ $sections = [
         'count' => $galleryCount,
         'count_label' => 'images live',
         'hint' => 'Upload, caption, and remove homepage gallery photos.',
+        'icon' => 'fas fa-images',
+        'color' => 'bg-success',
     ],
 ];
 ?>
@@ -45,40 +53,122 @@ $sections = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin — <?= htmlspecialchars(SITE_NAME) ?></title>
-    <link rel="stylesheet" href="<?= BASE ?>/assets/css/style.css">
+    <!-- AdminLTE (Bootstrap 4) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
 </head>
-<body>
-    <div class="admin-wrap">
-        <div class="admin-header">
-            <h1>Admin</h1>
-            <nav class="admin-nav">
-                <a href="<?= BASE ?>/admin/guests">Guests</a>
-                <a href="<?= BASE ?>/admin/scan">Scan check-in</a>
-                <a href="<?= BASE ?>/admin/gifts">Gifts</a>
-                <a href="<?= BASE ?>/admin/well-wishes">Well wishes</a>
-                <a href="<?= BASE ?>/admin/gallery">Gallery</a>
-                <a href="<?= BASE ?>/">View site</a>
-                <a href="<?= BASE ?>/admin/logout">Log out</a>
-            </nav>
-        </div>
-
-        <p class="admin-dashboard-lead">Pick a section to manage. Counts update from your live data.</p>
-
-        <section class="admin-dashboard" aria-label="Admin sections">
-            <div class="admin-dashboard-grid">
-                <?php foreach ($sections as $s): ?>
-                    <a href="<?= htmlspecialchars($s['href']) ?>" class="admin-dashboard-card">
-                        <span class="admin-dashboard-card-eyebrow">Open</span>
-                        <h2 class="admin-dashboard-card-title"><?= $s['title'] ?></h2>
-                        <p class="admin-dashboard-card-stat">
-                            <span class="admin-dashboard-card-num"><?= $s['count'] ?></span>
-                            <span class="admin-dashboard-card-label"><?= htmlspecialchars($s['count_label']) ?></span>
-                        </p>
-                        <p class="admin-dashboard-card-hint"><?= htmlspecialchars($s['hint']) ?></p>
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button" aria-label="Toggle menu">
+                        <i class="fas fa-bars"></i>
                     </a>
-                <?php endforeach; ?>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= BASE ?>/admin/logout" role="button" aria-label="Log out">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <a href="<?= BASE ?>/admin/dashboard" class="brand-link">
+                <span class="brand-text font-weight-light">Admin</span>
+            </a>
+
+            <div class="sidebar">
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="<?= BASE ?>/admin/guests" class="nav-link">
+                                <i class="nav-icon fas fa-user-friends"></i>
+                                <p>Guests</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?= BASE ?>/admin/scan" class="nav-link">
+                                <i class="nav-icon fas fa-qrcode"></i>
+                                <p>Scan check-in</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?= BASE ?>/admin/gifts" class="nav-link">
+                                <i class="nav-icon fas fa-gift"></i>
+                                <p>Gifts</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?= BASE ?>/admin/well-wishes" class="nav-link">
+                                <i class="nav-icon fas fa-heart"></i>
+                                <p>Well wishes</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?= BASE ?>/admin/gallery" class="nav-link">
+                                <i class="nav-icon fas fa-images"></i>
+                                <p>Gallery</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?= BASE ?>/" class="nav-link">
+                                <i class="nav-icon fas fa-home"></i>
+                                <p>View site</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
-        </section>
+        </aside>
+
+        <div class="content-wrapper">
+            <section class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0 text-dark">Dashboard</h1>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <p class="text-muted mb-0">Pick a section to manage. Counts update live.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <?php foreach ($sections as $s): ?>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <a href="<?= htmlspecialchars($s['href']) ?>" class="info-box text-reset" style="text-decoration: none;">
+                                    <span class="info-box-icon <?= htmlspecialchars($s['color']) ?> elevation-1">
+                                        <i class="<?= htmlspecialchars($s['icon']) ?>"></i>
+                                    </span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text"><?= htmlspecialchars($s['title']) ?></span>
+                                        <span class="info-box-number"><?= (int) $s['count'] ?></span>
+                                        <span class="info-box-text" style="font-size: 0.85rem; opacity: 0.85;"><?= htmlspecialchars($s['count_label']) ?></span>
+                                    </div>
+                                </a>
+                                <div class="px-2 pb-3" style="font-size: 0.9rem;">
+                                    <div class="text-muted"><?= htmlspecialchars($s['hint']) ?></div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
+
+    <!-- AdminLTE requires jQuery/Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 </body>
 </html>
