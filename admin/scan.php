@@ -33,20 +33,47 @@ if ($codeParam !== '') {
 
         if ($guest === null) {
             $result = ['type' => 'error', 'message' => 'No guest found for this code.'];
-        } elseif (!empty($guest['checked_in'])) {
+        } elseif (guest_pass_fully_checked_in($guest)) {
+            $limit = guest_party_scan_limit($guest);
             $when = trim((string) ($guest['checked_in_at'] ?? ''));
             $result = [
                 'type' => 'already',
-                'message' => 'This pass was already checked in.',
+                'message' => 'This pass is fully checked in (' . $limit . ' of ' . $limit . ').',
                 'when' => $when,
             ];
         } else {
-            $pdo->prepare("UPDATE guests SET checked_in = 1, checked_in_at = datetime('now') WHERE id = ? AND (checked_in = 0 OR checked_in IS NULL)")
-                ->execute([(int) $guest['id']]);
+            $gid = (int) $guest['id'];
+            $limit = guest_party_scan_limit($guest);
+            $count = guest_check_in_count($guest);
+            $newCount = $count + 1;
+            if ($count === 0) {
+                $pdo->prepare("UPDATE guests SET check_in_count = ?, checked_in_at = datetime('now') WHERE id = ?")
+                    ->execute([$newCount, $gid]);
+            } else {
+                $pdo->prepare('UPDATE guests SET check_in_count = ? WHERE id = ?')
+                    ->execute([$newCount, $gid]);
+            }
+            if ($newCount >= $limit) {
+                $pdo->prepare('UPDATE guests SET checked_in = 1 WHERE id = ?')->execute([$gid]);
+            }
             $stmt2 = $pdo->prepare('SELECT * FROM guests WHERE id = ? LIMIT 1');
-            $stmt2->execute([(int) $guest['id']]);
+            $stmt2->execute([$gid]);
             $guest = $stmt2->fetch(PDO::FETCH_ASSOC) ?: $guest;
-            $result = ['type' => 'success', 'message' => 'Checked in successfully.'];
+            if ($newCount >= $limit) {
+                $result = [
+                    'type' => 'success',
+                    'message' => 'Party fully checked in (' . $newCount . ' of ' . $limit . ').',
+                    'count' => $newCount,
+                    'limit' => $limit,
+                ];
+            } else {
+                $result = [
+                    'type' => 'partial',
+                    'message' => 'Checked in ' . $newCount . ' of ' . $limit . ' for this pass. Scan again for each remaining guest.',
+                    'count' => $newCount,
+                    'limit' => $limit,
+                ];
+            }
         }
     }
 }
@@ -79,12 +106,12 @@ $displayName = $guest ? guest_display_name($guest) : '';
             <p class="admin-scan-lead">Scan a guest’s pass QR with your phone camera, or paste the code from under the QR if the link does not open.</p>
 
             <?php if ($result !== null): ?>
-                <?php if ($result['type'] === 'success'): ?>
+                <?php if ($result['type'] === 'success' || $result['type'] === 'partial'): ?>
                     <div class="alert alert-success admin-scan-banner"><?= htmlspecialchars($result['message']) ?></div>
                     <?php if ($guest): ?>
                         <p class="admin-scan-guest-name"><strong><?= htmlspecialchars($displayName) ?></strong></p>
                         <p class="admin-scan-meta"><?= htmlspecialchars((string) ($guest['email'] ?? '')) ?></p>
-                        <p class="admin-scan-meta">Party size: <?= (int) ($guest['num_guests'] ?? 1) ?></p>
+                        <p class="admin-scan-meta">Party size: <?= (int) ($result['limit'] ?? guest_party_scan_limit($guest)) ?> · Checked in: <?= (int) ($result['count'] ?? guest_check_in_count($guest)) ?></p>
                     <?php endif; ?>
                 <?php elseif ($result['type'] === 'already'): ?>
                     <div class="admin-scan-banner admin-scan-banner--warn" role="status"><?= htmlspecialchars($result['message']) ?></div>

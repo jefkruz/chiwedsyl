@@ -21,6 +21,64 @@ function guest_valid_titles(): array {
 }
 
 /**
+ * QR scans allowed for this pass (one scan per person entering).
+ * RSVP option 1 = registrant only; option 2 = registrant plus two guests.
+ */
+function guest_party_scan_limit(array $guest): int {
+    $n = (int) ($guest['num_guests'] ?? 1);
+    if ($n < 1) {
+        $n = 1;
+    }
+    if ($n === 1) {
+        return 1;
+    }
+
+    return $n + 1;
+}
+
+function guest_check_in_count(array $guest): int {
+    return max(0, (int) ($guest['check_in_count'] ?? 0));
+}
+
+function guest_pass_fully_checked_in(array $guest): bool {
+    $limit = guest_party_scan_limit($guest);
+    $count = guest_check_in_count($guest);
+    if ($count >= $limit) {
+        return true;
+    }
+    // Legacy rows: one scan marked the whole pass before per-person counts existed.
+    return !empty($guest['checked_in']) && $count === 0;
+}
+
+function guest_check_in_remaining(array $guest): int {
+    if (guest_pass_fully_checked_in($guest)) {
+        return 0;
+    }
+
+    return max(0, guest_party_scan_limit($guest) - guest_check_in_count($guest));
+}
+
+function guest_party_admit_line_html(array $guest): string {
+    $total = guest_party_scan_limit($guest);
+    $extras = max(0, $total - 1);
+    if ($total === 1) {
+        return 'This pass admits <strong>1</strong> person at the gate.';
+    }
+
+    return 'This pass admits <strong>' . $total . '</strong> people in total — you plus <strong>' . $extras . '</strong> guest' . ($extras === 1 ? '' : 's') . ' arriving with you.';
+}
+
+function guest_party_admit_line_plain(array $guest): string {
+    $total = guest_party_scan_limit($guest);
+    $extras = max(0, $total - 1);
+    if ($total === 1) {
+        return 'This pass admits 1 person at the gate.';
+    }
+
+    return 'This pass admits ' . $total . ' people total — you plus ' . $extras . ' guest' . ($extras === 1 ? '' : 's') . ' with you.';
+}
+
+/**
  * Project root (parent of /includes).
  */
 function guest_access_card_project_root(): string {
@@ -212,8 +270,8 @@ function render_guest_access_card(array $guest, string $base = '', bool $embed_f
     if ($qrData === '') {
         $qrData = (string) ($guest['qr_code'] ?? '');
     }
-    $num = max(1, (int) ($guest['num_guests'] ?? 1));
-    $extras = max(0, $num - 1);
+    $partyLine = guest_party_admit_line_html($guest);
+    $scanLimit = guest_party_scan_limit($guest);
     $site = defined('SITE_NAME') ? htmlspecialchars((string) SITE_NAME, ENT_QUOTES, 'UTF-8') : 'Wedding';
     $dateLine = guest_access_card_event_date_label();
     $dateHtml = $dateLine !== '' ? htmlspecialchars($dateLine, ENT_QUOTES, 'UTF-8') : '';
@@ -239,10 +297,6 @@ function render_guest_access_card(array $guest, string $base = '', bool $embed_f
     $photoUrlWeb = guest_access_card_photo_url($guest, $base);
 
     $qrUrl = guest_access_card_qr_proxy_url($qrData, $base);
-
-    $partyLine = $num === 1
-        ? 'This pass admits <strong>1</strong> person at the gate.'
-        : 'This pass admits <strong>' . $num . '</strong> people in total — you plus <strong>' . $extras . '</strong> guest' . ($extras === 1 ? '' : 's') . ' arriving with you.';
 
     $downloadName = htmlspecialchars(guest_access_card_download_filename($guest), ENT_QUOTES, 'UTF-8');
     $html = '<article class="guest-access-card" aria-label="Wedding access pass" data-download-name="' . $downloadName . '">';
@@ -278,7 +332,10 @@ function render_guest_access_card(array $guest, string $base = '', bool $embed_f
     } else {
         $html .= '<div class="guest-access-card-qr guest-access-card-qr--missing"><p>QR unavailable</p></div>';
     }
-    $html .= '<p class="guest-access-card-hint">Present this pass at entry. Staff scan the QR to check you in (once per pass). Use your site’s download button to save this card as a PNG — it matches what you see here.</p>';
+    $scanHint = $scanLimit === 1
+        ? 'Present this pass at entry. Staff scan the QR once to check you in.'
+        : 'Present this pass at entry. Staff scan the QR once for each person in your party (up to ' . $scanLimit . ' scans).';
+    $html .= '<p class="guest-access-card-hint">' . htmlspecialchars($scanHint, ENT_QUOTES, 'UTF-8') . ' Use your site’s download button to save this card as a PNG — it matches what you see here.</p>';
     $html .= '</div></div>';
     $html .= '<footer class="guest-access-card-footer">Official guest pass · keep private</footer>';
     $html .= '</div></article>';

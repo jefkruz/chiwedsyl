@@ -222,11 +222,8 @@ function guest_access_card_render_png_binary(array $guest): ?string {
     $boxRef11 = imagettfbbox(11, 0, $font, 'Mg');
     $emailAsc = $boxRef11 !== false ? abs((int) $boxRef11[7]) : 12;
 
-    $num = max(1, (int) ($guest['num_guests'] ?? 1));
-    $extras = max(0, $num - 1);
-    $party = $num === 1
-        ? 'This pass admits 1 person at the gate.'
-        : "This pass admits {$num} people total — you plus {$extras} guest" . ($extras === 1 ? '' : 's') . ' with you.';
+    $party = guest_party_admit_line_plain($guest);
+    $scanLimit = guest_party_scan_limit($guest);
     $partyInnerW = $W - 80 - 48;
     $partyLines = guest_access_card_png_split_lines($font, 12, $party, $partyInnerW);
     if ($partyLines === []) {
@@ -236,7 +233,9 @@ function guest_access_card_render_png_binary(array $guest): ?string {
     $boxRef12 = imagettfbbox(12, 0, $font, 'Mg');
     $partyAsc = $boxRef12 !== false ? abs((int) $boxRef12[7]) : 12;
 
-    $hintText = 'Save on your phone. Staff scan the QR to check you in once.';
+    $hintText = $scanLimit === 1
+        ? 'Save on your phone. Staff scan the QR once to check you in.'
+        : 'Save on your phone. Staff scan the QR once per person in your party (up to ' . $scanLimit . ' scans).';
     $hintLines = guest_access_card_png_split_lines($font, 9, $hintText, min(520, $W - 80));
     if ($hintLines === []) {
         $hintLines = [$hintText];

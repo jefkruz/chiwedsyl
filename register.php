@@ -121,11 +121,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($num_guests < 1) {
             $num_guests = 1;
         }
-        if ($num_guests > 5) {
-            $num_guests = 5;
+        if ($num_guests > 2) {
+            $num_guests = 2;
         }
-
-        $photoRequired = !guest_has_valid_pass_photo_on_disk($existing);
         $photoResult = register_process_guest_photo_upload($_FILES['photo'] ?? null, $max_guest_photo_bytes, $photoRequired);
         $newPhotoPath = $photoResult['path'];
         $photoErr = $photoResult['error'];
@@ -202,8 +200,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($num_guests < 1) {
             $num_guests = 1;
         }
-        if ($num_guests > 5) {
-            $num_guests = 5;
+        if ($num_guests > 2) {
+            $num_guests = 2;
         }
 
         $photoResult = register_process_guest_photo_upload($_FILES['photo'] ?? null, $max_guest_photo_bytes, true);
@@ -349,7 +347,7 @@ elseif ($phase === 'update_profile' && $profileGuest):
     $pfGender = (string) ($post['gender'] ?? $profileGuest['gender'] ?? '');
     $pfInvited = trim((string) ($post['invited_by'] ?? $profileGuest['invited_by'] ?? ''));
     $pfPhone = trim((string) ($post['phone'] ?? $profileGuest['phone'] ?? ''));
-    $pfNum = (int) ($post['num_guests'] ?? $profileGuest['num_guests'] ?? 1);
+    $pfNum = min(2, max(1, (int) ($post['num_guests'] ?? $profileGuest['num_guests'] ?? 1)));
     if ($pfNum < 1) {
         $pfNum = 1;
     }
@@ -401,11 +399,10 @@ elseif ($phase === 'update_profile' && $profileGuest):
                 <input type="text" id="up_invited_by" name="invited_by" placeholder="Name of person who invited you" value="<?= htmlspecialchars($pfInvited) ?>">
             </div>
             <div class="form-group">
-                <label for="up_num_guests">Number of people (including you)</label>
+                <label for="up_num_guests">How many people are in your party?</label>
                 <select id="up_num_guests" name="num_guests">
-                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <option value="<?= $i ?>" <?= $pfNum === $i ? 'selected' : '' ?>><?= $i ?></option>
-                    <?php endfor; ?>
+                    <option value="1" <?= $pfNum === 1 ? 'selected' : '' ?>>1 — just me</option>
+                    <option value="2" <?= $pfNum === 2 ? 'selected' : '' ?>>3 — me plus 2 guests</option>
                 </select>
             </div>
             <div class="form-group">
@@ -487,11 +484,11 @@ elseif ($phase === 'new' && !empty($phaseData['email'])):
                 <input type="text" id="invited_by" name="invited_by" placeholder="Name of person who invited you" value="<?= htmlspecialchars($_POST['invited_by'] ?? '') ?>">
             </div>
             <div class="form-group">
-                <label for="num_guests">Number of people (including you)</label>
+                <label for="num_guests">How many people are in your party?</label>
                 <select id="num_guests" name="num_guests">
-                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <option value="<?= $i ?>" <?= (int) ($_POST['num_guests'] ?? 1) === $i ? 'selected' : '' ?>><?= $i ?></option>
-                    <?php endfor; ?>
+                    <?php $regNum = min(2, max(1, (int) ($_POST['num_guests'] ?? 1))); ?>
+                    <option value="1" <?= $regNum === 1 ? 'selected' : '' ?>>1 — just me</option>
+                    <option value="2" <?= $regNum === 2 ? 'selected' : '' ?>>3 — me plus 2 guests</option>
                 </select>
             </div>
             <div class="form-group">

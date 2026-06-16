@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/admin-auth.php';
+require_once __DIR__ . '/../includes/guest-access-card.php';
 require_once __DIR__ . '/../includes/admin-delete-guest.php';
 
 $pdo = getDb();
@@ -17,7 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_guest_id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_in_id'])) {
     $id = (int) $_POST['check_in_id'];
-    $pdo->prepare("UPDATE guests SET checked_in = 1, checked_in_at = datetime('now') WHERE id = ?")->execute([$id]);
+    $stmt = $pdo->prepare('SELECT * FROM guests WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row) {
+        $limit = guest_party_scan_limit($row);
+        $pdo->prepare("UPDATE guests SET checked_in = 1, check_in_count = ?, checked_in_at = COALESCE(checked_in_at, datetime('now')) WHERE id = ?")
+            ->execute([$limit, $id]);
+    }
     header('Location: ' . BASE . '/admin/guests?checked=' . $id);
     exit;
 }
@@ -39,6 +47,79 @@ if ($q === '') {
     $stmt = $pdo->prepare("SELECT * FROM guests WHERE name LIKE ? OR email LIKE ? OR IFNULL(phone,'') LIKE ? OR IFNULL(invited_by,'') LIKE ? OR IFNULL(first_name,'') LIKE ? OR IFNULL(last_name,'') LIKE ? OR IFNULL(title,'') LIKE ? ORDER BY created_at DESC");
     $stmt->execute([$like, $like, $like, $like, $like, $like, $like]);
     $guests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    $filename = 'registrations-' . date('Y-m-d-His') . '.csv';
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+
+    $out = fopen('php://output', 'w');
+    if ($out === false) {
+        http_response_code(500);
+        exit('Could not generate CSV.');
+    }
+
+    // UTF-8 BOM improves compatibility with Excel.
+    fwrite($out, "\xEF\xBB\xBF");
+    fputcsv($out, [
+        'ID',
+        'Guest',
+        'Title',
+        'Email',
+        'Gender',
+        'Phone',
+        'Invited by',
+        'Party size',
+        'RSVP status',
+        'Check-in status',
+        'Checked in count',
+        'Created at',
+        'Checked in at',
+    ]);
+
+    foreach ($guests as $g) {
+        $scanLimit = guest_party_scan_limit($g);
+        $scanCount = guest_check_in_count($g);
+        $regOk = (int) ($g['registration_confirmed'] ?? 0) === 1;
+        if (guest_pass_fully_checked_in($g)) {
+            $checkInStatus = 'In (' . $scanLimit . '/' . $scanLimit . ')';
+        } elseif ($scanCount > 0) {
+            $checkInStatus = 'Partial (' . $scanCount . '/' . $scanLimit . ')';
+        } else {
+            $checkInStatus = 'Not checked in';
+        }
+
+        $gender = (string) ($g['gender'] ?? '');
+        if ($gender === 'male') {
+            $gender = 'Male';
+        } elseif ($gender === 'female') {
+            $gender = 'Female';
+        } else {
+            $gender = '';
+        }
+
+        fputcsv($out, [
+            (int) ($g['id'] ?? 0),
+            (string) ($g['name'] ?? ''),
+            (string) ($g['title'] ?? ''),
+            (string) ($g['email'] ?? ''),
+            $gender,
+            (string) ($g['phone'] ?? ''),
+            (string) ($g['invited_by'] ?? ''),
+            $scanLimit,
+            $regOk ? 'Confirmed' : 'Pending',
+            $checkInStatus,
+            $scanCount . '/' . $scanLimit,
+            (string) ($g['created_at'] ?? ''),
+            (string) ($g['checked_in_at'] ?? ''),
+        ]);
+    }
+
+    fclose($out);
+    exit;
 }
 
 ?>
@@ -77,7 +158,7 @@ if ($q === '') {
             <?php if (isset($_GET['delete_error'])): ?>
                 <p class="alert alert-error">Could not remove that registration (it may have already been deleted).</p>
             <?php endif; ?>
-            <p>The pass QR on each guest’s access card opens check-in when scanned (stay logged in on the device at the door). A pass can only be checked in once; use <strong>Check in</strong> below or <a href="<?= BASE ?>/admin/scan">scan / enter code manually</a>. <strong>Delete</strong> permanently removes a registration and their pass photo file. Search by name or email, confirm new RSVPs, and open each guest’s access card to view or download.</p>
+            <p>The pass QR on each guest’s access card opens check-in when scanned (stay logged in on the device at the door). Scan once per person in the party — e.g. a pass for three people needs three scans. Use <strong>Check in</strong> below to admit the full party at once, or <a href="<?= BASE ?>/admin/scan">scan / enter code manually</a>. <strong>Delete</strong> permanently removes a registration and their pass photo file. Search by name or email, confirm new RSVPs, and open each guest’s access card to view or download.</p>
             <form method="get" action="<?= BASE ?>/admin/guests" class="admin-search-form">
                 <label for="guest-search" class="visually-hidden">Search guests</label>
                 <input type="search" id="guest-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search name, email, phone…" autocomplete="off">
@@ -85,6 +166,7 @@ if ($q === '') {
                 <?php if ($q !== ''): ?>
                     <a href="<?= BASE ?>/admin/guests" class="btn-small">Clear</a>
                 <?php endif; ?>
+                <a href="<?= BASE ?>/admin/guests?export=csv<?= $q !== '' ? '&amp;q=' . urlencode($q) : '' ?>" class="btn-small">Export CSV</a>
             </form>
             <div class="table-wrap">
                 <table class="responsive-table">
@@ -123,9 +205,18 @@ if ($q === '') {
                                 <td data-label="Gender"><?= htmlspecialchars($genderLabel) ?></td>
                                 <td data-label="Phone"><?= htmlspecialchars($g['phone'] ?? '') ?></td>
                                 <td data-label="Invited by"><?= htmlspecialchars($g['invited_by'] ?? '') ?></td>
-                                <td data-label="# Guests"><?= (int) $g['num_guests'] ?></td>
+                                <td data-label="# Guests"><?= guest_party_scan_limit($g) ?></td>
                                 <td data-label="RSVP"><?= $regOk ? 'Confirmed' : 'Pending' ?></td>
-                                <td data-label="Check-in"><?php if (!empty($g['checked_in'])): ?>✓ In<?php if (!empty($g['checked_in_at'])): ?><br><span class="admin-checked-when"><?= htmlspecialchars((string) $g['checked_in_at']) ?></span><?php endif; else: ?>—<?php endif; ?></td>
+                                <td data-label="Check-in"><?php
+                                    $scanLimit = guest_party_scan_limit($g);
+                                    $scanCount = guest_check_in_count($g);
+                                    if (guest_pass_fully_checked_in($g)):
+                                        ?>✓ In (<?= $scanLimit ?>/<?= $scanLimit ?>)<?php if (!empty($g['checked_in_at'])): ?><br><span class="admin-checked-when"><?= htmlspecialchars((string) $g['checked_in_at']) ?></span><?php endif;
+                                    elseif ($scanCount > 0):
+                                        ?>Partial (<?= $scanCount ?>/<?= $scanLimit ?>)<?php if (!empty($g['checked_in_at'])): ?><br><span class="admin-checked-when"><?= htmlspecialchars((string) $g['checked_in_at']) ?></span><?php endif;
+                                    else:
+                                        ?>—<?php
+                                    endif; ?></td>
                                 <td data-label="Access card">
                                     <a href="<?= htmlspecialchars(BASE) ?>/admin/guest-card?id=<?= (int) $g['id'] ?>">View / save PNG</a>
                                 </td>
@@ -138,7 +229,7 @@ if ($q === '') {
                                                 <button type="submit" class="btn-small">Confirm RSVP</button>
                                             </form>
                                         <?php endif; ?>
-                                        <?php if (!$g['checked_in']): ?>
+                                        <?php if (!guest_pass_fully_checked_in($g)): ?>
                                             <form class="check-in-form" method="post">
                                                 <input type="hidden" name="check_in_id" value="<?= (int) $g['id'] ?>">
                                                 <button type="submit" class="btn-small">Check in</button>

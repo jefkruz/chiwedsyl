@@ -104,6 +104,10 @@ function initSchema(PDO $pdo): void {
     if (!in_array('checked_in_at', $cols)) {
         $pdo->exec("ALTER TABLE guests ADD COLUMN checked_in_at TEXT");
     }
+    if (!in_array('check_in_count', $cols)) {
+        $pdo->exec("ALTER TABLE guests ADD COLUMN check_in_count INTEGER DEFAULT 0");
+        $pdo->exec("UPDATE guests SET check_in_count = CASE WHEN COALESCE(num_guests, 1) <= 1 THEN 1 ELSE COALESCE(num_guests, 1) + 1 END WHERE checked_in = 1 AND COALESCE(check_in_count, 0) = 0");
+    }
     // Add price to gift_items if missing
     $giftInfo = $pdo->query("PRAGMA table_info(gift_items)")->fetchAll(PDO::FETCH_ASSOC);
     $giftCols = array_column($giftInfo, 'name');
