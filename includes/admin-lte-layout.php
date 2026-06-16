@@ -105,6 +105,35 @@ function admin_lte_layout_end(): void {
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+    <!-- DataTables (responsive) -->
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.13.8/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-responsive@2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-responsive-bs4@2.5.0/js/responsive.bootstrap4.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!window.jQuery || !jQuery.fn.DataTable) return;
+
+            jQuery('table.js-datatable').each(function () {
+                const $table = jQuery(this);
+
+                // Avoid double-init if the page is re-rendered.
+                if ($.fn.dataTable.isDataTable($table)) return;
+
+                $table.DataTable({
+                    responsive: true,
+                    autoWidth: false,
+                    pageLength: 25,
+                    lengthMenu: [10, 25, 50, 100],
+                    order: [],
+                    // Don't sort the last column (usually contains action buttons/links).
+                    columnDefs: [{ orderable: false, targets: -1 }]
+                });
+            });
+        });
+    </script>
     </body>
     </html>
     <?php

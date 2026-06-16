@@ -32,6 +32,8 @@ $allowed_msg_tags = '<p><br><b><strong><i><em><u>';
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.13.8/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-responsive-bs4@2.5.0/css/responsive.bootstrap4.min.css">
 </head>
 <body class="hold-transition sidebar-mini">
 <?php admin_lte_layout_begin('Well wishes', 'well-wishes'); ?>
@@ -44,7 +46,7 @@ $allowed_msg_tags = '<p><br><b><strong><i><em><u>';
                 <p>No well wishes yet.</p>
             <?php else: ?>
                 <div class="table-wrap">
-                    <table class="responsive-table">
+                    <table class="js-datatable responsive-table table table-striped table-bordered table-sm">
                         <thead>
                             <tr>
                                 <th>Name</th>

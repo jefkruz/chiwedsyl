@@ -76,6 +76,8 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.13.8/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-responsive-bs4@2.5.0/css/responsive.bootstrap4.min.css">
 </head>
 <body class="hold-transition sidebar-mini">
 <?php admin_lte_layout_begin('Gifts', 'gifts'); ?>
@@ -106,7 +108,7 @@ $gifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id")->fetchA
         <div class="admin-card">
             <h2>Current gifts</h2>
             <div class="table-wrap">
-                <table class="responsive-table">
+                <table class="js-datatable responsive-table table table-striped table-bordered table-sm">
                     <thead>
                         <tr>
                             <th>Image</th>
