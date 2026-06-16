@@ -16,6 +16,9 @@ function guest_valid_titles(): array {
         'Prof'  => 'Prof',
         'Eng'   => 'Eng',
         'Rev'   => 'Rev',
+        'Pastor' => 'Pastor',
+        'Deacon' => 'Deacon',
+        'Deaconess' => 'Deaconess',
         'Chief' => 'Chief',
     ];
 }
