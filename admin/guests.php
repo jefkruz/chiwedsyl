@@ -5,6 +5,7 @@ require_once __DIR__ . '/../includes/guest-access-card.php';
 require_once __DIR__ . '/../includes/admin-delete-guest.php';
 require_once __DIR__ . '/../includes/admin-lte-layout.php';
 require_once __DIR__ . '/../includes/guest-whatsapp-invite.php';
+require_once __DIR__ . '/../includes/admin-guest-export.php';
 
 $pdo = getDb();
 
@@ -88,77 +89,13 @@ if ($params === []) {
     $guests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-if (isset($_GET['export']) && $_GET['export'] === 'csv') {
-    $filename = 'registrations-' . date('Y-m-d-His') . '.csv';
-    header('Content-Type: text/csv; charset=UTF-8');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Pragma: no-cache');
-    header('Expires: 0');
-
-    $out = fopen('php://output', 'w');
-    if ($out === false) {
-        http_response_code(500);
-        exit('Could not generate CSV.');
-    }
-
-    // UTF-8 BOM improves compatibility with Excel.
-    fwrite($out, "\xEF\xBB\xBF");
-    fputcsv($out, [
-        'ID',
-        'Guest',
-        'Title',
-        'Email',
-        'Gender',
-        'Phone',
-        'Invited by',
-        'Party size',
-        'RSVP status',
-        'Check-in status',
-        'Checked in count',
-        'Created at',
-        'Checked in at',
-    ]);
-
-    foreach ($guests as $g) {
-        $scanLimit = guest_party_scan_limit($g);
-        $scanCount = guest_check_in_count($g);
-        $regOk = (int) ($g['registration_confirmed'] ?? 0) === 1;
-        if (guest_pass_fully_checked_in($g)) {
-            $checkInStatus = 'In (' . $scanLimit . '/' . $scanLimit . ')';
-        } elseif ($scanCount > 0) {
-            $checkInStatus = 'Partial (' . $scanCount . '/' . $scanLimit . ')';
-        } else {
-            $checkInStatus = 'Not checked in';
-        }
-
-        $gender = (string) ($g['gender'] ?? '');
-        if ($gender === 'male') {
-            $gender = 'Male';
-        } elseif ($gender === 'female') {
-            $gender = 'Female';
-        } else {
-            $gender = '';
-        }
-
-        fputcsv($out, [
-            (int) ($g['id'] ?? 0),
-            (string) ($g['name'] ?? ''),
-            (string) ($g['title'] ?? ''),
-            (string) ($g['email'] ?? ''),
-            $gender,
-            (string) ($g['phone'] ?? ''),
-            (string) ($g['invited_by'] ?? ''),
-            $scanLimit,
-            $regOk ? 'Confirmed' : 'Pending',
-            $checkInStatus,
-            $scanCount . '/' . $scanLimit,
-            (string) ($g['created_at'] ?? ''),
-            (string) ($g['checked_in_at'] ?? ''),
-        ]);
-    }
-
-    fclose($out);
-    exit;
+if (isset($_GET['export']) && $_GET['export'] === 'excel') {
+    $export = admin_guests_export_dataset($guests);
+    admin_send_xlsx_download(
+        $export['headers'],
+        $export['rows'],
+        'registrations-' . date('Y-m-d-His') . '.xlsx'
+    );
 }
 
 ?>
@@ -216,7 +153,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                     <a href="<?= BASE ?>/admin/guests" class="btn-small">Clear</a>
                 <?php endif; ?>
                 <?php
-                $exportQs = ['export=csv'];
+                $exportQs = ['export=excel'];
                 if ($q !== '') {
                     $exportQs[] = 'q=' . urlencode($q);
                 }
@@ -224,7 +161,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                     $exportQs[] = 'status=' . urlencode($status);
                 }
                 ?>
-                <a href="<?= BASE ?>/admin/guests?<?= implode('&amp;', $exportQs) ?>" class="btn-small">Export CSV</a>
+                <a href="<?= BASE ?>/admin/guests?<?= implode('&amp;', $exportQs) ?>" class="btn-small">Export Excel</a>
             </form>
             <div class="table-wrap">
                 <table class="js-datatable responsive-table table table-striped table-bordered table-sm">
