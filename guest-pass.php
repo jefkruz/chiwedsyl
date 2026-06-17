@@ -37,7 +37,7 @@ $page_title = 'Your access pass — ' . SITE_NAME;
 include __DIR__ . '/includes/header.php';
 ?>
 <section class="register-access-card-wrap">
-    <h1>Your access pass</h1>
+    <h1>Your Access Pass</h1>
     <p class="register-access-card-lead">Save this pass to your phone and present it at the venue. Do not share it with anyone else.</p>
     <?= render_guest_access_card($guest, BASE) ?>
     <div class="register-access-card-actions">
