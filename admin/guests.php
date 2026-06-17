@@ -56,12 +56,35 @@ if (isset($_GET['confirmed'])) {
 }
 
 $q = trim($_GET['q'] ?? '');
-if ($q === '') {
-    $guests = $pdo->query('SELECT * FROM guests ORDER BY created_at DESC')->fetchAll(PDO::FETCH_ASSOC);
-} else {
+$status = strtolower(trim($_GET['status'] ?? ''));
+if (!in_array($status, ['pending', 'confirmed'], true)) {
+    $status = '';
+}
+
+$where = [];
+$params = [];
+if ($status === 'pending') {
+    $where[] = 'COALESCE(registration_confirmed, 0) = 0';
+} elseif ($status === 'confirmed') {
+    $where[] = 'registration_confirmed = 1';
+}
+if ($q !== '') {
+    $where[] = "(name LIKE ? OR email LIKE ? OR IFNULL(phone,'') LIKE ? OR IFNULL(invited_by,'') LIKE ? OR IFNULL(first_name,'') LIKE ? OR IFNULL(last_name,'') LIKE ? OR IFNULL(title,'') LIKE ?)";
     $like = '%' . $q . '%';
-    $stmt = $pdo->prepare("SELECT * FROM guests WHERE name LIKE ? OR email LIKE ? OR IFNULL(phone,'') LIKE ? OR IFNULL(invited_by,'') LIKE ? OR IFNULL(first_name,'') LIKE ? OR IFNULL(last_name,'') LIKE ? OR IFNULL(title,'') LIKE ? ORDER BY created_at DESC");
-    $stmt->execute([$like, $like, $like, $like, $like, $like, $like]);
+    $params = array_merge($params, [$like, $like, $like, $like, $like, $like, $like]);
+}
+
+$sql = 'SELECT * FROM guests';
+if ($where !== []) {
+    $sql .= ' WHERE ' . implode(' AND ', $where);
+}
+$sql .= ' ORDER BY created_at DESC';
+
+if ($params === []) {
+    $guests = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $guests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -177,14 +200,31 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                 <p class="alert alert-error">Could not remove that registration (it may have already been deleted).</p>
             <?php endif; ?>
             <p>The pass QR on each guest’s access card opens check-in when scanned (stay logged in on the device at the door). Scan once per person in the party — e.g. a pass for three people needs three scans. Use <strong>Check in</strong> below to admit the full party at once, or <a href="<?= BASE ?>/admin/scan">scan / enter code manually</a>. <strong>Delete</strong> permanently removes a registration and their pass photo file. Search by name or email, confirm new RSVPs, and open each guest’s access card to view or download.</p>
+            <p class="admin-guest-filters" style="margin-bottom:1rem;">
+                <a href="<?= BASE ?>/admin/guests" class="btn-small<?= $status === '' ? ' active' : '' ?>">All</a>
+                <a href="<?= BASE ?>/admin/guests?status=pending" class="btn-small<?= $status === 'pending' ? ' active' : '' ?>">Pending</a>
+                <a href="<?= BASE ?>/admin/guests?status=confirmed" class="btn-small<?= $status === 'confirmed' ? ' active' : '' ?>">Confirmed</a>
+            </p>
             <form method="get" action="<?= BASE ?>/admin/guests" class="admin-search-form">
+                <?php if ($status !== ''): ?>
+                    <input type="hidden" name="status" value="<?= htmlspecialchars($status) ?>">
+                <?php endif; ?>
                 <label for="guest-search" class="visually-hidden">Search guests</label>
                 <input type="search" id="guest-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search name, email, phone…" autocomplete="off">
                 <button type="submit" class="btn-small">Search</button>
-                <?php if ($q !== ''): ?>
+                <?php if ($q !== '' || $status !== ''): ?>
                     <a href="<?= BASE ?>/admin/guests" class="btn-small">Clear</a>
                 <?php endif; ?>
-                <a href="<?= BASE ?>/admin/guests?export=csv<?= $q !== '' ? '&amp;q=' . urlencode($q) : '' ?>" class="btn-small">Export CSV</a>
+                <?php
+                $exportQs = ['export=csv'];
+                if ($q !== '') {
+                    $exportQs[] = 'q=' . urlencode($q);
+                }
+                if ($status !== '') {
+                    $exportQs[] = 'status=' . urlencode($status);
+                }
+                ?>
+                <a href="<?= BASE ?>/admin/guests?<?= implode('&amp;', $exportQs) ?>" class="btn-small">Export CSV</a>
             </form>
             <div class="table-wrap">
                 <table class="js-datatable responsive-table table table-striped table-bordered table-sm">

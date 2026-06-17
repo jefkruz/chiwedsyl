@@ -3,20 +3,30 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/admin-auth.php';
 
 $pdo = getDb();
-$guestCount = (int) $pdo->query("SELECT COUNT(*) FROM guests")->fetchColumn();
+$pendingGuestCount = (int) $pdo->query('SELECT COUNT(*) FROM guests WHERE COALESCE(registration_confirmed, 0) = 0')->fetchColumn();
+$confirmedGuestCount = (int) $pdo->query('SELECT COUNT(*) FROM guests WHERE registration_confirmed = 1')->fetchColumn();
 $giftCount = (int) $pdo->query("SELECT COUNT(*) FROM gift_items")->fetchColumn();
 $wishCount = (int) $pdo->query("SELECT COUNT(*) FROM well_wishes")->fetchColumn();
 $galleryCount = (int) $pdo->query("SELECT COUNT(*) FROM gallery_images")->fetchColumn();
 
 $sections = [
     [
-        'href' => BASE . '/admin/guests',
-        'title' => 'Guests',
-        'count' => $guestCount,
-        'count_label' => 'guests registered',
-        'hint' => 'Check-in, access passes, and invite list.',
-        'icon' => 'fas fa-users',
-        'color' => 'bg-info',
+        'href' => BASE . '/admin/guests?status=pending',
+        'title' => 'Pending guests',
+        'count' => $pendingGuestCount,
+        'count_label' => 'awaiting confirmation',
+        'hint' => 'Review new RSVPs and confirm registrations.',
+        'icon' => 'fas fa-user-clock',
+        'color' => 'bg-warning',
+    ],
+    [
+        'href' => BASE . '/admin/guests?status=confirmed',
+        'title' => 'Confirmed guests',
+        'count' => $confirmedGuestCount,
+        'count_label' => 'confirmed registrations',
+        'hint' => 'Send passes, WhatsApp invites, and check-in.',
+        'icon' => 'fas fa-user-check',
+        'color' => 'bg-success',
     ],
     [
         'href' => BASE . '/admin/gifts',
