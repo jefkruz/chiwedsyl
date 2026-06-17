@@ -4,6 +4,7 @@ require_once __DIR__ . '/../includes/admin-auth.php';
 require_once __DIR__ . '/../includes/guest-access-card.php';
 require_once __DIR__ . '/../includes/admin-delete-guest.php';
 require_once __DIR__ . '/../includes/admin-lte-layout.php';
+require_once __DIR__ . '/../includes/guest-whatsapp-invite.php';
 
 $pdo = getDb();
 
@@ -38,6 +39,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_registration_
     }
     header('Location: ' . BASE . '/admin/guests?confirmed=' . $id);
     exit;
+}
+
+$confirmedGuest = null;
+$confirmedWhatsAppUrl = '';
+if (isset($_GET['confirmed'])) {
+    $confirmedId = (int) $_GET['confirmed'];
+    if ($confirmedId > 0) {
+        $stmt = $pdo->prepare('SELECT * FROM guests WHERE id = ? LIMIT 1');
+        $stmt->execute([$confirmedId]);
+        $confirmedGuest = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        if ($confirmedGuest) {
+            $confirmedWhatsAppUrl = guest_whatsapp_invite_url($confirmedGuest);
+        }
+    }
 }
 
 $q = trim($_GET['q'] ?? '');
@@ -144,7 +159,16 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                 <p class="alert alert-success">Guest marked as checked in.</p>
             <?php endif; ?>
             <?php if (isset($_GET['confirmed'])): ?>
-                <p class="alert alert-success">Registration confirmed. The guest can now retrieve their access card from the public RSVP page.</p>
+                <p class="alert alert-success">
+                    Registration confirmed. The guest can now retrieve their access card from the public RSVP page.
+                    <?php if ($confirmedGuest): ?>
+                        <?php if ($confirmedWhatsAppUrl !== ''): ?>
+                            <br><a href="<?= htmlspecialchars($confirmedWhatsAppUrl) ?>" class="btn-small" target="_blank" rel="noopener noreferrer" style="margin-top:0.75rem;display:inline-block;">Send invite on WhatsApp</a>
+                        <?php else: ?>
+                            <br><span class="admin-scan-meta">Add a phone number on the guest record to send the invite on WhatsApp.</span>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </p>
             <?php endif; ?>
             <?php if (isset($_GET['deleted'])): ?>
                 <p class="alert alert-success">Registration removed from the list.</p>
@@ -223,13 +247,19 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                                 <button type="submit" class="btn-small">Confirm RSVP</button>
                                             </form>
                                         <?php endif; ?>
+                                        <?php if ($regOk): ?>
+                                            <?php $waUrl = guest_whatsapp_invite_url($g); ?>
+                                            <?php if ($waUrl !== ''): ?>
+                                                <a href="<?= htmlspecialchars($waUrl) ?>" class="btn-small" target="_blank" rel="noopener noreferrer">WhatsApp invite</a>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
                                         <?php if (!guest_pass_fully_checked_in($g)): ?>
                                             <form class="check-in-form" method="post">
                                                 <input type="hidden" name="check_in_id" value="<?= (int) $g['id'] ?>">
                                                 <button type="submit" class="btn-small">Check in</button>
                                             </form>
-                                        <?php elseif ($regOk): ?>
-                                            <span class="admin-action-done">Done</span>
+                                        <?php else: ?>
+                                            <span class="admin-action-done">Checked in</span>
                                         <?php endif; ?>
                                         <form class="check-in-form" method="post" onsubmit="return confirm('Remove this registration permanently? This cannot be undone.');">
                                             <input type="hidden" name="delete_guest_id" value="<?= (int) $g['id'] ?>">

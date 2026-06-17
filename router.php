@@ -9,6 +9,7 @@ $routes = [
     '/' => '/index.php',
     '/index' => '/index.php',
     '/register' => '/register.php',
+    '/guest-pass' => '/guest-pass.php',
     '/qr-image' => '/qr-image.php',
     '/gallery' => '/gallery.php',
     '/gifts' => '/gifts.php',

@@ -23,7 +23,7 @@ define('RSVP_PHONE_PRECIOUS', '08100175880');
 define('BASE', ''); // No .php in URLs; use /register, /gifts, etc.
 
 // Optional: full origin with no trailing slash (e.g. https://yourdomain.com) for guest QR links if auto-detection fails.
-define('SITE_PUBLIC_URL', '');
+define('SITE_PUBLIC_URL', 'https://chiwedsyl.live');
 
 require_once __DIR__ . '/includes/site-url.php';
 
