@@ -94,7 +94,7 @@ function admin_lte_layout_begin(string $pageHeaderTitle, string $activeSection):
     <?php
 }
 
-function admin_lte_layout_end(): void {
+function admin_lte_layout_end(?string $extraFooterScripts = null): void {
     ?>
                 </div>
             </section>
@@ -122,18 +122,23 @@ function admin_lte_layout_end(): void {
                 // Avoid double-init if the page is re-rendered.
                 if ($.fn.dataTable.isDataTable($table)) return;
 
+                const noSortFirst = $table.hasClass('js-datatable-no-sort-first');
+                const nonSortTargets = noSortFirst ? [0, -1] : [-1];
+
                 $table.DataTable({
                     responsive: true,
                     autoWidth: false,
                     pageLength: 25,
                     lengthMenu: [10, 25, 50, 100],
                     order: [],
-                    // Don't sort the last column (usually contains action buttons/links).
-                    columnDefs: [{ orderable: false, targets: -1 }]
+                    columnDefs: [{ orderable: false, targets: nonSortTargets }]
                 });
             });
         });
     </script>
+    <?php if ($extraFooterScripts !== null && $extraFooterScripts !== ''): ?>
+    <script><?= $extraFooterScripts ?></script>
+    <?php endif; ?>
     </body>
     </html>
     <?php

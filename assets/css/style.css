@@ -2498,6 +2498,58 @@ th {
     gap: 0.4rem;
 }
 
+.admin-bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.admin-bulk-confirm-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.admin-bulk-meta {
+    color: var(--text-muted, #6c757d);
+    font-size: 0.9rem;
+}
+
+.admin-bulk-check-col {
+    width: 2.5rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.admin-bulk-check-col input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+}
+
+.admin-bulk-sent-mark {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.admin-whatsapp-bridge {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: #f4f6f9;
+}
+
+.admin-whatsapp-bridge-card {
+    max-width: 28rem;
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
 .btn-submit.btn-submit--inline {
     width: auto;
     max-width: 100%;

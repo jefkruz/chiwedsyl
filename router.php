@@ -25,6 +25,8 @@ $routes = [
     '/admin/receipts' => '/admin/receipts.php',
     '/admin/well-wishes' => '/admin/well-wishes.php',
     '/admin/gallery' => '/admin/gallery.php',
+    '/admin/whatsapp-invite' => '/admin/whatsapp-invite.php',
+    '/admin/whatsapp-bulk' => '/admin/whatsapp-bulk.php',
     '/admin/logout' => '/admin/logout.php',
 ];
 

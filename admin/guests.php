@@ -42,17 +42,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_registration_
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['bulk_confirm_ids']) && is_array($_POST['bulk_confirm_ids'])) {
+    $ids = array_values(array_unique(array_filter(
+        array_map('intval', $_POST['bulk_confirm_ids']),
+        static fn(int $id): bool => $id > 0
+    )));
+    $confirmedCount = 0;
+    if ($ids !== []) {
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $pdo->prepare(
+            "UPDATE guests SET registration_confirmed = 1 WHERE id IN ({$placeholders}) AND COALESCE(registration_confirmed, 0) = 0"
+        );
+        $stmt->execute($ids);
+        $confirmedCount = $stmt->rowCount();
+    }
+    $redirectQs = ['bulk_confirmed=' . $confirmedCount];
+    $returnStatus = trim((string) ($_POST['return_status'] ?? ''));
+    if (in_array($returnStatus, ['pending', 'confirmed'], true)) {
+        $redirectQs[] = 'status=' . urlencode($returnStatus);
+    }
+    $returnQ = trim((string) ($_POST['return_q'] ?? ''));
+    if ($returnQ !== '') {
+        $redirectQs[] = 'q=' . urlencode($returnQ);
+    }
+    header('Location: ' . BASE . '/admin/guests?' . implode('&', $redirectQs));
+    exit;
+}
+
 $confirmedGuest = null;
-$confirmedWhatsAppUrl = '';
 if (isset($_GET['confirmed'])) {
     $confirmedId = (int) $_GET['confirmed'];
     if ($confirmedId > 0) {
         $stmt = $pdo->prepare('SELECT * FROM guests WHERE id = ? LIMIT 1');
         $stmt->execute([$confirmedId]);
         $confirmedGuest = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-        if ($confirmedGuest) {
-            $confirmedWhatsAppUrl = guest_whatsapp_invite_url($confirmedGuest);
-        }
     }
 }
 
@@ -98,6 +121,86 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
     );
 }
 
+$pendingGuestIds = [];
+$whatsappUnsentIds = [];
+foreach ($guests as $guestRow) {
+    if ((int) ($guestRow['registration_confirmed'] ?? 0) !== 1) {
+        $pendingGuestIds[] = (int) $guestRow['id'];
+    } elseif (guest_whatsapp_eligible($guestRow) && !guest_whatsapp_invite_was_sent($guestRow)) {
+        $whatsappUnsentIds[] = (int) $guestRow['id'];
+    }
+}
+
+$guestsReturnPath = BASE . '/admin/guests';
+if ($status !== '') {
+    $guestsReturnPath .= '?status=' . urlencode($status);
+    if ($q !== '') {
+        $guestsReturnPath .= '&q=' . urlencode($q);
+    }
+} elseif ($q !== '') {
+    $guestsReturnPath .= '?q=' . urlencode($q);
+}
+
+$guestsBulkScripts = <<<'JS'
+document.addEventListener('DOMContentLoaded', function () {
+    function initBulkBar(barId, formId, checkboxName, selectAllId) {
+        const bulkBar = document.getElementById(barId);
+        const bulkForm = document.getElementById(formId);
+        const selectAll = document.getElementById(selectAllId);
+        if (!bulkBar || !bulkForm) return;
+
+        const selector = 'input[name="' + checkboxName + '"][form="' + formId + '"]';
+
+        function boxes() {
+            return document.querySelectorAll(selector);
+        }
+
+        function refreshBulkBar() {
+            const checked = document.querySelectorAll(selector + ':checked').length;
+            bulkBar.hidden = checked === 0;
+            const countEl = bulkBar.querySelector('.js-bulk-selected-count');
+            if (countEl) {
+                countEl.textContent = checked === 1 ? '1 guest selected' : checked + ' guests selected';
+            }
+            if (selectAll) {
+                const allBoxes = boxes();
+                const checkedBoxes = document.querySelectorAll(selector + ':checked');
+                selectAll.indeterminate = checkedBoxes.length > 0 && checkedBoxes.length < allBoxes.length;
+                selectAll.checked = allBoxes.length > 0 && checkedBoxes.length === allBoxes.length;
+            }
+        }
+
+        document.addEventListener('change', function (event) {
+            if (!(event.target instanceof HTMLInputElement)) return;
+            if (event.target.name === checkboxName || event.target.id === selectAllId) {
+                refreshBulkBar();
+            }
+        });
+
+        if (selectAll) {
+            selectAll.addEventListener('change', function () {
+                const checked = selectAll.checked;
+                const tableId = selectAll.getAttribute('data-table-id');
+                if (tableId && window.jQuery && jQuery.fn.DataTable && jQuery.fn.dataTable.isDataTable('#' + tableId)) {
+                    const table = jQuery('#' + tableId).DataTable();
+                    table.rows({ page: 'current' }).nodes().to$().find(selector).prop('checked', checked);
+                } else {
+                    boxes().forEach(function (box) {
+                        box.checked = checked;
+                    });
+                }
+                refreshBulkBar();
+            });
+        }
+
+        refreshBulkBar();
+    }
+
+    initBulkBar('guest-bulk-confirm-bar', 'guest-bulk-confirm-form', 'bulk_confirm_ids[]', 'guest-bulk-select-all');
+    initBulkBar('guest-bulk-wa-bar', 'guest-bulk-wa-form', 'bulk_wa_ids[]', 'guest-bulk-wa-select-all');
+});
+JS;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -118,12 +221,15 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
             <?php if (isset($_GET['checked'])): ?>
                 <p class="alert alert-success">Guest marked as checked in.</p>
             <?php endif; ?>
+            <?php if (isset($_GET['bulk_confirmed'])): ?>
+                <p class="alert alert-success"><?= (int) $_GET['bulk_confirmed'] === 1 ? '1 registration confirmed.' : (int) $_GET['bulk_confirmed'] . ' registrations confirmed.' ?></p>
+            <?php endif; ?>
             <?php if (isset($_GET['confirmed'])): ?>
                 <p class="alert alert-success">
                     Registration confirmed. The guest can now retrieve their access card from the public RSVP page.
                     <?php if ($confirmedGuest): ?>
-                        <?php if ($confirmedWhatsAppUrl !== ''): ?>
-                            <br><a href="<?= htmlspecialchars($confirmedWhatsAppUrl) ?>" class="btn-small" target="_blank" rel="noopener noreferrer" style="margin-top:0.75rem;display:inline-block;">Send invite on WhatsApp</a>
+                        <?php if (guest_whatsapp_eligible($confirmedGuest)): ?>
+                            <br><a href="<?= htmlspecialchars(guest_admin_whatsapp_invite_href((int) $confirmedGuest['id'], BASE . '/admin/guests?confirmed=' . (int) $confirmedGuest['id'])) ?>" class="btn-small" style="margin-top:0.75rem;display:inline-block;">Send invite on WhatsApp</a>
                         <?php else: ?>
                             <br><span class="admin-scan-meta">Add a phone number on the guest record to send the invite on WhatsApp.</span>
                         <?php endif; ?>
@@ -163,10 +269,56 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
                 ?>
                 <a href="<?= BASE ?>/admin/guests?<?= implode('&amp;', $exportQs) ?>" class="btn-small">Export Excel</a>
             </form>
+            <?php if ($pendingGuestIds !== [] || $whatsappUnsentIds !== []): ?>
+                <div class="admin-bulk-actions" style="margin-bottom:1rem;">
+                    <?php if ($pendingGuestIds !== []): ?>
+                    <form id="guest-bulk-confirm-form" method="post" class="admin-bulk-confirm-selected-form" style="display:inline;">
+                        <?php if ($status !== ''): ?>
+                            <input type="hidden" name="return_status" value="<?= htmlspecialchars($status) ?>">
+                        <?php endif; ?>
+                        <?php if ($q !== ''): ?>
+                            <input type="hidden" name="return_q" value="<?= htmlspecialchars($q) ?>">
+                        <?php endif; ?>
+                        <span id="guest-bulk-confirm-bar" class="admin-bulk-confirm-bar" hidden>
+                            <span class="admin-bulk-meta js-bulk-selected-count"></span>
+                            <button type="submit" class="btn-small" onclick="return confirm('Confirm the selected registrations?');">Confirm selected</button>
+                        </span>
+                    </form>
+                    <form method="post" class="admin-bulk-confirm-all-form" style="display:inline;" onsubmit="return confirm('Confirm all <?= count($pendingGuestIds) ?> pending guest<?= count($pendingGuestIds) === 1 ? '' : 's' ?> in this list?');">
+                        <?php if ($status !== ''): ?>
+                            <input type="hidden" name="return_status" value="<?= htmlspecialchars($status) ?>">
+                        <?php endif; ?>
+                        <?php if ($q !== ''): ?>
+                            <input type="hidden" name="return_q" value="<?= htmlspecialchars($q) ?>">
+                        <?php endif; ?>
+                        <?php foreach ($pendingGuestIds as $pendingId): ?>
+                            <input type="hidden" name="bulk_confirm_ids[]" value="<?= $pendingId ?>">
+                        <?php endforeach; ?>
+                        <button type="submit" class="btn-small">Confirm all pending (<?= count($pendingGuestIds) ?>)</button>
+                    </form>
+                    <?php endif; ?>
+                    <?php if ($whatsappUnsentIds !== []): ?>
+                    <form id="guest-bulk-wa-form" method="get" action="<?= BASE ?>/admin/whatsapp-bulk" class="admin-bulk-wa-selected-form" style="display:inline;">
+                        <span id="guest-bulk-wa-bar" class="admin-bulk-confirm-bar" hidden>
+                            <span class="admin-bulk-meta js-bulk-selected-count"></span>
+                            <button type="submit" class="btn-small">Send WhatsApp to selected</button>
+                        </span>
+                    </form>
+                    <a href="<?= BASE ?>/admin/whatsapp-bulk?ids=<?= implode(',', $whatsappUnsentIds) ?>" class="btn-small">Send all unsent WhatsApp (<?= count($whatsappUnsentIds) ?>)</a>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
             <div class="table-wrap">
-                <table class="js-datatable responsive-table table table-striped table-bordered table-sm">
+                <table id="guests-admin-table" class="js-datatable js-datatable-no-sort-first responsive-table table table-striped table-bordered table-sm">
                     <thead>
                         <tr>
+                            <th class="admin-bulk-check-col">
+                                <?php if ($pendingGuestIds !== []): ?>
+                                    <input type="checkbox" id="guest-bulk-select-all" data-table-id="guests-admin-table" aria-label="Select all pending on this page">
+                                <?php elseif ($whatsappUnsentIds !== []): ?>
+                                    <input type="checkbox" id="guest-bulk-wa-select-all" data-table-id="guests-admin-table" aria-label="Select all unsent WhatsApp invites on this page">
+                                <?php endif; ?>
+                            </th>
                             <th>Guest</th>
                             <th>Title</th>
                             <th>Email</th>
@@ -184,6 +336,8 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
                         <?php foreach ($guests as $g): ?>
                             <?php
                             $regOk = (int) ($g['registration_confirmed'] ?? 0) === 1;
+                            $waEligible = guest_whatsapp_eligible($g);
+                            $waSent = guest_whatsapp_invite_was_sent($g);
                             $genderLabel = $g['gender'] ?? '';
                             if ($genderLabel === 'male') {
                                 $genderLabel = 'Male';
@@ -194,6 +348,15 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
                             }
                             ?>
                             <tr>
+                                <td data-label="Select" class="admin-bulk-check-col">
+                                    <?php if (!$regOk): ?>
+                                        <input type="checkbox" name="bulk_confirm_ids[]" value="<?= (int) $g['id'] ?>" form="guest-bulk-confirm-form" aria-label="Select <?= htmlspecialchars($g['name']) ?>">
+                                    <?php elseif ($waEligible && !$waSent): ?>
+                                        <input type="checkbox" name="bulk_wa_ids[]" value="<?= (int) $g['id'] ?>" form="guest-bulk-wa-form" aria-label="Select <?= htmlspecialchars($g['name']) ?> for WhatsApp">
+                                    <?php elseif ($waSent): ?>
+                                        <span class="admin-bulk-sent-mark" title="WhatsApp sent">✓</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td data-label="Guest"><?= htmlspecialchars($g['name']) ?></td>
                                 <td data-label="Title"><?= htmlspecialchars($g['title'] ?? '—') ?></td>
                                 <td data-label="Email"><?= htmlspecialchars($g['email']) ?></td>
@@ -225,9 +388,16 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
                                             </form>
                                         <?php endif; ?>
                                         <?php if ($regOk): ?>
-                                            <?php $waUrl = guest_whatsapp_invite_url($g); ?>
-                                            <?php if ($waUrl !== ''): ?>
-                                                <a href="<?= htmlspecialchars($waUrl) ?>" class="btn-small" target="_blank" rel="noopener noreferrer">WhatsApp invite</a>
+                                            <?php if ($waEligible): ?>
+                                                <?php if ($waSent): ?>
+                                                    <span class="admin-action-done">WhatsApp sent</span>
+                                                    <?php if (!empty($g['whatsapp_invite_sent_at'])): ?>
+                                                        <span class="admin-checked-when"><?= htmlspecialchars((string) $g['whatsapp_invite_sent_at']) ?></span>
+                                                    <?php endif; ?>
+                                                    <a href="<?= htmlspecialchars(guest_admin_whatsapp_invite_href((int) $g['id'], $guestsReturnPath)) ?>" class="btn-small">Resend</a>
+                                                <?php else: ?>
+                                                    <a href="<?= htmlspecialchars(guest_admin_whatsapp_invite_href((int) $g['id'], $guestsReturnPath)) ?>" class="btn-small">WhatsApp invite</a>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         <?php endif; ?>
                                         <?php if (!guest_pass_fully_checked_in($g)): ?>
@@ -250,4 +420,4 @@ if (isset($_GET['export']) && $_GET['export'] === 'excel') {
                 </table>
             </div>
         </div>
-<?php admin_lte_layout_end(); ?>
+<?php admin_lte_layout_end($guestsBulkScripts); ?>

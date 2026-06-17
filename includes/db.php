@@ -108,6 +108,9 @@ function initSchema(PDO $pdo): void {
         $pdo->exec("ALTER TABLE guests ADD COLUMN check_in_count INTEGER DEFAULT 0");
         $pdo->exec("UPDATE guests SET check_in_count = COALESCE(num_guests, 1) WHERE checked_in = 1 AND COALESCE(check_in_count, 0) = 0");
     }
+    if (!in_array('whatsapp_invite_sent_at', $cols)) {
+        $pdo->exec("ALTER TABLE guests ADD COLUMN whatsapp_invite_sent_at TEXT");
+    }
     // One-time: old RSVP stored 2 for a party of 3 at the gate; now num_guests = total including self.
     $partyMigrated = $pdo->query("SELECT value FROM site_settings WHERE key = 'guest_party_total_includes_self' LIMIT 1")->fetchColumn();
     if ($partyMigrated !== '1') {

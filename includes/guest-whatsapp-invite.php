@@ -95,3 +95,48 @@ function guest_whatsapp_invite_url(array $guest): string {
 function guest_has_whatsapp_phone(array $guest): bool {
     return guest_normalize_phone_for_whatsapp((string) ($guest['phone'] ?? '')) !== '';
 }
+
+function guest_whatsapp_invite_was_sent(array $guest): bool {
+    return trim((string) ($guest['whatsapp_invite_sent_at'] ?? '')) !== '';
+}
+
+function guest_whatsapp_eligible(array $guest): bool {
+    return (int) ($guest['registration_confirmed'] ?? 0) === 1 && guest_has_whatsapp_phone($guest);
+}
+
+function guest_mark_whatsapp_invite_sent(PDO $pdo, int $guestId): bool {
+    if ($guestId < 1) {
+        return false;
+    }
+    $stmt = $pdo->prepare(
+        "UPDATE guests SET whatsapp_invite_sent_at = datetime('now') WHERE id = ? AND registration_confirmed = 1"
+    );
+    $stmt->execute([$guestId]);
+
+    return $stmt->rowCount() > 0;
+}
+
+function admin_safe_return_path(?string $return): string {
+    $default = BASE . '/admin/guests';
+    if ($return === null || trim($return) === '') {
+        return $default;
+    }
+    $return = trim($return);
+    if (preg_match('#^(https?:)?//#i', $return)) {
+        return $default;
+    }
+    if ($return[0] !== '/') {
+        return $default;
+    }
+
+    return $return;
+}
+
+function guest_admin_whatsapp_invite_href(int $guestId, ?string $returnPath = null): string {
+    $href = BASE . '/admin/whatsapp-invite?id=' . $guestId;
+    if ($returnPath !== null && trim($returnPath) !== '') {
+        $href .= '&return=' . rawurlencode($returnPath);
+    }
+
+    return $href;
+}
