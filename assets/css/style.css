@@ -1245,6 +1245,12 @@ button.btn {
     }
 }
 
+@media (max-width: 768px) {
+    body.page-guest-pass .register-access-card-wrap {
+        padding-top: 0.5rem;
+    }
+}
+
 .register-access-card-wrap {
     padding: 1.25rem 1.25rem 4rem;
     max-width: 440px;

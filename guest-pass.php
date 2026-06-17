@@ -4,6 +4,8 @@ require_once __DIR__ . '/includes/guest-access-card.php';
 require_once __DIR__ . '/includes/guest-access-card-image.php';
 require_once __DIR__ . '/includes/guest-whatsapp-invite.php';
 
+$current_page = 'guest-pass';
+
 $code = trim((string) ($_GET['code'] ?? ''));
 $pdo = getDb();
 $guest = guest_fetch_confirmed_by_pass_code($pdo, $code);
