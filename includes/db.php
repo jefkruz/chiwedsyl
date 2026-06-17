@@ -106,7 +106,13 @@ function initSchema(PDO $pdo): void {
     }
     if (!in_array('check_in_count', $cols)) {
         $pdo->exec("ALTER TABLE guests ADD COLUMN check_in_count INTEGER DEFAULT 0");
-        $pdo->exec("UPDATE guests SET check_in_count = CASE WHEN COALESCE(num_guests, 1) <= 1 THEN 1 ELSE COALESCE(num_guests, 1) + 1 END WHERE checked_in = 1 AND COALESCE(check_in_count, 0) = 0");
+        $pdo->exec("UPDATE guests SET check_in_count = COALESCE(num_guests, 1) WHERE checked_in = 1 AND COALESCE(check_in_count, 0) = 0");
+    }
+    // One-time: old RSVP stored 2 for a party of 3 at the gate; now num_guests = total including self.
+    $partyMigrated = $pdo->query("SELECT value FROM site_settings WHERE key = 'guest_party_total_includes_self' LIMIT 1")->fetchColumn();
+    if ($partyMigrated !== '1') {
+        $pdo->exec('UPDATE guests SET num_guests = num_guests + 1 WHERE num_guests > 1');
+        $pdo->prepare("INSERT OR REPLACE INTO site_settings (key, value) VALUES ('guest_party_total_includes_self', '1')")->execute();
     }
     // Add price to gift_items if missing
     $giftInfo = $pdo->query("PRAGMA table_info(gift_items)")->fetchAll(PDO::FETCH_ASSOC);

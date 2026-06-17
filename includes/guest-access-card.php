@@ -25,18 +25,12 @@ function guest_valid_titles(): array {
 
 /**
  * QR scans allowed for this pass (one scan per person entering).
- * RSVP option 1 = registrant only; option 2 = registrant plus two guests.
+ * `num_guests` is total party size including the registrant.
  */
 function guest_party_scan_limit(array $guest): int {
     $n = (int) ($guest['num_guests'] ?? 1);
-    if ($n < 1) {
-        $n = 1;
-    }
-    if ($n === 1) {
-        return 1;
-    }
 
-    return $n + 1;
+    return max(1, $n);
 }
 
 function guest_check_in_count(array $guest): int {

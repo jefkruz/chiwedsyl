@@ -402,7 +402,7 @@ elseif ($phase === 'update_profile' && $profileGuest):
                 <label for="up_num_guests">How many people are in your party?</label>
                 <select id="up_num_guests" name="num_guests">
                     <option value="1" <?= $pfNum === 1 ? 'selected' : '' ?>>1 — just me</option>
-                    <option value="2" <?= $pfNum === 2 ? 'selected' : '' ?>>3 — me plus 2 guests</option>
+                    <option value="2" <?= $pfNum === 2 ? 'selected' : '' ?>>2 — me plus 1 guest</option>
                 </select>
             </div>
             <div class="form-group">
@@ -488,7 +488,7 @@ elseif ($phase === 'new' && !empty($phaseData['email'])):
                 <select id="num_guests" name="num_guests">
                     <?php $regNum = min(2, max(1, (int) ($_POST['num_guests'] ?? 1))); ?>
                     <option value="1" <?= $regNum === 1 ? 'selected' : '' ?>>1 — just me</option>
-                    <option value="2" <?= $regNum === 2 ? 'selected' : '' ?>>3 — me plus 2 guests</option>
+                    <option value="2" <?= $regNum === 2 ? 'selected' : '' ?>>2 — me plus 1 guest</option>
                 </select>
             </div>
             <div class="form-group">
