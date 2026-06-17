@@ -63,8 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
     if ($num_guests < 1) {
         $num_guests = 1;
     }
-    if ($num_guests > 5) {
-        $num_guests = 5;
+    if ($num_guests > 2) {
+        $num_guests = 2;
     }
     $registration_confirmed = isset($_POST['registration_confirmed']) ? 1 : 0;
     $checked_in = isset($_POST['checked_in']) ? 1 : 0;
@@ -198,11 +198,11 @@ $v = function (string $field) use ($guest) {
                     <input type="text" id="invited_by" name="invited_by" value="<?= $v('invited_by') ?>">
                 </div>
                 <div class="form-group">
-                    <label for="num_guests">Number of people (including guest)</label>
+                    <label for="num_guests">How many people are in the party?</label>
                     <select id="num_guests" name="num_guests">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <option value="<?= $i ?>" <?= (int) ($guest['num_guests'] ?? 1) === $i ? 'selected' : '' ?>><?= $i ?></option>
-                        <?php endfor; ?>
+                        <?php $editNum = min(2, max(1, (int) ($guest['num_guests'] ?? 1))); ?>
+                        <option value="1" <?= $editNum === 1 ? 'selected' : '' ?>>1</option>
+                        <option value="2" <?= $editNum === 2 ? 'selected' : '' ?>>2</option>
                     </select>
                 </div>
                 <div class="form-group">
