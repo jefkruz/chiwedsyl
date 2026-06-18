@@ -147,4 +147,13 @@ function initSchema(PDO $pdo): void {
         sort_order INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS wedding_highlights (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        image_path TEXT NOT NULL,
+        note TEXT,
+        hashtags TEXT,
+        author_name TEXT,
+        is_visible INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
 }

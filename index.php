@@ -67,6 +67,8 @@ $photo3 = 'assets/images/DSC02162.jpg';
 $pdo = getDb();
 $homeGifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id LIMIT 12")->fetchAll(PDO::FETCH_ASSOC);
 $homeGallery = $pdo->query("SELECT * FROM gallery_images ORDER BY sort_order, created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+require_once __DIR__ . '/includes/wedding-highlight-upload.php';
+$homeWeddingHighlights = wedding_highlight_fetch_visible($pdo, 24);
 $homeWishes = $pdo->query("SELECT id, author_name, message FROM well_wishes ORDER BY created_at ASC, id ASC LIMIT 30")->fetchAll(PDO::FETCH_ASSOC);
 
 include __DIR__ . '/includes/header.php';
@@ -302,6 +304,54 @@ include __DIR__ . '/includes/header.php';
         <a href="<?= BASE ?>/gallery" class="btn">View more</a>
     </p>
 </section>
+
+<?php if (!empty($homeWeddingHighlights)): ?>
+<section class="home-wedding-highlights-section">
+    <h2 class="section-title">Wedding Highlights</h2>
+    <div class="home-carousel-wrap">
+        <button type="button" class="carousel-btn prev" data-target="home-wedding-highlights-carousel" aria-label="Previous wedding highlights">‹</button>
+        <div class="home-carousel" id="home-wedding-highlights-carousel">
+            <div class="home-carousel-track">
+                <?php foreach ($homeWeddingHighlights as $highlight): ?>
+                    <?php
+                    $hpath = trim((string) ($highlight['image_path'] ?? ''));
+                    $hnote = trim((string) ($highlight['note'] ?? ''));
+                    $htags = trim((string) ($highlight['hashtags'] ?? ''));
+                    $hauthor = trim((string) ($highlight['author_name'] ?? ''));
+                    ?>
+                    <article class="home-highlight-slide">
+                        <a href="<?= BASE ?>/<?= htmlspecialchars($hpath) ?>" class="home-highlight-image-link" target="_blank" rel="noopener noreferrer">
+                            <img src="<?= BASE ?>/<?= htmlspecialchars($hpath) ?>" alt="<?= $hauthor !== '' ? htmlspecialchars('Photo by ' . $hauthor) : 'Wedding highlight' ?>">
+                        </a>
+                        <?php if ($hnote !== '' || $htags !== ''): ?>
+                            <div class="home-highlight-caption">
+                                <?php if ($hnote !== ''): ?>
+                                    <p class="home-highlight-note"><?= htmlspecialchars($hnote) ?></p>
+                                <?php endif; ?>
+                                <?php if ($htags !== ''): ?>
+                                    <p class="home-highlight-tags"><?= htmlspecialchars($htags) ?></p>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <button type="button" class="carousel-btn next" data-target="home-wedding-highlights-carousel" aria-label="Next wedding highlights">›</button>
+    </div>
+    <p class="home-carousel-link">
+        <a href="<?= BASE ?>/wedding-highlights" class="btn">Share yours</a>
+    </p>
+</section>
+<?php else: ?>
+<section class="home-wedding-highlights-section home-wedding-highlights-section--empty">
+    <h2 class="section-title">Wedding Highlights</h2>
+    <p class="wedding-highlights-empty">Share your photos from the celebration — add a short note and hashtags if you like.</p>
+    <p class="home-carousel-link">
+        <a href="<?= BASE ?>/wedding-highlights" class="btn">Upload a photo</a>
+    </p>
+</section>
+<?php endif; ?>
 
 <section class="rsvp-cta-section">
     <h2 class="section-title">Why you need to RSVP</h2>

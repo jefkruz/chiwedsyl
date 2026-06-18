@@ -44,6 +44,7 @@ $og_image = $base_url . BASE . '/assets/images/wedding.png';
             <a href="<?= BASE ?>/#our-story">Our Story</a>
             <a href="<?= BASE ?>/#details">Details</a>
             <a href="<?= BASE ?>/gallery">Gallery</a>
+            <a href="<?= BASE ?>/wedding-highlights">Highlights</a>
             <a href="<?= BASE ?>/gifts">Gifts</a>
             <a href="<?= BASE ?>/well-wishes">Well Wishes</a>
             <a href="<?= BASE ?>/register" class="nav-cta">RSVP</a>

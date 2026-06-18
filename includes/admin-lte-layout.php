@@ -51,6 +51,7 @@ function admin_lte_layout_begin(string $pageHeaderTitle, string $activeSection):
                             'gifts' => ['href' => BASE . '/admin/gifts', 'icon' => 'fas fa-gift', 'label' => 'Gifts'],
                             'well-wishes' => ['href' => BASE . '/admin/well-wishes', 'icon' => 'fas fa-heart', 'label' => 'Well wishes'],
                             'gallery' => ['href' => BASE . '/admin/gallery', 'icon' => 'fas fa-images', 'label' => 'Gallery'],
+                            'wedding-highlights' => ['href' => BASE . '/admin/wedding-highlights', 'icon' => 'fas fa-camera', 'label' => 'Wedding highlights'],
                         ];
 
                         foreach ($navItems as $key => $item):
