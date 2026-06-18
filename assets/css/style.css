@@ -2534,6 +2534,29 @@ th {
     margin: 0;
 }
 
+.admin-guest-photo-field input[type="file"] {
+    margin-top: 0.5rem;
+}
+
+.admin-guest-photo-preview-wrap {
+    margin: 0.5rem 0 0.75rem;
+}
+
+.admin-guest-photo-preview {
+    display: block;
+    width: min(100%, 220px);
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--cream-dark, #efe8dc);
+    box-shadow: 0 2px 8px var(--shadow, rgba(61, 35, 20, 0.12));
+}
+
+.admin-guest-photo-remove {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+}
+
 .admin-bulk-sent-mark {
     color: #28a745;
     font-weight: 600;

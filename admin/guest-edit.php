@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/admin-auth.php';
 require_once __DIR__ . '/../includes/guest-access-card.php';
+require_once __DIR__ . '/../includes/guest-photo-upload.php';
 require_once __DIR__ . '/../includes/admin-delete-guest.php';
 require_once __DIR__ . '/../includes/admin-lte-layout.php';
 
@@ -35,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 }
 
 $validTitles = guest_valid_titles();
+$maxGuestPhotoBytes = 10 * 1024 * 1024;
 $error = '';
 $saved = isset($_GET['saved']);
 $deleteError = isset($_GET['delete_error']);
@@ -93,23 +95,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
         if ($name === '') {
             $name = trim((string) $guest['name']);
         }
-        $stmt = $pdo->prepare('UPDATE guests SET title = ?, first_name = ?, last_name = ?, name = ?, email = ?, phone = ?, gender = ?, invited_by = ?, num_guests = ?, registration_confirmed = ?, checked_in = ? WHERE id = ?');
-        $stmt->execute([
-            $title !== '' ? $title : null,
-            $first !== '' ? $first : null,
-            $last !== '' ? $last : null,
-            $name,
-            $email,
-            $phone !== '' ? $phone : null,
-            $gender !== '' ? $gender : null,
-            $invited_by !== '' ? $invited_by : null,
-            $num_guests,
-            $registration_confirmed,
-            $checked_in,
-            $id,
-        ]);
-        header('Location: ' . BASE . '/admin/guest-edit?id=' . $id . '&saved=1');
-        exit;
+
+        $oldPhotoPath = trim((string) ($guest['guest_photo_path'] ?? ''));
+        $guestPhotoPath = guest_has_valid_pass_photo_on_disk($guest) ? $oldPhotoPath : null;
+        $removePhoto = isset($_POST['remove_guest_photo']);
+        $photoResult = guest_process_photo_upload($_FILES['guest_photo'] ?? null, $maxGuestPhotoBytes, false);
+
+        if ($photoResult['error'] !== null) {
+            $error = $photoResult['error'];
+        } elseif ($photoResult['path'] !== null) {
+            if ($guestPhotoPath !== null && $guestPhotoPath !== $photoResult['path']) {
+                guest_delete_stored_photo_file($guestPhotoPath);
+            }
+            $guestPhotoPath = $photoResult['path'];
+        } elseif ($removePhoto) {
+            guest_delete_stored_photo_file($guestPhotoPath);
+            $guestPhotoPath = null;
+        }
+
+        if ($error === '') {
+            $stmt = $pdo->prepare('UPDATE guests SET title = ?, first_name = ?, last_name = ?, name = ?, email = ?, phone = ?, gender = ?, invited_by = ?, num_guests = ?, registration_confirmed = ?, checked_in = ?, guest_photo_path = ? WHERE id = ?');
+            $stmt->execute([
+                $title !== '' ? $title : null,
+                $first !== '' ? $first : null,
+                $last !== '' ? $last : null,
+                $name,
+                $email,
+                $phone !== '' ? $phone : null,
+                $gender !== '' ? $gender : null,
+                $invited_by !== '' ? $invited_by : null,
+                $num_guests,
+                $registration_confirmed,
+                $checked_in,
+                $guestPhotoPath,
+                $id,
+            ]);
+            header('Location: ' . BASE . '/admin/guest-edit?id=' . $id . '&saved=1');
+            exit;
+        }
     }
 
     $guest = array_merge($guest, [
@@ -156,8 +179,8 @@ $v = function (string $field) use ($guest) {
             <?php if ($error): ?>
                 <p class="alert alert-error"><?= htmlspecialchars($error) ?></p>
             <?php endif; ?>
-            <p>Changes here update the guest list and their downloadable access pass. The QR code and pass photo are not changed here — guests update their photo on the public RSVP flow.</p>
-            <form method="post" action="<?= BASE ?>/admin/guest-edit?id=<?= (int) $id ?>" class="admin-guest-edit-form admin-form-narrow">
+            <p>Changes here update the guest list and their downloadable access pass. You can replace or remove the guest’s pass photo below.</p>
+            <form method="post" action="<?= BASE ?>/admin/guest-edit?id=<?= (int) $id ?>" class="admin-guest-edit-form admin-form-narrow" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="save_guest">
                 <input type="hidden" name="id" value="<?= (int) $id ?>">
                 <div class="form-group">
@@ -210,6 +233,22 @@ $v = function (string $field) use ($guest) {
                 </div>
                 <div class="form-group">
                     <label><input type="checkbox" name="checked_in" value="1" <?= !empty($guest['checked_in']) ? 'checked' : '' ?>> Checked in at venue</label>
+                </div>
+                <div class="form-group admin-guest-photo-field">
+                    <label for="guest_photo">Pass photo</label>
+                    <?php if (guest_has_valid_pass_photo_on_disk($guest)): ?>
+                        <?php $photoUrl = htmlspecialchars(BASE . '/' . ltrim((string) $guest['guest_photo_path'], '/'), ENT_QUOTES, 'UTF-8'); ?>
+                        <div class="admin-guest-photo-preview-wrap">
+                            <img src="<?= $photoUrl ?>" alt="Current pass photo for <?= $v('name') ?>" class="admin-guest-photo-preview">
+                        </div>
+                        <label class="admin-guest-photo-remove">
+                            <input type="checkbox" name="remove_guest_photo" value="1"> Remove current photo
+                        </label>
+                    <?php else: ?>
+                        <p class="admin-scan-meta">No pass photo on file.</p>
+                    <?php endif; ?>
+                    <input type="file" id="guest_photo" name="guest_photo" accept="image/jpeg,image/png,image/gif,image/webp">
+                    <p class="admin-scan-meta">JPG, PNG, GIF or WebP. Max 10 MB. Uploading a new image replaces the current one.</p>
                 </div>
                 <p><button type="submit" class="btn-submit btn-submit--inline">Save changes</button></p>
             </form>

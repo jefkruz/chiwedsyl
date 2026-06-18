@@ -1,40 +1,12 @@
 <?php
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/guest-access-card.php';
+require_once __DIR__ . '/includes/guest-photo-upload.php';
 /**
  * @return array{path: ?string, error: ?string}
  */
 function register_process_guest_photo_upload(?array $fu, int $max_bytes, bool $required): array {
-    if (!is_array($fu)) {
-        return ['path' => null, 'error' => $required ? 'Please upload a photo for your guest pass.' : null];
-    }
-    $fileErr = (int) ($fu['error'] ?? UPLOAD_ERR_NO_FILE);
-    $fileName = trim((string) ($fu['name'] ?? ''));
-    if ($fileErr === UPLOAD_ERR_NO_FILE || $fileName === '') {
-        return ['path' => null, 'error' => $required ? 'Please upload a photo for your guest pass (JPG, PNG, GIF or WebP, max 10 MB).' : null];
-    }
-    if ($fileErr === UPLOAD_ERR_INI_SIZE || $fileErr === UPLOAD_ERR_FORM_SIZE) {
-        return ['path' => null, 'error' => 'Your photo must be 10 MB or smaller.'];
-    }
-    if ($fileErr !== UPLOAD_ERR_OK) {
-        return ['path' => null, 'error' => 'Photo upload failed. Please try again.'];
-    }
-    if ((int) ($fu['size'] ?? 0) > $max_bytes) {
-        return ['path' => null, 'error' => 'Your photo must be 10 MB or smaller.'];
-    }
-    $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true)) {
-        return ['path' => null, 'error' => 'Please use a JPG, PNG, GIF or WebP image.'];
-    }
-    $uploadDir = UPLOAD_PATH . '/guests/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0755, true);
-    }
-    $filename = uniqid('guest_') . '.' . $ext;
-    if (!move_uploaded_file($fu['tmp_name'], $uploadDir . $filename)) {
-        return ['path' => null, 'error' => 'Could not save your photo. Please try again.'];
-    }
-    return ['path' => 'uploads/guests/' . $filename, 'error' => null];
+    return guest_process_photo_upload($fu, $max_bytes, $required);
 }
 
 $current_page = 'register';
