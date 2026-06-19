@@ -2,6 +2,7 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/guest-access-card.php';
 require_once __DIR__ . '/includes/guest-photo-upload.php';
+require_once __DIR__ . '/includes/site-settings.php';
 /**
  * @return array{path: ?string, error: ?string}
  */
@@ -21,10 +22,12 @@ if (isset($_GET['new']) && $_GET['new'] === '1') {
 }
 
 $pdo = getDb();
+$rsvpOpen = rsvp_registrations_open($pdo);
 $error = '';
 $email_error = '';
 $form_error = '';
 $profile_error = '';
+$registration_closed_notice = false;
 $thanks = isset($_GET['thanks']) && !empty($_SESSION['register_thanks']);
 if ($thanks) {
     unset($_SESSION['register_thanks']);
@@ -56,11 +59,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['register_phase_data'] = ['email' => $email];
                 }
             } else {
-                $_SESSION['register_phase'] = 'new';
-                $_SESSION['register_phase_data'] = ['email' => $email];
+                if (!$rsvpOpen) {
+                    $email_error = 'New registrations are closed. If you already RSVP\'d, double-check your email spelling or call the numbers on the home page.';
+                } else {
+                    $_SESSION['register_phase'] = 'new';
+                    $_SESSION['register_phase_data'] = ['email' => $email];
+                }
             }
-            header('Location: ' . BASE . '/register');
-            exit;
+            if ($email_error === '') {
+                header('Location: ' . BASE . '/register');
+                exit;
+            }
         }
     } elseif ($action === 'update_guest_profile') {
         if (($_SESSION['register_phase'] ?? '') !== 'update_profile' || empty($_SESSION['register_phase_data']['guest_id'])) {
@@ -151,10 +160,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } elseif ($action === 'complete_registration') {
-        if (($_SESSION['register_phase'] ?? '') !== 'new' || empty($_SESSION['register_phase_data']['email'])) {
+        if (!$rsvpOpen) {
+            $form_error = 'New registrations are currently closed.';
+        }
+        if ($form_error === '' && (($_SESSION['register_phase'] ?? '') !== 'new' || empty($_SESSION['register_phase_data']['email']))) {
             header('Location: ' . BASE . '/register');
             exit;
         }
+        if ($form_error === '') {
         $sessionEmail = $_SESSION['register_phase_data']['email'];
         $postEmail = trim($_POST['email'] ?? '');
         if (strcasecmp($sessionEmail, $postEmail) !== 0) {
@@ -222,11 +235,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
+        }
     }
 }
 
 $phase = $_SESSION['register_phase'] ?? null;
 $phaseData = $_SESSION['register_phase_data'] ?? [];
+
+if ($phase === 'new' && !$rsvpOpen) {
+    unset($_SESSION['register_phase'], $_SESSION['register_phase_data']);
+    $phase = null;
+    $phaseData = [];
+    $registration_closed_notice = true;
+}
+
 $cardGuest = null;
 $profileGuest = null;
 $profileSavedFlash = !empty($_SESSION['register_profile_saved']);
@@ -496,6 +518,11 @@ else:
 ?>
     <section class="form-page">
         <h1>Register to attend</h1>
+        <?php if (!$rsvpOpen): ?>
+            <div class="alert alert-error" style="margin-bottom:1.25rem;">New registrations are closed. If you already RSVP'd, enter your email below to view your pass or check your status.</div>
+        <?php elseif ($registration_closed_notice): ?>
+            <div class="alert alert-error" style="margin-bottom:1.25rem;">New registrations are currently closed.</div>
+        <?php endif; ?>
         <p style="text-align: center; margin-bottom: 1.5rem; color: var(--chocolate-light);">Enter the email you would like us to use for your invitation. We will either show your access card or guide you through the next step.</p>
         <?php if ($email_error): ?>
             <div class="alert alert-error"><?= htmlspecialchars($email_error) ?></div>

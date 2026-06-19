@@ -6,8 +6,17 @@ require_once __DIR__ . '/../includes/admin-delete-guest.php';
 require_once __DIR__ . '/../includes/admin-lte-layout.php';
 require_once __DIR__ . '/../includes/guest-whatsapp-invite.php';
 require_once __DIR__ . '/../includes/admin-guest-export.php';
+require_once __DIR__ . '/../includes/site-settings.php';
 
 $pdo = getDb();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_rsvp_registrations'])) {
+    rsvp_set_registrations_open($pdo, ($_POST['toggle_rsvp_registrations'] ?? '') === 'open');
+    header('Location: ' . BASE . '/admin/guests?rsvp_updated=1');
+    exit;
+}
+
+$rsvpRegistrationsOpen = rsvp_registrations_open($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_guest_id'])) {
     $delId = (int) $_POST['delete_guest_id'];
@@ -218,6 +227,28 @@ JS;
 <body class="hold-transition sidebar-mini">
 <?php admin_lte_layout_begin('Guests', 'guests'); ?>
         <div class="admin-card">
+            <?php if (isset($_GET['rsvp_updated'])): ?>
+                <p class="alert alert-success">RSVP registration setting updated.</p>
+            <?php endif; ?>
+            <div class="admin-rsvp-toggle-card" style="margin-bottom:1.25rem;padding:1rem 1.25rem;border:1px solid #dee2e6;border-radius:8px;background:#fff;">
+                <p style="margin:0 0 0.75rem;">
+                    Public RSVP is <strong><?= $rsvpRegistrationsOpen ? 'open' : 'closed' ?></strong>.
+                    <?php if ($rsvpRegistrationsOpen): ?>
+                        New guests can submit registrations. Existing guests can still look up their pass by email.
+                    <?php else: ?>
+                        New sign-ups are blocked. Existing guests can still enter their email on the RSVP page.
+                    <?php endif; ?>
+                </p>
+                <form method="post" style="display:inline;">
+                    <?php if ($rsvpRegistrationsOpen): ?>
+                        <input type="hidden" name="toggle_rsvp_registrations" value="close">
+                        <button type="submit" class="btn-small danger" onclick="return confirm('Close public registrations? New guests will not be able to RSVP.');">Close registrations</button>
+                    <?php else: ?>
+                        <input type="hidden" name="toggle_rsvp_registrations" value="open">
+                        <button type="submit" class="btn-small">Open registrations</button>
+                    <?php endif; ?>
+                </form>
+            </div>
             <?php if (isset($_GET['checked'])): ?>
                 <p class="alert alert-success">Guest marked as checked in.</p>
             <?php endif; ?>

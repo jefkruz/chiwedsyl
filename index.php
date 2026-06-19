@@ -65,6 +65,8 @@ $photo2 = 'assets/images/DSC02354.jpg';
 $photo3 = 'assets/images/DSC02162.jpg';
 
 $pdo = getDb();
+require_once __DIR__ . '/includes/site-settings.php';
+$rsvpOpen = rsvp_registrations_open($pdo);
 $homeGifts = $pdo->query("SELECT * FROM gift_items ORDER BY sort_order, id LIMIT 12")->fetchAll(PDO::FETCH_ASSOC);
 $homeGallery = $pdo->query("SELECT * FROM gallery_images ORDER BY sort_order, created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
 require_once __DIR__ . '/includes/wedding-highlight-upload.php';
@@ -356,7 +358,11 @@ include __DIR__ . '/includes/header.php';
 <section class="rsvp-cta-section">
     <h2 class="section-title">Why you need to RSVP</h2>
     <p>So we can reserve your seat and make sure everything is perfect for you. Please register below or reach out to us.</p>
-    <a href="<?= BASE ?>/register" class="btn">Click here to RSVP</a>
+    <?php if ($rsvpOpen): ?>
+        <a href="<?= BASE ?>/register" class="btn">Click here to RSVP</a>
+    <?php else: ?>
+        <p class="rsvp-closed-note">Online registrations are now closed. If you already RSVP'd, <a href="<?= BASE ?>/register">enter your email here</a> to view your pass.</p>
+    <?php endif; ?>
     <p class="rsvp-phones">Or call <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_EHI) ?>">Ehi <?= preg_replace('/\s+/', ' ', RSVP_PHONE_EHI) ?></a>, <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_ONYINYE) ?>">Onyinye <?= preg_replace('/\s+/', ' ', RSVP_PHONE_ONYINYE) ?></a>, <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_BECKY) ?>">Becky <?= preg_replace('/\s+/', ' ', RSVP_PHONE_BECKY) ?></a> or <a href="tel:<?= preg_replace('/\s+/', '', RSVP_PHONE_PRECIOUS) ?>">Precious <?= preg_replace('/\s+/', ' ', RSVP_PHONE_PRECIOUS) ?></a></p>
 </section>
 
