@@ -2399,42 +2399,51 @@ button.btn {
 
 .admin-scan-form {
     margin-top: 1.35rem;
-    padding-top: 1rem;
-    border-top: 1px dashed var(--cream-dark);
+    padding-top: 0.25rem;
+    border-top: none;
 }
 
 .admin-scan-camera-wrap {
     margin: 0 0 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed var(--cream-dark);
+}
+
+.admin-scan-camera-title,
+.admin-scan-manual-title {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    margin: 0 0 0.35rem;
+    color: var(--chocolate);
+}
+
+.admin-scan-camera-desc,
+.admin-scan-manual-desc {
+    font-size: 0.88rem;
+    color: var(--chocolate-light);
+    margin: 0 0 0.85rem;
+    line-height: 1.45;
 }
 
 .admin-scan-reader {
     max-width: 420px;
     margin: 0 auto;
+    min-height: 260px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--cream-dark, #efe8dc);
 }
 
-.admin-scan-reader img {
-    max-width: 100%;
+.admin-scan-reader video {
+    border-radius: 12px;
 }
 
-.admin-scan-reader #html5-qrcode-button-camera-permission,
-.admin-scan-reader #html5-qrcode-button-camera-start,
-.admin-scan-reader #html5-qrcode-button-camera-stop,
-.admin-scan-reader #html5-qrcode-button-file-selection {
-    font-family: var(--font-ui, inherit);
-    font-size: 0.85rem;
-    padding: 0.5rem 0.85rem;
-    border-radius: 8px;
-    border: 1px solid var(--cream-dark, #efe8dc);
-    background: var(--white, #fff);
-    color: var(--chocolate, #3d2314);
-    cursor: pointer;
-    margin: 0.25rem 0.35rem 0.25rem 0;
-}
-
-.admin-scan-reader #html5-qrcode-button-camera-start {
-    background: var(--gold, #c9a227);
-    border-color: rgba(61, 35, 20, 0.18);
-    font-weight: 600;
+.admin-scan-camera-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    justify-content: center;
+    margin-top: 0.85rem;
 }
 
 .admin-scan-camera-status {
@@ -2442,6 +2451,10 @@ button.btn {
     font-size: 0.9rem;
     color: var(--chocolate-light);
     margin: 0.75rem 0 0;
+}
+
+.admin-scan-camera-status--error {
+    color: #8b2e2e;
 }
 
 .admin-thumb-sm {

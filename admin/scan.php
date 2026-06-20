@@ -103,8 +103,14 @@ $displayName = $guest ? guest_display_name($guest) : '';
             <p class="admin-scan-lead">Use the camera below to scan a guest pass QR, or enter the 16-character code manually.</p>
 
             <div class="admin-scan-camera-wrap">
+                <h2 class="admin-scan-camera-title">Camera scanner</h2>
+                <p class="admin-scan-camera-desc">Point your camera at the guest pass QR code.</p>
                 <div id="admin-scan-reader" class="admin-scan-reader" data-scan-url="<?= htmlspecialchars(BASE . '/admin/scan', ENT_QUOTES, 'UTF-8') ?>"></div>
                 <p id="admin-scan-camera-status" class="admin-scan-camera-status" hidden></p>
+                <div class="admin-scan-camera-actions">
+                    <button type="button" class="btn-submit btn-submit--inline" id="admin-scan-start">Start camera</button>
+                    <button type="button" class="btn-small" id="admin-scan-stop" hidden>Stop camera</button>
+                </div>
             </div>
 
             <?php if ($result !== null): ?>
@@ -131,6 +137,8 @@ $displayName = $guest ? guest_display_name($guest) : '';
             <?php endif; ?>
 
             <form method="get" action="<?= BASE ?>/admin/scan" class="admin-form-narrow--sm admin-scan-form">
+                <h2 class="admin-scan-manual-title">Manual lookup</h2>
+                <p class="admin-scan-manual-desc">Enter a pass code if the QR cannot be scanned.</p>
                 <div class="form-group">
                     <label for="scan-code">Pass code (16 characters)</label>
                     <input type="text" id="scan-code" name="code" value="<?= htmlspecialchars($codeParam) ?>" maxlength="32" autocomplete="off" autocapitalize="characters" placeholder="e.g. A1B2C3D4E5F6789">
