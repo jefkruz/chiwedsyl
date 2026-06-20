@@ -93,12 +93,19 @@ $displayName = $guest ? guest_display_name($guest) : '';
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+    <script src="<?= BASE ?>/assets/js/admin-scan-camera.js" defer></script>
 </head>
 <body class="hold-transition sidebar-mini">
 <?php admin_lte_layout_begin('Check-in scan', 'scan'); ?>
 
         <div class="admin-card admin-scan-card">
-            <p class="admin-scan-lead">Scan a guest’s pass QR with your phone camera, or paste the code from under the QR if the link does not open.</p>
+            <p class="admin-scan-lead">Use the camera below to scan a guest pass QR, or enter the 16-character code manually.</p>
+
+            <div class="admin-scan-camera-wrap">
+                <div id="admin-scan-reader" class="admin-scan-reader" data-scan-url="<?= htmlspecialchars(BASE . '/admin/scan', ENT_QUOTES, 'UTF-8') ?>"></div>
+                <p id="admin-scan-camera-status" class="admin-scan-camera-status" hidden></p>
+            </div>
 
             <?php if ($result !== null): ?>
                 <?php if ($result['type'] === 'success' || $result['type'] === 'partial'): ?>
@@ -120,7 +127,7 @@ $displayName = $guest ? guest_display_name($guest) : '';
                     <div class="alert alert-error"><?= htmlspecialchars($result['message']) ?></div>
                 <?php endif; ?>
             <?php else: ?>
-                <p class="admin-scan-hint">No code in the URL yet. Scan a pass QR (opens this page while you are logged in) or enter the code manually below.</p>
+                <p class="admin-scan-hint">Point the camera at a pass QR to check someone in, or type the code below.</p>
             <?php endif; ?>
 
             <form method="get" action="<?= BASE ?>/admin/scan" class="admin-form-narrow--sm admin-scan-form">
